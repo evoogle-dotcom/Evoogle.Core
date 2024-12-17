@@ -39,18 +39,11 @@ internal class DepthFirstEnumerator<TNode>(TNode node) : IEnumerator<TNode>
         var current = this.Stack.Pop();
 
         // Push siblings onto the stack (in reverse order for correct left-to-right traversal)
-        var child = current.FirstChild;
-        var tempStack = new Stack<TNode>();
+        var child = current.LastChild;
         while (child != null)
         {
-            tempStack.Push(child);
-            child = child.NextSibling;
-        }
-
-        // Push children from the temporary stack to preserve left-to-right order
-        while (tempStack.Count > 0)
-        {
-            this.Stack.Push(tempStack.Pop());
+            this.Stack.Push(child);
+            child = child.PreviousSibling;
         }
 
         this.NullableCurrent = current;

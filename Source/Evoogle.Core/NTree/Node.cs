@@ -40,6 +40,9 @@ public abstract class Node<TNode> : INode<TNode>
 
     /// <summary>Predicate if this node has a parent node.</summary>
     public bool HasParent => this.Parent != null;
+
+    /// <summary>Predicate if this node has any sibling nodes.</summary>
+    public bool HasSiblings => this.NextSibling != null || this.PreviousSibling != null;
     #endregion
 
     #region Constructors
