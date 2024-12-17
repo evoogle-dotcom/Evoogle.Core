@@ -275,7 +275,10 @@ public static class TypeExtensions
             return false;
 
         if (enumerableGenericTypeArgumentsCount > 1)
-            throw new InvalidOperationException($"CLR type {{Name={type.Name}}} implements multiple versions of IEnumerable<T>.");
+        {
+            var message = $"CLR type {{Name={type.Name}}} implements multiple versions of IEnumerable<T>.";
+            throw new InvalidOperationException(message);
+        }
 
         enumerableType = enumerableGenericTypeArguments[0];
         return true;
@@ -801,9 +804,7 @@ public static class TypeExtensions
         if (isInstance || isStatic)
             return;
 
-        const string bindingFlagsName = nameof(TypeReflectionFlags);
-        var message = $"{bindingFlagsName} must at least specify either {TypeReflectionFlags.Instance} or {TypeReflectionFlags.Static}";
-
+        var message = $"{nameof(TypeReflectionFlags)} must at least specify either {TypeReflectionFlags.Instance} or {TypeReflectionFlags.Static}";
         throw new ArgumentException(message);
     }
 
@@ -812,9 +813,7 @@ public static class TypeExtensions
         if (isPublic || isNonPublic)
             return;
 
-        const string bindingFlagsName = nameof(TypeReflectionFlags);
-        var message = $"{bindingFlagsName} must at least specify either {TypeReflectionFlags.Public} or {TypeReflectionFlags.NonPublic}";
-
+        var message = $"{nameof(TypeReflectionFlags)} must at least specify either {TypeReflectionFlags.Public} or {TypeReflectionFlags.NonPublic}";
         throw new ArgumentException(message);
     }
     #endregion

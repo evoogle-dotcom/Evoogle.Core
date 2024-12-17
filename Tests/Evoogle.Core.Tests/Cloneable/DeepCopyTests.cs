@@ -1,13 +1,12 @@
 // Copyright (c) 2024 Evoogle.com
 // Licensed under the MIT License. See License.txt in the project root for license information.
-using Evoogle.Cloneable;
 using Evoogle.XUnit;
 
 using FluentAssertions;
 
 using Xunit.Abstractions;
 
-namespace Evoogle.Platform;
+namespace Evoogle.Cloneable;
 
 public class DeepCopyTests(ITestOutputHelper output) : XUnitTests(output)
 {
