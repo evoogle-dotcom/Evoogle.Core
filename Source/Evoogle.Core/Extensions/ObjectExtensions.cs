@@ -16,9 +16,16 @@ public static class ObjectExtensions
         WriteIndented = false,
         DefaultIgnoreCondition = JsonIgnoreCondition.Never
     };
+
+    private static JsonSerializerOptions DefaultToJsonOptions { get; } = new()
+    {
+        WriteIndented = false,
+        DefaultIgnoreCondition = JsonIgnoreCondition.Never
+    };
     #endregion
 
     #region Methods
+
     /// <summary>
     ///     Create a deep copy by using the serializing/deserializing to/from JSON idiom of making a deep copy of an object.
     /// </summary>
@@ -160,7 +167,24 @@ public static class ObjectExtensions
     }
 
     /// <summary>
-    ///     Gets a safe string representation of any .NET object even if the .NET object is null.
+    ///     Gets a safe JSON representation of any .NET object even if the .NET object is null.
+    ///     Provides optional <see cref="JsonSerializerOptions" /> to be used during JSON serialization.
+    /// </summary>
+    /// <typeparam name="T">Type of object to get a safe JSON representation of.</typeparam>
+    /// <param name="obj">.NET object to call extension method on.</param>
+    /// <param name="options">
+    ///     Optional JSON serializer options to use for the JSON serializing.
+    ///     If null, default JSON serializer options will be used.
+    /// </param>
+    /// <returns>JSON string of the .NET object.</returns>
+    public static string SafeToJson<T>(this T? obj, JsonSerializerOptions? options = null)
+    {
+        var toJson = JsonSerializer.Serialize(obj, options ?? DefaultToJsonOptions);
+        return toJson;
+    }
+
+    /// <summary>
+    ///     Gets a safe ToString method invocation of any .NET object even if the .NET object is null.
     ///     Provides optional parameters to customize the text when the .NET object is null or the .NET object ToString method returned an empty string.
     /// </summary>
     /// <typeparam name="T">Type of object to get a safe <c>ToString</c> representation of.</typeparam>
@@ -183,10 +207,10 @@ public static class ObjectExtensions
         var toStringResult = obj?.ToString();
 
         if (toStringResult == null)
-            return !string.IsNullOrWhiteSpace(nullText) ? nullText : "<null>";
+            return nullText ?? "<null>";
 
         if (string.IsNullOrWhiteSpace(toStringResult))
-            return !string.IsNullOrWhiteSpace(emptyText) ? emptyText : "<empty>";
+            return emptyText ?? "<empty>";
 
         return toStringResult;
     }

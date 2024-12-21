@@ -3,8 +3,7 @@
 using Evoogle.XUnit;
 
 using FluentAssertions;
-
-using Xunit.Abstractions;
+using Xunit.v3;
 
 namespace Evoogle.Cloneable;
 
@@ -23,30 +22,45 @@ public class DeepCopyTests(ITestOutputHelper output) : XUnitTests(output)
         public Func<T?>? ExpectedSafeDeepCopyAccessor { get; set; }
         #endregion
 
+        #region Constructors
+        public SafeDeepCopyTest()
+        {
+            this.Name = this.GetType().Name;
+        }
+        #endregion
+
         #region Methods
         protected override void Arrange()
         {
             this.ExpectedSafeDeepCopy = this.ExpectedSafeDeepCopyAccessor != null ? this.ExpectedSafeDeepCopyAccessor() : default;
 
             this.WriteLine($"Source Type: {typeof(T).Name}");
-            this.WriteLine();
 
-            var expectedSafeDeepCopyString = this.ExpectedSafeDeepCopy.SafeToString();
-            this.WriteLine($"Expected Safe Deep Copy: {expectedSafeDeepCopyString}");
-            this.WriteLine();
+            var expectedDeepCopyJson = this.ExpectedSafeDeepCopy.SafeToJson();
+            this.WriteLine($"Expected Deep Copy: {expectedDeepCopyJson}");
         }
 
         protected override void Act()
         {
             this.ActualSafeDeepCopy = this.ExpectedSafeDeepCopy.SafeDeepCopy();
 
-            var actualSafeDeepCopyString = this.ActualSafeDeepCopy.SafeToString();
-            this.WriteLine($"Actual Safe Deep Copy:   {actualSafeDeepCopyString}");
+            var actualDeepCopyJson = this.ActualSafeDeepCopy.SafeToJson();
+            this.WriteLine($"Actual Deep Copy:   {actualDeepCopyJson}");
         }
 
         protected override void Assert()
         {
-            ReferenceEquals(this.ActualSafeDeepCopy, this.ExpectedSafeDeepCopy).Should().BeFalse();
+            ReferenceEquals(this.ActualSafeDeepCopy, this.ExpectedSafeDeepCopy).Should().BeFalse(); // Checks expected and actual are 2 unique objects.
+
+            if (this.ExpectedSafeDeepCopy == null)
+            {
+                this.ActualSafeDeepCopy.Should().BeNull();
+                return;
+            }
+
+            if (this.ExpectedSafeDeepCopy.GetType() == typeof(EmptyObject))
+                return;
+
             this.ActualSafeDeepCopy.Should().BeEquivalentTo(this.ExpectedSafeDeepCopy);
         }
         #endregion
@@ -87,137 +101,150 @@ public class DeepCopyTests(ITestOutputHelper output) : XUnitTests(output)
     #endregion
 
     #region Theory Data
-    public static TheoryData<IXUnitTest> SafeDeepCopyTheoryData => new()
-    {
+    public static TheoryDataRow<IXUnitTest>[] SafeDeepCopyTheoryData =>
+    [
+        new SafeDeepCopyTest<EmptyObject>
         {
-            new SafeDeepCopyTest<Person> {
-                Name = "Basic object",
-                ExpectedSafeDeepCopyAccessor = () => new Person
+            Name = "Empty object",
+            ExpectedSafeDeepCopyAccessor = () => new EmptyObject()
+        },
+
+        new SafeDeepCopyTest<Person>
+        {
+            Name = "Basic object",
+            ExpectedSafeDeepCopyAccessor = () => new Person
+            {
+                PersonId  = "1234",
+                LastName  = "Doe",
+                FirstName = "John"
+            }
+        },
+
+        new SafeDeepCopyTest<BoardOfDirectors>
+        {
+            Name = "Composite object",
+            ExpectedSafeDeepCopyAccessor = () =>
+            {
+                var president = new Person
                 {
                     PersonId  = "1234",
                     LastName  = "Doe",
                     FirstName = "John"
-                }}
+                };
+                var vicePresident = new Person
+                {
+                    PersonId  = "5678",
+                    LastName  = "Doe",
+                    FirstName = "Jane"
+                };
+                var boardOfDirectors = new BoardOfDirectors
+                {
+                    President     = president,
+                    VicePresident = vicePresident
+                };
+                return boardOfDirectors;
+            }
         },
-        {
-            new SafeDeepCopyTest<BoardOfDirectors> {
-                Name = "Composite object",
-                ExpectedSafeDeepCopyAccessor = () => {
-                    var president = new Person
-                    {
-                        PersonId  = "1234",
-                        LastName  = "Doe",
-                        FirstName = "John"
-                    };
-                    var vicePresident = new Person
-                    {
-                        PersonId  = "5678",
-                        LastName  = "Doe",
-                        FirstName = "Jane"
-                    };
-                    var boardOfDirectors = new BoardOfDirectors
-                    {
-                        President     = president,
-                        VicePresident = vicePresident
-                    };
-                    return boardOfDirectors;
-                }}
-        },
-        {
-            new SafeDeepCopyTest<Person> {
-                Name = "Derived object",
-                ExpectedSafeDeepCopyAccessor = () => new Employee
-                    {
-                        PersonId       = "1234",
-                        LastName       = "Doe",
-                        FirstName      = "John",
-                        EmployeeNumber = "1234567890"
-                    }}
-        },
-        {
-            new SafeDeepCopyTest<People> {
-                Name = "Basic object containg a collection",
-                ExpectedSafeDeepCopyAccessor = () => {
-                    var person0 = new Person
-                    {
-                        PersonId  = "1234",
-                        LastName  = "Doe",
-                        FirstName = "John"
-                    };
-                    var person1 = new Person
-                    {
-                        PersonId  = "5678",
-                        LastName  = "Doe",
-                        FirstName = "Jane"
-                    };
 
-                    var people = new People
-                    {
-                        PersonCollection =
-                        [
-                            person0,
-                            person1
-                        ]
-                    };
-                    return people;
-                }}
-        },
+        new SafeDeepCopyTest<Person>
         {
-            new SafeDeepCopyTest<Company> {
-                Name = "Complex object",
-                ExpectedSafeDeepCopyAccessor = () => {
-                    var president = new Person
-                    {
-                        PersonId  = "1111",
-                        FirstName = "George",
-                        LastName  = "Washington"
-                    };
-                    var vicePresident = new Person
-                    {
-                        PersonId  = "2222",
-                        FirstName = "John",
-                        LastName  = "Adams"
-                    };
-                    var boardOfDirectors = new BoardOfDirectors
-                    {
-                        President     = president,
-                        VicePresident = vicePresident
-                    };
-
-                    var employee0 = new Employee
-                    {
-                        PersonId       = "1234",
-                        LastName       = "Doe",
-                        FirstName      = "John",
-                        EmployeeNumber = "1111111111"
-                    };
-                    var employee1 = new Employee
-                    {
-                        PersonId       = "5678",
-                        LastName       = "Doe",
-                        FirstName      = "Jane",
-                        EmployeeNumber = "2222222222"
-                    };
-                    var employees = new People
-                    {
-                        PersonCollection =
-                        [
-                            employee0,
-                            employee1
-                        ]
-                    };
-
-                    var company = new Company
-                    {
-                        CompanyId        = "Acme",
-                        CompanyName      = "Acme, Inc.",
-                        BoardOfDirectors = boardOfDirectors,
-                        CurrentEmployees = employees
-                    };
-                    return company;
-                }}
+            Name = "Derived object",
+            ExpectedSafeDeepCopyAccessor = () => new Employee
+            {
+                PersonId       = "1234",
+                LastName       = "Doe",
+                FirstName      = "John",
+                EmployeeNumber = "1234567890"
+            }
         },
-    };
+
+        new SafeDeepCopyTest<People>
+        {
+            Name = "Basic object containing a collection",
+            ExpectedSafeDeepCopyAccessor = () =>
+            {
+                var person0 = new Person
+                {
+                    PersonId = "1234",
+                    LastName = "Doe",
+                    FirstName = "John"
+                };
+                var person1 = new Person
+                {
+                    PersonId = "5678",
+                    LastName = "Doe",
+                    FirstName = "Jane"
+                };
+
+                var people = new People
+                {
+                    PersonCollection =
+                    [
+                        person0,
+                                person1
+                    ]
+                };
+                return people;
+            }
+        },
+
+        new SafeDeepCopyTest<Company>
+        {
+            Name = "Complex object",
+            ExpectedSafeDeepCopyAccessor = () =>
+            {
+                var president = new Person
+                {
+                    PersonId = "1111",
+                    FirstName = "George",
+                    LastName = "Washington"
+                };
+                var vicePresident = new Person
+                {
+                    PersonId = "2222",
+                    FirstName = "John",
+                    LastName = "Adams"
+                };
+                var boardOfDirectors = new BoardOfDirectors
+                {
+                    President = president,
+                    VicePresident = vicePresident
+                };
+
+                var employee0 = new Employee
+                {
+                    PersonId = "1234",
+                    LastName = "Doe",
+                    FirstName = "John",
+                    EmployeeNumber = "1111111111"
+                };
+                var employee1 = new Employee
+                {
+                    PersonId = "5678",
+                    LastName = "Doe",
+                    FirstName = "Jane",
+                    EmployeeNumber = "2222222222"
+                };
+                var employees = new People
+                {
+                    PersonCollection =
+                    [
+                        employee0,
+                        employee1
+                    ]
+                };
+
+                var company = new Company
+                {
+                    CompanyId = "Acme",
+                    CompanyName = "Acme, Inc.",
+                    BoardOfDirectors = boardOfDirectors,
+                    CurrentEmployees = employees
+                };
+                return company;
+            }
+        }
+    ];
     #endregion
 
     #region Test Methods

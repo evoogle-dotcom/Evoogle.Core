@@ -14,7 +14,7 @@ public abstract class XUnitTest : XUnitTestBase, IXUnitTest
         this.Parent = parent;
 
         this.WriteLine($"Test Name: {this.Name}");
-        this.WriteLine();
+        this.WriteDashedLine();
 
         this.Arrange();
         this.Act();

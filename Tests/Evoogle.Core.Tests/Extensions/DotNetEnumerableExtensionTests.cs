@@ -6,8 +6,6 @@ using Evoogle.XUnit;
 
 using FluentAssertions;
 
-using Xunit.Abstractions;
-
 namespace Evoogle;
 
 public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTests(output)
@@ -326,54 +324,54 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
     #endregion
 
     #region Theory Data
-    public static TheoryData<IXUnitTest> EmptyIfNullTheoryData => new()
-    {
-        { new EmptyIfNullUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = Enumerable.Empty<string>() } },
-        { new EmptyIfNullUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(),           Expected = Enumerable.Empty<string>() } },
-        { new EmptyIfNullUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = ["String 1", "String 2", "String 3"] } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] EmptyIfNullTheoryData =>
+    [
+        new EmptyIfNullUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = Enumerable.Empty<string>() },
+        new EmptyIfNullUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(),           Expected = Enumerable.Empty<string>() },
+        new EmptyIfNullUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = ["String 1", "String 2", "String 3"] },
+    ];
 
-    public static TheoryData<IXUnitTest> IsNullOrEmptyTheoryData => new()
-    {
-        { new IsNullOrEmptyUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = true } },
-        { new IsNullOrEmptyUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(),           Expected = true } },
-        { new IsNullOrEmptyUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = false } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] IsNullOrEmptyTheoryData =>
+    [
+        new IsNullOrEmptyUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = true },
+        new IsNullOrEmptyUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(), Expected = true },
+        new IsNullOrEmptyUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = false },
+    ];
 
-    public static TheoryData<IXUnitTest> SafeCastTheoryData => new()
-    {
-        { new SafeCastUnitTest<object, string> { Name = "With Null Collection",      Original = default,                              Expected = Enumerable.Empty<string>() } },
-        { new SafeCastUnitTest<object, string> { Name = "With Empty Collection",     Original = Enumerable.Empty<object>(),           Expected = Enumerable.Empty<string>() } },
-        { new SafeCastUnitTest<object, string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = ["String 1", "String 2", "String 3"] } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] SafeCastTheoryData =>
+    [
+        new SafeCastUnitTest<object, string> { Name = "With Null Collection",      Original = default,                              Expected = Enumerable.Empty<string>() },
+        new SafeCastUnitTest<object, string> { Name = "With Empty Collection",     Original = Enumerable.Empty<object>(), Expected = Enumerable.Empty<string>() },
+        new SafeCastUnitTest<object, string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = ["String 1", "String 2", "String 3"] },
+    ];
 
-    public static TheoryData<IXUnitTest> SafeToArrayTheoryData => new()
-    {
-        { new SafeToArrayUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = [] } },
-        { new SafeToArrayUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(),           Expected = [] } },
-        { new SafeToArrayUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = ["String 1", "String 2", "String 3"] } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] SafeToArrayTheoryData =>
+    [
+        new SafeToArrayUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = [] },
+        new SafeToArrayUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(), Expected = [] },
+        new SafeToArrayUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = ["String 1", "String 2", "String 3"] },
+    ];
 
-    public static TheoryData<IXUnitTest> SafeToListTheoryData => new()
-    {
-        { new SafeToListUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = new List<string>() } },
-        { new SafeToListUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(),           Expected = new List<string>() } },
-        { new SafeToListUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = new List<string> { "String 1", "String 2", "String 3" } } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] SafeToListTheoryData =>
+    [
+        new SafeToListUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = new List<string>() },
+        new SafeToListUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(), Expected = new List<string>() },
+        new SafeToListUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = new List<string> { "String 1", "String 2", "String 3" } },
+    ];
 
-    public static TheoryData<IXUnitTest> SafeToReadOnlyCollectionTheoryData => new()
-    {
-        { new SafeToReadOnlyCollectionUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = new List<string>() } },
-        { new SafeToReadOnlyCollectionUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(),           Expected = new List<string>() } },
-        { new SafeToReadOnlyCollectionUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = new List<string> { "String 1", "String 2", "String 3" } } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] SafeToReadOnlyCollectionTheoryData =>
+    [
+        new SafeToReadOnlyCollectionUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = new List<string>() },
+        new SafeToReadOnlyCollectionUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(), Expected = new List<string>() },
+        new SafeToReadOnlyCollectionUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = new List<string> { "String 1", "String 2", "String 3" } },
+    ];
 
-    public static TheoryData<IXUnitTest> SafeToReadOnlyListTheoryData => new()
-    {
-        { new SafeToReadOnlyListUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = new List<string>() } },
-        { new SafeToReadOnlyListUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(),           Expected = new List<string>() } },
-        { new SafeToReadOnlyListUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = new List<string> { "String 1", "String 2", "String 3" } } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] SafeToReadOnlyListTheoryData =>
+    [
+        new SafeToReadOnlyListUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = new List<string>() },
+        new SafeToReadOnlyListUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(), Expected = new List<string>() },
+        new SafeToReadOnlyListUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = new List<string> { "String 1", "String 2", "String 3" } },
+    ];
     #endregion
 
     #region Test Methods

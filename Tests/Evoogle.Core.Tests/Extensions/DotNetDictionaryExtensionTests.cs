@@ -4,8 +4,6 @@ using Evoogle.XUnit;
 
 using FluentAssertions;
 
-using Xunit.Abstractions;
-
 namespace Evoogle;
 
 public class DotNetDictionaryExtensionTests(ITestOutputHelper output) : XUnitTests(output)
@@ -62,14 +60,14 @@ public class DotNetDictionaryExtensionTests(ITestOutputHelper output) : XUnitTes
     #endregion
 
     #region Theory Data
-    public static TheoryData<IXUnitTest> GetValueTheoryData => new()
-    {
-        { new GetValueUnitTest<int, int> { Name = "With IntToInt Dictionary And Existing Key", Dictionary = new Dictionary<int, int> { { 24, 42 } }, Key = 24, ExpectedValue = 42, ExpectedExceptionThrown = false } },
-        { new GetValueUnitTest<int, int> { Name = "With IntToInt Dictionary And Non Existing Key", Dictionary = new Dictionary<int, int> { { 24, 42 } }, Key = 68, ExpectedValue = default, ExpectedExceptionThrown = true } },
+    public static TheoryDataRow<IXUnitTest>[] GetValueTheoryData =>
+    [
+        new GetValueUnitTest<int, int> { Name = "With IntToInt Dictionary And Existing Key", Dictionary = new Dictionary<int, int> { { 24, 42 } }, Key = 24, ExpectedValue = 42, ExpectedExceptionThrown = false },
+        new GetValueUnitTest<int, int> { Name = "With IntToInt Dictionary And Non Existing Key", Dictionary = new Dictionary<int, int> { { 24, 42 } }, Key = 68, ExpectedValue = default, ExpectedExceptionThrown = true },
 
-        { new GetValueUnitTest<string, string> { Name = "With StringToString Dictionary And Existing Key", Dictionary = new Dictionary<string, string> { { "24", "42" } }, Key = "24", ExpectedValue = "42", ExpectedExceptionThrown = false } },
-        { new GetValueUnitTest<string, string> { Name = "With StringToString Dictionary And Non Existing Key", Dictionary = new Dictionary<string, string> { { "24", "42" } }, Key = "68", ExpectedValue = default, ExpectedExceptionThrown = true } },
-    };
+        new GetValueUnitTest<string, string> { Name = "With StringToString Dictionary And Existing Key", Dictionary = new Dictionary<string, string> { { "24", "42" } }, Key = "24", ExpectedValue = "42", ExpectedExceptionThrown = false },
+        new GetValueUnitTest<string, string> { Name = "With StringToString Dictionary And Non Existing Key", Dictionary = new Dictionary<string, string> { { "24", "42" } }, Key = "68", ExpectedValue = default, ExpectedExceptionThrown = true },
+    ];
     #endregion
 
     #region Test Methods

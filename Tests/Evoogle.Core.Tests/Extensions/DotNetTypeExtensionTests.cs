@@ -6,8 +6,6 @@ using Evoogle.XUnit;
 
 using FluentAssertions;
 
-using Xunit.Abstractions;
-
 namespace Evoogle;
 
 public class DotNetTypeExtensionTests(ITestOutputHelper output) : XUnitTests(output)
@@ -786,313 +784,313 @@ public class DotNetTypeExtensionTests(ITestOutputHelper output) : XUnitTests(out
     #endregion
 
     #region Theory Data
-    public static TheoryData<IXUnitTest> GetBaseTypeTheoryData => new()
-    {
-        { new GetBaseTypeTest { Name = "With Interface Type", Type = typeof(IShape), ExpectedBaseType = null } },
-        { new GetBaseTypeTest { Name = "With Type", Type = typeof(AbstractShape), ExpectedBaseType = typeof(object) } },
-        { new GetBaseTypeTest { Name = "With Type And Base Type", Type = typeof(Rectangle), ExpectedBaseType = typeof(AbstractShape) } },
-        { new GetBaseTypeTest { Name = "With Type And Base Type And Base Type", Type = typeof(Square), ExpectedBaseType = typeof(Rectangle)} },
+    public static TheoryDataRow<IXUnitTest>[] GetBaseTypeTheoryData =>
+    [
+        new GetBaseTypeTest { Name = "With Interface Type", Type = typeof(IShape), ExpectedBaseType = null },
+        new GetBaseTypeTest { Name = "With Type", Type = typeof(AbstractShape), ExpectedBaseType = typeof(object) },
+        new GetBaseTypeTest { Name = "With Type And Base Type", Type = typeof(Rectangle), ExpectedBaseType = typeof(AbstractShape) },
+        new GetBaseTypeTest { Name = "With Type And Base Type And Base Type", Type = typeof(Square), ExpectedBaseType = typeof(Rectangle)},
 
-        { new GetBaseTypeTest { Name = "With Generic Interface Type", Type = typeof(ICollection<>), ExpectedBaseType = null } },
-        { new GetBaseTypeTest { Name = "With Generic Type", Type = typeof(AbstractCollection<>), ExpectedBaseType = typeof(object) } },
-        { new GetBaseTypeTest { Name = "With Generic Type And Generic Base Type", Type = typeof(Collection<>), ExpectedBaseType = typeof(AbstractCollection<>) } },
-        { new GetBaseTypeTest { Name = "With Generic Type And Generic Base Type And Generic Base Type", Type = typeof(DecoratedCollection<>), ExpectedBaseType = typeof(Collection<>) } },
-    };
+        new GetBaseTypeTest { Name = "With Generic Interface Type", Type = typeof(ICollection<>), ExpectedBaseType = null },
+        new GetBaseTypeTest { Name = "With Generic Type", Type = typeof(AbstractCollection<>), ExpectedBaseType = typeof(object) },
+        new GetBaseTypeTest { Name = "With Generic Type And Generic Base Type", Type = typeof(Collection<>), ExpectedBaseType = typeof(AbstractCollection<>) },
+        new GetBaseTypeTest { Name = "With Generic Type And Generic Base Type And Generic Base Type", Type = typeof(DecoratedCollection<>), ExpectedBaseType = typeof(Collection<>) },
+    ];
 
-    public static TheoryData<IXUnitTest> GetBaseTypesTheoryData => new()
-    {
-        { new GetBaseTypesTest { Name = "With Interface Type", Type = typeof(IShape), ExpectedBaseTypes = [] } },
-        { new GetBaseTypesTest { Name = "With Type", Type = typeof(AbstractShape), ExpectedBaseTypes = [typeof(object)] } },
-        { new GetBaseTypesTest { Name = "With Type And Base Type", Type = typeof(Rectangle), ExpectedBaseTypes = [typeof(AbstractShape), typeof(object)] } },
-        { new GetBaseTypesTest { Name = "With Type And Base Type And Base Type", Type = typeof(Square), ExpectedBaseTypes = [typeof(Rectangle), typeof(AbstractShape), typeof(object)] } },
+    public static TheoryDataRow<IXUnitTest>[] GetBaseTypesTheoryData =>
+    [
+        new GetBaseTypesTest { Name = "With Interface Type", Type = typeof(IShape), ExpectedBaseTypes = [] },
+        new GetBaseTypesTest { Name = "With Type", Type = typeof(AbstractShape), ExpectedBaseTypes = [typeof(object)] },
+        new GetBaseTypesTest { Name = "With Type And Base Type", Type = typeof(Rectangle), ExpectedBaseTypes = [typeof(AbstractShape), typeof(object)] },
+        new GetBaseTypesTest { Name = "With Type And Base Type And Base Type", Type = typeof(Square), ExpectedBaseTypes = [typeof(Rectangle), typeof(AbstractShape), typeof(object)] },
 
-        { new GetBaseTypesTest { Name = "With Generic Interface Type", Type = typeof(ICollection<>), ExpectedBaseTypes = [] } },
-        { new GetBaseTypesTest { Name = "With Generic Type", Type = typeof(AbstractCollection<>), ExpectedBaseTypes = [typeof(object)] } },
-        { new GetBaseTypesTest { Name = "With Generic Type And Generic Base Type", Type = typeof(Collection<>), ExpectedBaseTypes = [typeof(AbstractCollection<>), typeof(object)] } },
-        { new GetBaseTypesTest { Name = "With Generic Type And Generic Base Type And Generic Base Type", Type = typeof(DecoratedCollection<>), ExpectedBaseTypes = [typeof(Collection<>), typeof(AbstractCollection<>), typeof(object)] } },
-    };
+        new GetBaseTypesTest { Name = "With Generic Interface Type", Type = typeof(ICollection<>), ExpectedBaseTypes = [] },
+        new GetBaseTypesTest { Name = "With Generic Type", Type = typeof(AbstractCollection<>), ExpectedBaseTypes = [typeof(object)] },
+        new GetBaseTypesTest { Name = "With Generic Type And Generic Base Type", Type = typeof(Collection<>), ExpectedBaseTypes = [typeof(AbstractCollection<>), typeof(object)] },
+        new GetBaseTypesTest { Name = "With Generic Type And Generic Base Type And Generic Base Type", Type = typeof(DecoratedCollection<>), ExpectedBaseTypes = [typeof(Collection<>), typeof(AbstractCollection<>), typeof(object)] },
+    ];
 
-    public static TheoryData<IXUnitTest> GetConstructorTheoryData => new()
-    {
-        { new GetConstructorTest { Name = "With Public And 0 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public, ParameterTypes = [], ExpectedConstructorFound = true } },
-        { new GetConstructorTest { Name = "With Public And 1 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public, ParameterTypes = [typeof(int)], ExpectedConstructorFound = true } },
-        { new GetConstructorTest { Name = "With Public And 2 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public, ParameterTypes = [typeof(int), typeof(string)], ExpectedConstructorFound = true } },
-        { new GetConstructorTest { Name = "With Public And 3 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], ExpectedConstructorFound = false } },
+    public static TheoryDataRow<IXUnitTest>[] GetConstructorTheoryData =>
+        [
+            new GetConstructorTest { Name = "With Public And 0 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public, ParameterTypes = [], ExpectedConstructorFound = true },
+        new GetConstructorTest { Name = "With Public And 1 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public, ParameterTypes = [typeof(int)], ExpectedConstructorFound = true },
+        new GetConstructorTest { Name = "With Public And 2 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public, ParameterTypes = [typeof(int), typeof(string)], ExpectedConstructorFound = true },
+        new GetConstructorTest { Name = "With Public And 3 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], ExpectedConstructorFound = false },
 
-        { new GetConstructorTest { Name = "With Public And Non Public And 0 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic, ParameterTypes = [], ExpectedConstructorFound = true } },
-        { new GetConstructorTest { Name = "With Public And Non Public And 1 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic, ParameterTypes = [typeof(int)], ExpectedConstructorFound = true } },
-        { new GetConstructorTest { Name = "With Public And Non Public And 2 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic, ParameterTypes = [typeof(int), typeof(string)], ExpectedConstructorFound = true } },
-        { new GetConstructorTest { Name = "With Public And Non Public And 3 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], ExpectedConstructorFound = true } },
+        new GetConstructorTest { Name = "With Public And Non Public And 0 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic, ParameterTypes = [], ExpectedConstructorFound = true },
+        new GetConstructorTest { Name = "With Public And Non Public And 1 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic, ParameterTypes = [typeof(int)], ExpectedConstructorFound = true },
+        new GetConstructorTest { Name = "With Public And Non Public And 2 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic, ParameterTypes = [typeof(int), typeof(string)], ExpectedConstructorFound = true },
+        new GetConstructorTest { Name = "With Public And Non Public And 3 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], ExpectedConstructorFound = true },
 
-        { new GetConstructorTest { Name = "With Non Public And 0 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.NonPublic, ParameterTypes = [], ExpectedConstructorFound = false } },
-        { new GetConstructorTest { Name = "With Non Public And 1 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.NonPublic, ParameterTypes = [typeof(int)], ExpectedConstructorFound = false } },
-        { new GetConstructorTest { Name = "With Non Public And 2 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.NonPublic, ParameterTypes = [typeof(int), typeof(string)], ExpectedConstructorFound = false } },
-        { new GetConstructorTest { Name = "With Non Public And 3 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.NonPublic, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], ExpectedConstructorFound = true } },
-    };
+        new GetConstructorTest { Name = "With Non Public And 0 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.NonPublic, ParameterTypes = [], ExpectedConstructorFound = false },
+        new GetConstructorTest { Name = "With Non Public And 1 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.NonPublic, ParameterTypes = [typeof(int)], ExpectedConstructorFound = false },
+        new GetConstructorTest { Name = "With Non Public And 2 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.NonPublic, ParameterTypes = [typeof(int), typeof(string)], ExpectedConstructorFound = false },
+        new GetConstructorTest { Name = "With Non Public And 3 Parameters", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.NonPublic, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], ExpectedConstructorFound = true },
+    ];
 
-    public static TheoryData<IXUnitTest> GetConstructorsTheoryData => new()
-    {
-        { new GetConstructorsTest { Name = "With Public", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public, ExpectedConstructorCount = 3 } },
-        { new GetConstructorsTest { Name = "With Public And Non Public", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic, ExpectedConstructorCount = 4 } },
-        { new GetConstructorsTest { Name = "With Non Public", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.NonPublic, ExpectedConstructorCount = 1 } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] GetConstructorsTheoryData =>
+    [
+        new GetConstructorsTest { Name = "With Public", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public, ExpectedConstructorCount = 3 },
+        new GetConstructorsTest { Name = "With Public And Non Public", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic, ExpectedConstructorCount = 4 },
+        new GetConstructorsTest { Name = "With Non Public", Type = typeof(ClassWithConstructors), ReflectionFlags = TypeReflectionFlags.NonPublic, ExpectedConstructorCount = 1 },
+    ];
 
-    public static TheoryData<IXUnitTest> GetFieldTheoryData => new()
-    {
-        { new GetFieldTest { Name = "With Declared Only And Public And Instance", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, FieldName = "PublicField", ExpectedFieldName = "PublicField" } },
-        { new GetFieldTest { Name = "With Declared Only And Public And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, FieldName = "PublicStaticField", ExpectedFieldName = "PublicStaticField" } },
-        { new GetFieldTest { Name = "With Declared Only And Non Public And Instance", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, FieldName = "PrivateField", ExpectedFieldName = "PrivateField" } },
-        { new GetFieldTest { Name = "With Declared Only And Non Public And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, FieldName = "PrivateStaticField", ExpectedFieldName = "PrivateStaticField" } },
-        { new GetFieldTest { Name = "With Public And Instance", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, FieldName = "PublicFieldBase", ExpectedFieldName = "PublicFieldBase" } },
-        { new GetFieldTest { Name = "With Public And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, FieldName = "PublicStaticFieldBase", ExpectedFieldName = "PublicStaticFieldBase" } },
-        { new GetFieldTest { Name = "With Non Public And Instance", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, FieldName = "PrivateFieldBase", ExpectedFieldName = "PrivateFieldBase" } },
-        { new GetFieldTest { Name = "With Non Public And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, FieldName = "PrivateStaticFieldBase", ExpectedFieldName = "PrivateStaticFieldBase" } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] GetFieldTheoryData =>
+    [
+        new GetFieldTest { Name = "With Declared Only And Public And Instance", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, FieldName = "PublicField", ExpectedFieldName = "PublicField" },
+        new GetFieldTest { Name = "With Declared Only And Public And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, FieldName = "PublicStaticField", ExpectedFieldName = "PublicStaticField" },
+        new GetFieldTest { Name = "With Declared Only And Non Public And Instance", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, FieldName = "PrivateField", ExpectedFieldName = "PrivateField" },
+        new GetFieldTest { Name = "With Declared Only And Non Public And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, FieldName = "PrivateStaticField", ExpectedFieldName = "PrivateStaticField" },
+        new GetFieldTest { Name = "With Public And Instance", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, FieldName = "PublicFieldBase", ExpectedFieldName = "PublicFieldBase" },
+        new GetFieldTest { Name = "With Public And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, FieldName = "PublicStaticFieldBase", ExpectedFieldName = "PublicStaticFieldBase" },
+        new GetFieldTest { Name = "With Non Public And Instance", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, FieldName = "PrivateFieldBase", ExpectedFieldName = "PrivateFieldBase" },
+        new GetFieldTest { Name = "With Non Public And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, FieldName = "PrivateStaticFieldBase", ExpectedFieldName = "PrivateStaticFieldBase" },
+    ];
 
-    public static TheoryData<IXUnitTest> GetFieldsTheoryData => new()
-    {
-        { new GetFieldsTest { Name = "With Declared Only And Public And Instance", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ExpectedFieldNames = ["PublicField"] } },
-        { new GetFieldsTest { Name = "With Declared Only And Public And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, ExpectedFieldNames = ["PublicStaticField"] } },
-        { new GetFieldsTest { Name = "With Declared Only And Public And Instance And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedFieldNames = ["PublicField", "PublicStaticField"] } },
-        { new GetFieldsTest { Name = "With Declared Only And Non Public And Instance", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ExpectedFieldNames = ["ProtectedInternalField", "ProtectedField", "InternalField", "PrivateField"] } },
-        { new GetFieldsTest { Name = "With Declared Only And Non Public And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ExpectedFieldNames = ["ProtectedInternalStaticField", "ProtectedStaticField", "InternalStaticField", "PrivateStaticField"] } },
-        { new GetFieldsTest { Name = "With Declared Only And Non Public And Instance And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedFieldNames = ["ProtectedInternalField", "ProtectedInternalStaticField", "ProtectedField", "ProtectedStaticField", "InternalField", "InternalStaticField", "PrivateField", "PrivateStaticField"] } },
-        { new GetFieldsTest { Name = "With Declared Only And Public And Non Public And Instance And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedFieldNames = ["PublicField", "PublicStaticField", "ProtectedInternalField", "ProtectedInternalStaticField", "ProtectedField", "ProtectedStaticField", "InternalField", "InternalStaticField", "PrivateField", "PrivateStaticField"] } },
-        { new GetFieldsTest { Name = "With Public And Instance", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ExpectedFieldNames = ["PublicField", "PublicFieldBase"] } },
-        { new GetFieldsTest { Name = "With Public And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, ExpectedFieldNames = ["PublicStaticField", "PublicStaticFieldBase"] } },
-        { new GetFieldsTest { Name = "With Public And Instance And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedFieldNames = ["PublicField", "PublicFieldBase", "PublicStaticField", "PublicStaticFieldBase"] } },
-        { new GetFieldsTest { Name = "With Non Public And Instance", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ExpectedFieldNames = ["ProtectedInternalField", "ProtectedField", "InternalField", "PrivateField", "ProtectedInternalFieldBase", "ProtectedFieldBase", "InternalFieldBase", "PrivateFieldBase"] } },
-        { new GetFieldsTest { Name = "With Non Public And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ExpectedFieldNames = ["ProtectedInternalStaticField", "ProtectedStaticField", "InternalStaticField", "PrivateStaticField", "ProtectedInternalStaticFieldBase", "ProtectedStaticFieldBase", "InternalStaticFieldBase", "PrivateStaticFieldBase"] } },
-        { new GetFieldsTest { Name = "With Non Public And Instance And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedFieldNames = ["ProtectedInternalField", "ProtectedInternalStaticField", "ProtectedField", "ProtectedStaticField", "InternalField", "InternalStaticField", "PrivateField", "PrivateStaticField", "ProtectedInternalFieldBase", "ProtectedInternalStaticFieldBase", "ProtectedFieldBase", "ProtectedStaticFieldBase", "InternalFieldBase", "InternalStaticFieldBase", "PrivateFieldBase", "PrivateStaticFieldBase"] } },
-        { new GetFieldsTest { Name = "With Public And Non Public And Instance And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedFieldNames = ["PublicField", "PublicStaticField", "ProtectedInternalField", "ProtectedInternalStaticField", "ProtectedField", "ProtectedStaticField", "InternalField", "InternalStaticField", "PrivateField", "PrivateStaticField", "PublicFieldBase", "PublicStaticFieldBase", "ProtectedInternalFieldBase", "ProtectedInternalStaticFieldBase", "ProtectedFieldBase", "ProtectedStaticFieldBase", "InternalFieldBase", "InternalStaticFieldBase", "PrivateFieldBase", "PrivateStaticFieldBase"] } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] GetFieldsTheoryData =>
+    [
+        new GetFieldsTest { Name = "With Declared Only And Public And Instance", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ExpectedFieldNames = ["PublicField"] },
+        new GetFieldsTest { Name = "With Declared Only And Public And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, ExpectedFieldNames = ["PublicStaticField"] },
+        new GetFieldsTest { Name = "With Declared Only And Public And Instance And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedFieldNames = ["PublicField", "PublicStaticField"] },
+        new GetFieldsTest { Name = "With Declared Only And Non Public And Instance", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ExpectedFieldNames = ["ProtectedInternalField", "ProtectedField", "InternalField", "PrivateField"] },
+        new GetFieldsTest { Name = "With Declared Only And Non Public And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ExpectedFieldNames = ["ProtectedInternalStaticField", "ProtectedStaticField", "InternalStaticField", "PrivateStaticField"] },
+        new GetFieldsTest { Name = "With Declared Only And Non Public And Instance And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedFieldNames = ["ProtectedInternalField", "ProtectedInternalStaticField", "ProtectedField", "ProtectedStaticField", "InternalField", "InternalStaticField", "PrivateField", "PrivateStaticField"] },
+        new GetFieldsTest { Name = "With Declared Only And Public And Non Public And Instance And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedFieldNames = ["PublicField", "PublicStaticField", "ProtectedInternalField", "ProtectedInternalStaticField", "ProtectedField", "ProtectedStaticField", "InternalField", "InternalStaticField", "PrivateField", "PrivateStaticField"] },
+        new GetFieldsTest { Name = "With Public And Instance", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ExpectedFieldNames = ["PublicField", "PublicFieldBase"] },
+        new GetFieldsTest { Name = "With Public And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, ExpectedFieldNames = ["PublicStaticField", "PublicStaticFieldBase"] },
+        new GetFieldsTest { Name = "With Public And Instance And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedFieldNames = ["PublicField", "PublicFieldBase", "PublicStaticField", "PublicStaticFieldBase"] },
+        new GetFieldsTest { Name = "With Non Public And Instance", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ExpectedFieldNames = ["ProtectedInternalField", "ProtectedField", "InternalField", "PrivateField", "ProtectedInternalFieldBase", "ProtectedFieldBase", "InternalFieldBase", "PrivateFieldBase"] },
+        new GetFieldsTest { Name = "With Non Public And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ExpectedFieldNames = ["ProtectedInternalStaticField", "ProtectedStaticField", "InternalStaticField", "PrivateStaticField", "ProtectedInternalStaticFieldBase", "ProtectedStaticFieldBase", "InternalStaticFieldBase", "PrivateStaticFieldBase"] },
+        new GetFieldsTest { Name = "With Non Public And Instance And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedFieldNames = ["ProtectedInternalField", "ProtectedInternalStaticField", "ProtectedField", "ProtectedStaticField", "InternalField", "InternalStaticField", "PrivateField", "PrivateStaticField", "ProtectedInternalFieldBase", "ProtectedInternalStaticFieldBase", "ProtectedFieldBase", "ProtectedStaticFieldBase", "InternalFieldBase", "InternalStaticFieldBase", "PrivateFieldBase", "PrivateStaticFieldBase"] },
+        new GetFieldsTest { Name = "With Public And Non Public And Instance And Static", Type = typeof(ClassWithFields), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedFieldNames = ["PublicField", "PublicStaticField", "ProtectedInternalField", "ProtectedInternalStaticField", "ProtectedField", "ProtectedStaticField", "InternalField", "InternalStaticField", "PrivateField", "PrivateStaticField", "PublicFieldBase", "PublicStaticFieldBase", "ProtectedInternalFieldBase", "ProtectedInternalStaticFieldBase", "ProtectedFieldBase", "ProtectedStaticFieldBase", "InternalFieldBase", "InternalStaticFieldBase", "PrivateFieldBase", "PrivateStaticFieldBase"] },
+    ];
 
-    public static TheoryData<IXUnitTest> GetMethodTheoryData => new()
-    {
-        { new GetMethodTest { Name = "With Declared Only And Public And Instance And 0 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ParameterTypes = [], MethodName = "PublicMethod", ExpectedMethodName = "PublicMethod" } },
-        { new GetMethodTest { Name = "With Declared Only And Public And Instance And 1 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int)], MethodName = "PublicMethod", ExpectedMethodName = "PublicMethod" } },
-        { new GetMethodTest { Name = "With Declared Only And Public And Instance And 2 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int), typeof(string)], MethodName = "PublicMethod", ExpectedMethodName = "PublicMethod" } },
-        { new GetMethodTest { Name = "With Declared Only And Public And Instance And 3 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], MethodName = "PublicMethod", ExpectedMethodName = null } },
+    public static TheoryDataRow<IXUnitTest>[] GetMethodTheoryData =>
+    [
+        new GetMethodTest { Name = "With Declared Only And Public And Instance And 0 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ParameterTypes = [], MethodName = "PublicMethod", ExpectedMethodName = "PublicMethod" },
+        new GetMethodTest { Name = "With Declared Only And Public And Instance And 1 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int)], MethodName = "PublicMethod", ExpectedMethodName = "PublicMethod" },
+        new GetMethodTest { Name = "With Declared Only And Public And Instance And 2 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int), typeof(string)], MethodName = "PublicMethod", ExpectedMethodName = "PublicMethod" },
+        new GetMethodTest { Name = "With Declared Only And Public And Instance And 3 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], MethodName = "PublicMethod", ExpectedMethodName = null },
 
-        { new GetMethodTest { Name = "With Declared Only And Public And Static And 0 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, ParameterTypes = [], MethodName = "PublicStaticMethod", ExpectedMethodName = "PublicStaticMethod" } },
-        { new GetMethodTest { Name = "With Declared Only And Public And Static And 1 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, ParameterTypes = [typeof(int)], MethodName = "PublicStaticMethod", ExpectedMethodName = "PublicStaticMethod" } },
-        { new GetMethodTest { Name = "With Declared Only And Public And Static And 2 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, ParameterTypes = [typeof(int), typeof(string)], MethodName = "PublicStaticMethod", ExpectedMethodName = "PublicStaticMethod" } },
-        { new GetMethodTest { Name = "With Declared Only And Public And Static And 3 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], MethodName = "PublicStaticMethod", ExpectedMethodName = null } },
+        new GetMethodTest { Name = "With Declared Only And Public And Static And 0 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, ParameterTypes = [], MethodName = "PublicStaticMethod", ExpectedMethodName = "PublicStaticMethod" },
+        new GetMethodTest { Name = "With Declared Only And Public And Static And 1 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, ParameterTypes = [typeof(int)], MethodName = "PublicStaticMethod", ExpectedMethodName = "PublicStaticMethod" },
+        new GetMethodTest { Name = "With Declared Only And Public And Static And 2 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, ParameterTypes = [typeof(int), typeof(string)], MethodName = "PublicStaticMethod", ExpectedMethodName = "PublicStaticMethod" },
+        new GetMethodTest { Name = "With Declared Only And Public And Static And 3 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], MethodName = "PublicStaticMethod", ExpectedMethodName = null },
 
-        { new GetMethodTest { Name = "With Declared Only And Non Public And Instance And 0 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ParameterTypes = [], MethodName = "PrivateMethod", ExpectedMethodName = "PrivateMethod" } },
-        { new GetMethodTest { Name = "With Declared Only And Non Public And Instance And 1 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int)], MethodName = "PrivateMethod", ExpectedMethodName = "PrivateMethod" } },
-        { new GetMethodTest { Name = "With Declared Only And Non Public And Instance And 2 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int), typeof(string)], MethodName = "PrivateMethod", ExpectedMethodName = "PrivateMethod" } },
-        { new GetMethodTest { Name = "With Declared Only And Non Public And Instance And 3 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], MethodName = "PrivateMethod", ExpectedMethodName = null } },
+        new GetMethodTest { Name = "With Declared Only And Non Public And Instance And 0 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ParameterTypes = [], MethodName = "PrivateMethod", ExpectedMethodName = "PrivateMethod" },
+        new GetMethodTest { Name = "With Declared Only And Non Public And Instance And 1 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int)], MethodName = "PrivateMethod", ExpectedMethodName = "PrivateMethod" },
+        new GetMethodTest { Name = "With Declared Only And Non Public And Instance And 2 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int), typeof(string)], MethodName = "PrivateMethod", ExpectedMethodName = "PrivateMethod" },
+        new GetMethodTest { Name = "With Declared Only And Non Public And Instance And 3 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], MethodName = "PrivateMethod", ExpectedMethodName = null },
 
-        { new GetMethodTest { Name = "With Declared Only And Non Public And Static And 0 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ParameterTypes = [], MethodName = "PrivateStaticMethod", ExpectedMethodName = "PrivateStaticMethod" } },
-        { new GetMethodTest { Name = "With Declared Only And Non Public And Static And 1 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ParameterTypes = [typeof(int)], MethodName = "PrivateStaticMethod", ExpectedMethodName = "PrivateStaticMethod" } },
-        { new GetMethodTest { Name = "With Declared Only And Non Public And Static And 2 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ParameterTypes = [typeof(int), typeof(string)], MethodName = "PrivateStaticMethod", ExpectedMethodName = "PrivateStaticMethod" } },
-        { new GetMethodTest { Name = "With Declared Only And Non Public And Static And 3 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], MethodName = "PrivateStaticMethod", ExpectedMethodName = null } },
+        new GetMethodTest { Name = "With Declared Only And Non Public And Static And 0 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ParameterTypes = [], MethodName = "PrivateStaticMethod", ExpectedMethodName = "PrivateStaticMethod" },
+        new GetMethodTest { Name = "With Declared Only And Non Public And Static And 1 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ParameterTypes = [typeof(int)], MethodName = "PrivateStaticMethod", ExpectedMethodName = "PrivateStaticMethod" },
+        new GetMethodTest { Name = "With Declared Only And Non Public And Static And 2 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ParameterTypes = [typeof(int), typeof(string)], MethodName = "PrivateStaticMethod", ExpectedMethodName = "PrivateStaticMethod" },
+        new GetMethodTest { Name = "With Declared Only And Non Public And Static And 3 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], MethodName = "PrivateStaticMethod", ExpectedMethodName = null },
 
-        { new GetMethodTest { Name = "Public And Instance And 0 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ParameterTypes = [], MethodName = "PublicMethodBase", ExpectedMethodName = "PublicMethodBase" } },
-        { new GetMethodTest { Name = "Public And Instance And 1 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int)], MethodName = "PublicMethodBase", ExpectedMethodName = "PublicMethodBase" } },
-        { new GetMethodTest { Name = "Public And Instance And 2 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int), typeof(string)], MethodName = "PublicMethodBase", ExpectedMethodName = "PublicMethodBase" } },
-        { new GetMethodTest { Name = "Public And Instance And 3 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], MethodName = "PublicMethodBase", ExpectedMethodName = null } },
+        new GetMethodTest { Name = "Public And Instance And 0 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ParameterTypes = [], MethodName = "PublicMethodBase", ExpectedMethodName = "PublicMethodBase" },
+        new GetMethodTest { Name = "Public And Instance And 1 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int)], MethodName = "PublicMethodBase", ExpectedMethodName = "PublicMethodBase" },
+        new GetMethodTest { Name = "Public And Instance And 2 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int), typeof(string)], MethodName = "PublicMethodBase", ExpectedMethodName = "PublicMethodBase" },
+        new GetMethodTest { Name = "Public And Instance And 3 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], MethodName = "PublicMethodBase", ExpectedMethodName = null },
 
-        { new GetMethodTest { Name = "Public And Static And 0 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, ParameterTypes = [], MethodName = "PublicStaticMethodBase", ExpectedMethodName = "PublicStaticMethodBase" } },
-        { new GetMethodTest { Name = "Public And Static And 1 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, ParameterTypes = [typeof(int)], MethodName = "PublicStaticMethodBase", ExpectedMethodName = "PublicStaticMethodBase" } },
-        { new GetMethodTest { Name = "Public And Static And 2 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, ParameterTypes = [typeof(int), typeof(string)], MethodName = "PublicStaticMethodBase", ExpectedMethodName = "PublicStaticMethodBase" } },
-        { new GetMethodTest { Name = "Public And Static And 3 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], MethodName = "PublicStaticMethodBase", ExpectedMethodName = null } },
+        new GetMethodTest { Name = "Public And Static And 0 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, ParameterTypes = [], MethodName = "PublicStaticMethodBase", ExpectedMethodName = "PublicStaticMethodBase" },
+        new GetMethodTest { Name = "Public And Static And 1 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, ParameterTypes = [typeof(int)], MethodName = "PublicStaticMethodBase", ExpectedMethodName = "PublicStaticMethodBase" },
+        new GetMethodTest { Name = "Public And Static And 2 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, ParameterTypes = [typeof(int), typeof(string)], MethodName = "PublicStaticMethodBase", ExpectedMethodName = "PublicStaticMethodBase" },
+        new GetMethodTest { Name = "Public And Static And 3 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], MethodName = "PublicStaticMethodBase", ExpectedMethodName = null },
 
-        { new GetMethodTest { Name = "Non Public And Instance And 0 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ParameterTypes = [], MethodName = "ProtectedMethodBase", ExpectedMethodName = "ProtectedMethodBase" } },
-        { new GetMethodTest { Name = "Non Public And Instance And 1 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int)], MethodName = "ProtectedMethodBase", ExpectedMethodName = "ProtectedMethodBase" } },
-        { new GetMethodTest { Name = "Non Public And Instance And 2 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int), typeof(string)], MethodName = "ProtectedMethodBase", ExpectedMethodName = "ProtectedMethodBase" } },
-        { new GetMethodTest { Name = "Non Public And Instance And 3 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], MethodName = "ProtectedMethodBase", ExpectedMethodName = null } },
+        new GetMethodTest { Name = "Non Public And Instance And 0 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ParameterTypes = [], MethodName = "ProtectedMethodBase", ExpectedMethodName = "ProtectedMethodBase" },
+        new GetMethodTest { Name = "Non Public And Instance And 1 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int)], MethodName = "ProtectedMethodBase", ExpectedMethodName = "ProtectedMethodBase" },
+        new GetMethodTest { Name = "Non Public And Instance And 2 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int), typeof(string)], MethodName = "ProtectedMethodBase", ExpectedMethodName = "ProtectedMethodBase" },
+        new GetMethodTest { Name = "Non Public And Instance And 3 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], MethodName = "ProtectedMethodBase", ExpectedMethodName = null },
 
-        { new GetMethodTest { Name = "Non Public And Static And 0 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ParameterTypes = [], MethodName = "ProtectedStaticMethodBase", ExpectedMethodName = "ProtectedStaticMethodBase" } },
-        { new GetMethodTest { Name = "Non Public And Static And 1 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ParameterTypes = [typeof(int)], MethodName = "ProtectedStaticMethodBase", ExpectedMethodName = "ProtectedStaticMethodBase" } },
-        { new GetMethodTest { Name = "Non Public And Static And 2 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ParameterTypes = [typeof(int), typeof(string)], MethodName = "ProtectedStaticMethodBase", ExpectedMethodName = "ProtectedStaticMethodBase" } },
-        { new GetMethodTest { Name = "Non Public And Static And 3 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], MethodName = "ProtectedStaticMethodBase", ExpectedMethodName = null } },
-    };
+        new GetMethodTest { Name = "Non Public And Static And 0 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ParameterTypes = [], MethodName = "ProtectedStaticMethodBase", ExpectedMethodName = "ProtectedStaticMethodBase" },
+        new GetMethodTest { Name = "Non Public And Static And 1 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ParameterTypes = [typeof(int)], MethodName = "ProtectedStaticMethodBase", ExpectedMethodName = "ProtectedStaticMethodBase" },
+        new GetMethodTest { Name = "Non Public And Static And 2 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ParameterTypes = [typeof(int), typeof(string)], MethodName = "ProtectedStaticMethodBase", ExpectedMethodName = "ProtectedStaticMethodBase" },
+        new GetMethodTest { Name = "Non Public And Static And 3 Parameters", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ParameterTypes = [typeof(int), typeof(string), typeof(bool)], MethodName = "ProtectedStaticMethodBase", ExpectedMethodName = null },
+    ];
 
-    public static TheoryData<IXUnitTest> GetMethodsTheoryData => new()
-    {
-        { new GetMethodsTest { Name = "With Declared Only And Public And Instance", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ExpectedMethodNames = ["PublicMethod", "PublicMethod", "PublicMethod"] } },
-        { new GetMethodsTest { Name = "With Declared Only And Public And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, ExpectedMethodNames = ["PublicStaticMethod", "PublicStaticMethod", "PublicStaticMethod"] } },
-        { new GetMethodsTest { Name = "With Declared Only And Public And Instance And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedMethodNames = ["PublicMethod", "PublicMethod", "PublicMethod", "PublicStaticMethod", "PublicStaticMethod", "PublicStaticMethod"] } },
-        { new GetMethodsTest { Name = "With Declared Only And Non Public And Instance", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ExpectedMethodNames = ["PrivateMethod", "PrivateMethod", "PrivateMethod"] } },
-        { new GetMethodsTest { Name = "With Declared Only And Non Public And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ExpectedMethodNames = ["PrivateStaticMethod", "PrivateStaticMethod", "PrivateStaticMethod"] } },
-        { new GetMethodsTest { Name = "With Declared Only And Non Public And Instance And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedMethodNames = ["PrivateMethod", "PrivateMethod", "PrivateMethod", "PrivateStaticMethod", "PrivateStaticMethod", "PrivateStaticMethod"] } },
-        { new GetMethodsTest { Name = "With Declared Only And Public And Non Public And Instance And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedMethodNames = ["PublicMethod", "PublicMethod", "PublicMethod", "PublicStaticMethod", "PublicStaticMethod", "PublicStaticMethod", "PrivateMethod", "PrivateMethod", "PrivateMethod", "PrivateStaticMethod", "PrivateStaticMethod", "PrivateStaticMethod"] } },
-        { new GetMethodsTest { Name = "With Public And Instance", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ExpectedMethodNames = ["PublicMethod", "PublicMethod", "PublicMethod", "PublicMethodBase", "PublicMethodBase", "PublicMethodBase"] } },
-        { new GetMethodsTest { Name = "With Public And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, ExpectedMethodNames = ["PublicStaticMethod", "PublicStaticMethod", "PublicStaticMethod", "PublicStaticMethodBase", "PublicStaticMethodBase", "PublicStaticMethodBase"] } },
-        { new GetMethodsTest { Name = "With Public And Instance And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedMethodNames = ["PublicMethod", "PublicMethod", "PublicMethod", "PublicStaticMethod", "PublicStaticMethod", "PublicStaticMethod", "PublicMethodBase", "PublicMethodBase", "PublicMethodBase", "PublicStaticMethodBase", "PublicStaticMethodBase", "PublicStaticMethodBase"] } },
-        { new GetMethodsTest { Name = "With Non Public And Instance", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ExpectedMethodNames = ["PrivateMethod", "PrivateMethod", "PrivateMethod", "ProtectedMethodBase", "ProtectedMethodBase", "ProtectedMethodBase"] } },
-        { new GetMethodsTest { Name = "With Non Public And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ExpectedMethodNames = ["PrivateStaticMethod", "PrivateStaticMethod", "PrivateStaticMethod", "ProtectedStaticMethodBase", "ProtectedStaticMethodBase", "ProtectedStaticMethodBase"] } },
-        { new GetMethodsTest { Name = "With Non Public And Instance And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedMethodNames = ["PrivateMethod", "PrivateMethod", "PrivateMethod", "ProtectedMethodBase", "ProtectedMethodBase", "ProtectedMethodBase", "PrivateStaticMethod", "PrivateStaticMethod", "PrivateStaticMethod", "ProtectedStaticMethodBase", "ProtectedStaticMethodBase", "ProtectedStaticMethodBase"] } },
-        { new GetMethodsTest { Name = "With Public And Non Public And Instance And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedMethodNames = ["PublicMethod", "PublicMethod", "PublicMethod", "PublicMethodBase", "PublicMethodBase", "PublicMethodBase", "PublicStaticMethod", "PublicStaticMethod", "PublicStaticMethod", "PublicStaticMethodBase", "PublicStaticMethodBase", "PublicStaticMethodBase", "PrivateMethod", "PrivateMethod", "PrivateMethod", "ProtectedMethodBase", "ProtectedMethodBase", "ProtectedMethodBase", "PrivateStaticMethod", "PrivateStaticMethod", "PrivateStaticMethod", "ProtectedStaticMethodBase", "ProtectedStaticMethodBase", "ProtectedStaticMethodBase"] } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] GetMethodsTheoryData =>
+    [
+        new GetMethodsTest { Name = "With Declared Only And Public And Instance", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ExpectedMethodNames = ["PublicMethod", "PublicMethod", "PublicMethod"] },
+        new GetMethodsTest { Name = "With Declared Only And Public And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, ExpectedMethodNames = ["PublicStaticMethod", "PublicStaticMethod", "PublicStaticMethod"] },
+        new GetMethodsTest { Name = "With Declared Only And Public And Instance And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedMethodNames = ["PublicMethod", "PublicMethod", "PublicMethod", "PublicStaticMethod", "PublicStaticMethod", "PublicStaticMethod"] },
+        new GetMethodsTest { Name = "With Declared Only And Non Public And Instance", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ExpectedMethodNames = ["PrivateMethod", "PrivateMethod", "PrivateMethod"] },
+        new GetMethodsTest { Name = "With Declared Only And Non Public And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ExpectedMethodNames = ["PrivateStaticMethod", "PrivateStaticMethod", "PrivateStaticMethod"] },
+        new GetMethodsTest { Name = "With Declared Only And Non Public And Instance And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedMethodNames = ["PrivateMethod", "PrivateMethod", "PrivateMethod", "PrivateStaticMethod", "PrivateStaticMethod", "PrivateStaticMethod"] },
+        new GetMethodsTest { Name = "With Declared Only And Public And Non Public And Instance And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedMethodNames = ["PublicMethod", "PublicMethod", "PublicMethod", "PublicStaticMethod", "PublicStaticMethod", "PublicStaticMethod", "PrivateMethod", "PrivateMethod", "PrivateMethod", "PrivateStaticMethod", "PrivateStaticMethod", "PrivateStaticMethod"] },
+        new GetMethodsTest { Name = "With Public And Instance", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ExpectedMethodNames = ["PublicMethod", "PublicMethod", "PublicMethod", "PublicMethodBase", "PublicMethodBase", "PublicMethodBase"] },
+        new GetMethodsTest { Name = "With Public And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, ExpectedMethodNames = ["PublicStaticMethod", "PublicStaticMethod", "PublicStaticMethod", "PublicStaticMethodBase", "PublicStaticMethodBase", "PublicStaticMethodBase"] },
+        new GetMethodsTest { Name = "With Public And Instance And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedMethodNames = ["PublicMethod", "PublicMethod", "PublicMethod", "PublicStaticMethod", "PublicStaticMethod", "PublicStaticMethod", "PublicMethodBase", "PublicMethodBase", "PublicMethodBase", "PublicStaticMethodBase", "PublicStaticMethodBase", "PublicStaticMethodBase"] },
+        new GetMethodsTest { Name = "With Non Public And Instance", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ExpectedMethodNames = ["PrivateMethod", "PrivateMethod", "PrivateMethod", "ProtectedMethodBase", "ProtectedMethodBase", "ProtectedMethodBase"] },
+        new GetMethodsTest { Name = "With Non Public And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ExpectedMethodNames = ["PrivateStaticMethod", "PrivateStaticMethod", "PrivateStaticMethod", "ProtectedStaticMethodBase", "ProtectedStaticMethodBase", "ProtectedStaticMethodBase"] },
+        new GetMethodsTest { Name = "With Non Public And Instance And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedMethodNames = ["PrivateMethod", "PrivateMethod", "PrivateMethod", "ProtectedMethodBase", "ProtectedMethodBase", "ProtectedMethodBase", "PrivateStaticMethod", "PrivateStaticMethod", "PrivateStaticMethod", "ProtectedStaticMethodBase", "ProtectedStaticMethodBase", "ProtectedStaticMethodBase"] },
+        new GetMethodsTest { Name = "With Public And Non Public And Instance And Static", Type = typeof(ClassWithMethods), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedMethodNames = ["PublicMethod", "PublicMethod", "PublicMethod", "PublicMethodBase", "PublicMethodBase", "PublicMethodBase", "PublicStaticMethod", "PublicStaticMethod", "PublicStaticMethod", "PublicStaticMethodBase", "PublicStaticMethodBase", "PublicStaticMethodBase", "PrivateMethod", "PrivateMethod", "PrivateMethod", "ProtectedMethodBase", "ProtectedMethodBase", "ProtectedMethodBase", "PrivateStaticMethod", "PrivateStaticMethod", "PrivateStaticMethod", "ProtectedStaticMethodBase", "ProtectedStaticMethodBase", "ProtectedStaticMethodBase"] },
+    ];
 
-    public static TheoryData<IXUnitTest> GetPropertyTheoryData => new()
-    {
-        { new GetPropertyTest { Name = "With Declared Only And Public And Instance", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, PropertyName = "PublicProperty", ExpectedPropertyName = "PublicProperty" } },
-        { new GetPropertyTest { Name = "With Declared Only And Public And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, PropertyName = "PublicStaticProperty", ExpectedPropertyName = "PublicStaticProperty" } },
-        { new GetPropertyTest { Name = "With Declared Only And Non Public And Instance", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, PropertyName = "PrivateProperty", ExpectedPropertyName = "PrivateProperty" } },
-        { new GetPropertyTest { Name = "With Declared Only And Non Public And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, PropertyName = "PrivateStaticProperty", ExpectedPropertyName = "PrivateStaticProperty" } },
-        { new GetPropertyTest { Name = "With Public And Instance", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, PropertyName = "PublicPropertyBase", ExpectedPropertyName = "PublicPropertyBase" } },
-        { new GetPropertyTest { Name = "With Public And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, PropertyName = "PublicStaticPropertyBase", ExpectedPropertyName = "PublicStaticPropertyBase" } },
-        { new GetPropertyTest { Name = "With Non Public And Instance", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, PropertyName = "PrivatePropertyBase", ExpectedPropertyName = "PrivatePropertyBase" } },
-        { new GetPropertyTest { Name = "With Non Public And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, PropertyName = "PrivateStaticPropertyBase", ExpectedPropertyName = "PrivateStaticPropertyBase" } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] GetPropertyTheoryData =>
+    [
+        new GetPropertyTest { Name = "With Declared Only And Public And Instance", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, PropertyName = "PublicProperty", ExpectedPropertyName = "PublicProperty" },
+        new GetPropertyTest { Name = "With Declared Only And Public And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, PropertyName = "PublicStaticProperty", ExpectedPropertyName = "PublicStaticProperty" },
+        new GetPropertyTest { Name = "With Declared Only And Non Public And Instance", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, PropertyName = "PrivateProperty", ExpectedPropertyName = "PrivateProperty" },
+        new GetPropertyTest { Name = "With Declared Only And Non Public And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, PropertyName = "PrivateStaticProperty", ExpectedPropertyName = "PrivateStaticProperty" },
+        new GetPropertyTest { Name = "With Public And Instance", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, PropertyName = "PublicPropertyBase", ExpectedPropertyName = "PublicPropertyBase" },
+        new GetPropertyTest { Name = "With Public And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, PropertyName = "PublicStaticPropertyBase", ExpectedPropertyName = "PublicStaticPropertyBase" },
+        new GetPropertyTest { Name = "With Non Public And Instance", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, PropertyName = "PrivatePropertyBase", ExpectedPropertyName = "PrivatePropertyBase" },
+        new GetPropertyTest { Name = "With Non Public And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, PropertyName = "PrivateStaticPropertyBase", ExpectedPropertyName = "PrivateStaticPropertyBase" },
+    ];
 
-    public static TheoryData<IXUnitTest> GetPropertiesTheoryData => new()
-    {
-        { new GetPropertiesTest { Name = "With Declared Only And Public And Instance", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ExpectedPropertyNames = ["PublicProperty"] } },
-        { new GetPropertiesTest { Name = "With Declared Only And Public And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, ExpectedPropertyNames = ["PublicStaticProperty"] } },
-        { new GetPropertiesTest { Name = "With Declared Only And Public And Instance And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedPropertyNames = ["PublicProperty", "PublicStaticProperty"] } },
-        { new GetPropertiesTest { Name = "With Declared Only And Non Public And Instance", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ExpectedPropertyNames = ["ProtectedInternalProperty", "ProtectedProperty", "InternalProperty", "PrivateProperty"] } },
-        { new GetPropertiesTest { Name = "With Declared Only And Non Public And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ExpectedPropertyNames = ["ProtectedInternalStaticProperty", "ProtectedStaticProperty", "InternalStaticProperty", "PrivateStaticProperty"] } },
-        { new GetPropertiesTest { Name = "With Declared Only And Non Public And Instance And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedPropertyNames = ["ProtectedInternalProperty", "ProtectedInternalStaticProperty", "ProtectedProperty", "ProtectedStaticProperty", "InternalProperty", "InternalStaticProperty", "PrivateProperty", "PrivateStaticProperty"] } },
-        { new GetPropertiesTest { Name = "With Declared Only And Public And Non Public And Instance And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedPropertyNames = ["PublicProperty", "PublicStaticProperty", "ProtectedInternalProperty", "ProtectedInternalStaticProperty", "ProtectedProperty", "ProtectedStaticProperty", "InternalProperty", "InternalStaticProperty", "PrivateProperty", "PrivateStaticProperty"] } },
-        { new GetPropertiesTest { Name = "With Public And Instance", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ExpectedPropertyNames = ["PublicProperty", "PublicPropertyBase"] } },
-        { new GetPropertiesTest { Name = "With Public And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, ExpectedPropertyNames = ["PublicStaticProperty", "PublicStaticPropertyBase"] } },
-        { new GetPropertiesTest { Name = "With Public And Instance And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedPropertyNames = ["PublicProperty", "PublicPropertyBase", "PublicStaticProperty", "PublicStaticPropertyBase"] } },
-        { new GetPropertiesTest { Name = "With Non Public And Instance", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ExpectedPropertyNames = ["ProtectedInternalProperty", "ProtectedProperty", "InternalProperty", "PrivateProperty", "ProtectedInternalPropertyBase", "ProtectedPropertyBase", "InternalPropertyBase", "PrivatePropertyBase"] } },
-        { new GetPropertiesTest { Name = "With Non Public And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ExpectedPropertyNames = ["ProtectedInternalStaticProperty", "ProtectedStaticProperty", "InternalStaticProperty", "PrivateStaticProperty", "ProtectedInternalStaticPropertyBase", "ProtectedStaticPropertyBase", "InternalStaticPropertyBase", "PrivateStaticPropertyBase"] } },
-        { new GetPropertiesTest { Name = "With Non Public And Instance And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedPropertyNames = ["ProtectedInternalProperty", "ProtectedInternalStaticProperty", "ProtectedProperty", "ProtectedStaticProperty", "InternalProperty", "InternalStaticProperty", "PrivateProperty", "PrivateStaticProperty", "ProtectedInternalPropertyBase", "ProtectedInternalStaticPropertyBase", "ProtectedPropertyBase", "ProtectedStaticPropertyBase", "InternalPropertyBase", "InternalStaticPropertyBase", "PrivatePropertyBase", "PrivateStaticPropertyBase"] } },
-        { new GetPropertiesTest { Name = "With Public And Non Public And Instance And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedPropertyNames = ["PublicProperty", "PublicStaticProperty", "ProtectedInternalProperty", "ProtectedInternalStaticProperty", "ProtectedProperty", "ProtectedStaticProperty", "InternalProperty", "InternalStaticProperty", "PrivateProperty", "PrivateStaticProperty", "PublicPropertyBase", "PublicStaticPropertyBase", "ProtectedInternalPropertyBase", "ProtectedInternalStaticPropertyBase", "ProtectedPropertyBase", "ProtectedStaticPropertyBase", "InternalPropertyBase", "InternalStaticPropertyBase", "PrivatePropertyBase", "PrivateStaticPropertyBase"] } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] GetPropertiesTheoryData =>
+    [
+        new GetPropertiesTest { Name = "With Declared Only And Public And Instance", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ExpectedPropertyNames = ["PublicProperty"] },
+        new GetPropertiesTest { Name = "With Declared Only And Public And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Static, ExpectedPropertyNames = ["PublicStaticProperty"] },
+        new GetPropertiesTest { Name = "With Declared Only And Public And Instance And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedPropertyNames = ["PublicProperty", "PublicStaticProperty"] },
+        new GetPropertiesTest { Name = "With Declared Only And Non Public And Instance", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ExpectedPropertyNames = ["ProtectedInternalProperty", "ProtectedProperty", "InternalProperty", "PrivateProperty"] },
+        new GetPropertiesTest { Name = "With Declared Only And Non Public And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ExpectedPropertyNames = ["ProtectedInternalStaticProperty", "ProtectedStaticProperty", "InternalStaticProperty", "PrivateStaticProperty"] },
+        new GetPropertiesTest { Name = "With Declared Only And Non Public And Instance And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedPropertyNames = ["ProtectedInternalProperty", "ProtectedInternalStaticProperty", "ProtectedProperty", "ProtectedStaticProperty", "InternalProperty", "InternalStaticProperty", "PrivateProperty", "PrivateStaticProperty"] },
+        new GetPropertiesTest { Name = "With Declared Only And Public And Non Public And Instance And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.DeclaredOnly | TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedPropertyNames = ["PublicProperty", "PublicStaticProperty", "ProtectedInternalProperty", "ProtectedInternalStaticProperty", "ProtectedProperty", "ProtectedStaticProperty", "InternalProperty", "InternalStaticProperty", "PrivateProperty", "PrivateStaticProperty"] },
+        new GetPropertiesTest { Name = "With Public And Instance", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance, ExpectedPropertyNames = ["PublicProperty", "PublicPropertyBase"] },
+        new GetPropertiesTest { Name = "With Public And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Static, ExpectedPropertyNames = ["PublicStaticProperty", "PublicStaticPropertyBase"] },
+        new GetPropertiesTest { Name = "With Public And Instance And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedPropertyNames = ["PublicProperty", "PublicPropertyBase", "PublicStaticProperty", "PublicStaticPropertyBase"] },
+        new GetPropertiesTest { Name = "With Non Public And Instance", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance, ExpectedPropertyNames = ["ProtectedInternalProperty", "ProtectedProperty", "InternalProperty", "PrivateProperty", "ProtectedInternalPropertyBase", "ProtectedPropertyBase", "InternalPropertyBase", "PrivatePropertyBase"] },
+        new GetPropertiesTest { Name = "With Non Public And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Static, ExpectedPropertyNames = ["ProtectedInternalStaticProperty", "ProtectedStaticProperty", "InternalStaticProperty", "PrivateStaticProperty", "ProtectedInternalStaticPropertyBase", "ProtectedStaticPropertyBase", "InternalStaticPropertyBase", "PrivateStaticPropertyBase"] },
+        new GetPropertiesTest { Name = "With Non Public And Instance And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedPropertyNames = ["ProtectedInternalProperty", "ProtectedInternalStaticProperty", "ProtectedProperty", "ProtectedStaticProperty", "InternalProperty", "InternalStaticProperty", "PrivateProperty", "PrivateStaticProperty", "ProtectedInternalPropertyBase", "ProtectedInternalStaticPropertyBase", "ProtectedPropertyBase", "ProtectedStaticPropertyBase", "InternalPropertyBase", "InternalStaticPropertyBase", "PrivatePropertyBase", "PrivateStaticPropertyBase"] },
+        new GetPropertiesTest { Name = "With Public And Non Public And Instance And Static", Type = typeof(ClassWithProperties), ReflectionFlags = TypeReflectionFlags.Public | TypeReflectionFlags.NonPublic | TypeReflectionFlags.Instance | TypeReflectionFlags.Static, ExpectedPropertyNames = ["PublicProperty", "PublicStaticProperty", "ProtectedInternalProperty", "ProtectedInternalStaticProperty", "ProtectedProperty", "ProtectedStaticProperty", "InternalProperty", "InternalStaticProperty", "PrivateProperty", "PrivateStaticProperty", "PublicPropertyBase", "PublicStaticPropertyBase", "ProtectedInternalPropertyBase", "ProtectedInternalStaticPropertyBase", "ProtectedPropertyBase", "ProtectedStaticPropertyBase", "InternalPropertyBase", "InternalStaticPropertyBase", "PrivatePropertyBase", "PrivateStaticPropertyBase"] },
+    ];
 
-    public static TheoryData<IXUnitTest> IsComplexTheoryData => new()
-    {
-        { new IsComplexTest { Name = "Bool", Type = typeof(bool), Expected = false } },
-        { new IsComplexTest { Name = "Byte Array", Type = typeof(byte[]), Expected = false } },
-        { new IsComplexTest { Name = "Byte", Type = typeof(byte), Expected = false } },
-        { new IsComplexTest { Name = "Char", Type = typeof(char), Expected = false } },
-        { new IsComplexTest { Name = "DateTime", Type = typeof(DateTime), Expected = false } },
-        { new IsComplexTest { Name = "DateTimeOffset", Type = typeof(DateTimeOffset), Expected = false } },
-        { new IsComplexTest { Name = "Decimal", Type = typeof(decimal), Expected = false } },
-        { new IsComplexTest { Name = "Double", Type = typeof(double), Expected = false } },
-        { new IsComplexTest { Name = "Enum", Type = typeof(PrimaryColor), Expected = false } },
-        { new IsComplexTest { Name = "Float", Type = typeof(float), Expected = false } },
-        { new IsComplexTest { Name = "Guid", Type = typeof(Guid), Expected = false } },
-        { new IsComplexTest { Name = "Int", Type = typeof(int), Expected = false } },
-        { new IsComplexTest { Name = "Long", Type = typeof(long), Expected = false } },
-        { new IsComplexTest { Name = "Nullable Bool", Type = typeof(bool?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable Byte", Type = typeof(byte?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable Char", Type = typeof(char?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable DateTime", Type = typeof(DateTime?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable DateTimeOffset", Type = typeof(DateTimeOffset?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable Decimal", Type = typeof(decimal?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable Double", Type = typeof(double?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable Enum", Type = typeof(PrimaryColor?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable Float", Type = typeof(float?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable Guid", Type = typeof(Guid?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable Int", Type = typeof(int?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable Long", Type = typeof(long?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable SByte", Type = typeof(sbyte?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable Short", Type = typeof(short?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable TimeSpan", Type = typeof(TimeSpan?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable UInt", Type = typeof(uint?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable ULong", Type = typeof(ulong?), Expected = false } },
-        { new IsComplexTest { Name = "Nullable UShort", Type = typeof(ushort?), Expected = false } },
-        { new IsComplexTest { Name = "Object", Type = typeof(object), Expected = true } },
-        { new IsComplexTest { Name = "SByte", Type = typeof(sbyte), Expected = false } },
-        { new IsComplexTest { Name = "Short", Type = typeof(short), Expected = false } },
-        { new IsComplexTest { Name = "String", Type = typeof(string), Expected = false } },
-        { new IsComplexTest { Name = "TimeSpan", Type = typeof(TimeSpan), Expected = false } },
-        { new IsComplexTest { Name = "Type", Type = typeof(Type), Expected = false } },
-        { new IsComplexTest { Name = "UInt", Type = typeof(uint), Expected = false } },
-        { new IsComplexTest { Name = "ULong", Type = typeof(ulong), Expected = false } },
-        { new IsComplexTest { Name = "Uri", Type = typeof(Uri), Expected = false } },
-        { new IsComplexTest { Name = "UShort", Type = typeof(ushort), Expected = false } },
-        { new IsComplexTest { Name = "Class", Type = typeof(Rectangle), Expected = true } },
-        { new IsComplexTest { Name = "Interface", Type = typeof(IShape), Expected = true } },
-        { new IsComplexTest { Name = "Open Generic", Type = typeof(ICollection<>), Expected = true } },
-        { new IsComplexTest { Name = "Closed Generic", Type = typeof(ICollection<string>), Expected = true } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] IsComplexTheoryData =>
+    [
+        new IsComplexTest { Name = "Bool", Type = typeof(bool), Expected = false },
+        new IsComplexTest { Name = "Byte Array", Type = typeof(byte[]), Expected = false },
+        new IsComplexTest { Name = "Byte", Type = typeof(byte), Expected = false },
+        new IsComplexTest { Name = "Char", Type = typeof(char), Expected = false },
+        new IsComplexTest { Name = "DateTime", Type = typeof(DateTime), Expected = false },
+        new IsComplexTest { Name = "DateTimeOffset", Type = typeof(DateTimeOffset), Expected = false },
+        new IsComplexTest { Name = "Decimal", Type = typeof(decimal), Expected = false },
+        new IsComplexTest { Name = "Double", Type = typeof(double), Expected = false },
+        new IsComplexTest { Name = "Enum", Type = typeof(PrimaryColor), Expected = false },
+        new IsComplexTest { Name = "Float", Type = typeof(float), Expected = false },
+        new IsComplexTest { Name = "Guid", Type = typeof(Guid), Expected = false },
+        new IsComplexTest { Name = "Int", Type = typeof(int), Expected = false },
+        new IsComplexTest { Name = "Long", Type = typeof(long), Expected = false },
+        new IsComplexTest { Name = "Nullable Bool", Type = typeof(bool?), Expected = false },
+        new IsComplexTest { Name = "Nullable Byte", Type = typeof(byte?), Expected = false },
+        new IsComplexTest { Name = "Nullable Char", Type = typeof(char?), Expected = false },
+        new IsComplexTest { Name = "Nullable DateTime", Type = typeof(DateTime?), Expected = false },
+        new IsComplexTest { Name = "Nullable DateTimeOffset", Type = typeof(DateTimeOffset?), Expected = false },
+        new IsComplexTest { Name = "Nullable Decimal", Type = typeof(decimal?), Expected = false },
+        new IsComplexTest { Name = "Nullable Double", Type = typeof(double?), Expected = false },
+        new IsComplexTest { Name = "Nullable Enum", Type = typeof(PrimaryColor?), Expected = false },
+        new IsComplexTest { Name = "Nullable Float", Type = typeof(float?), Expected = false },
+        new IsComplexTest { Name = "Nullable Guid", Type = typeof(Guid?), Expected = false },
+        new IsComplexTest { Name = "Nullable Int", Type = typeof(int?), Expected = false },
+        new IsComplexTest { Name = "Nullable Long", Type = typeof(long?), Expected = false },
+        new IsComplexTest { Name = "Nullable SByte", Type = typeof(sbyte?), Expected = false },
+        new IsComplexTest { Name = "Nullable Short", Type = typeof(short?), Expected = false },
+        new IsComplexTest { Name = "Nullable TimeSpan", Type = typeof(TimeSpan?), Expected = false },
+        new IsComplexTest { Name = "Nullable UInt", Type = typeof(uint?), Expected = false },
+        new IsComplexTest { Name = "Nullable ULong", Type = typeof(ulong?), Expected = false },
+        new IsComplexTest { Name = "Nullable UShort", Type = typeof(ushort?), Expected = false },
+        new IsComplexTest { Name = "Object", Type = typeof(object), Expected = true },
+        new IsComplexTest { Name = "SByte", Type = typeof(sbyte), Expected = false },
+        new IsComplexTest { Name = "Short", Type = typeof(short), Expected = false },
+        new IsComplexTest { Name = "String", Type = typeof(string), Expected = false },
+        new IsComplexTest { Name = "TimeSpan", Type = typeof(TimeSpan), Expected = false },
+        new IsComplexTest { Name = "Type", Type = typeof(Type), Expected = false },
+        new IsComplexTest { Name = "UInt", Type = typeof(uint), Expected = false },
+        new IsComplexTest { Name = "ULong", Type = typeof(ulong), Expected = false },
+        new IsComplexTest { Name = "Uri", Type = typeof(Uri), Expected = false },
+        new IsComplexTest { Name = "UShort", Type = typeof(ushort), Expected = false },
+        new IsComplexTest { Name = "Class", Type = typeof(Rectangle), Expected = true },
+        new IsComplexTest { Name = "Interface", Type = typeof(IShape), Expected = true },
+        new IsComplexTest { Name = "Open Generic", Type = typeof(ICollection<>), Expected = true },
+        new IsComplexTest { Name = "Closed Generic", Type = typeof(ICollection<string>), Expected = true },
+    ];
 
-    public static TheoryData<IXUnitTest> IsEnumerableOfTTheoryData => new()
-    {
-        { new IsEnumerableOfTTest { Name = "With Simple Type", Type = typeof(bool), Expected = false } },
-        { new IsEnumerableOfTTest { Name = "With Complex Type", Type = typeof(Rectangle), Expected = false } },
-        { new IsEnumerableOfTTest { Name = "With Closed Generic List", Type = typeof(List<string>), Expected = true } },
-        { new IsEnumerableOfTTest { Name = "With Open Generic List", Type = typeof(List<>), Expected = true } },
-        { new IsEnumerableOfTTest { Name = "With Closed Enumerable Of T", Type = typeof(IEnumerable<string>), Expected = true } },
-        { new IsEnumerableOfTTest { Name = "With Open Enumerable Of T", Type = typeof(IEnumerable<>), Expected = true } },
-        { new IsEnumerableOfTTest { Name = "With Array", Type = typeof(int[]), Expected = true } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] IsEnumerableOfTTheoryData =>
+    [
+        new IsEnumerableOfTTest { Name = "With Simple Type", Type = typeof(bool), Expected = false },
+        new IsEnumerableOfTTest { Name = "With Complex Type", Type = typeof(Rectangle), Expected = false },
+        new IsEnumerableOfTTest { Name = "With Closed Generic List", Type = typeof(List<string>), Expected = true },
+        new IsEnumerableOfTTest { Name = "With Open Generic List", Type = typeof(List<>), Expected = true },
+        new IsEnumerableOfTTest { Name = "With Closed Enumerable Of T", Type = typeof(IEnumerable<string>), Expected = true },
+        new IsEnumerableOfTTest { Name = "With Open Enumerable Of T", Type = typeof(IEnumerable<>), Expected = true },
+        new IsEnumerableOfTTest { Name = "With Array", Type = typeof(int[]), Expected = true },
+    ];
 
-    public static TheoryData<IXUnitTest> IsImplementationOfTheoryData => new()
-    {
-        { new IsImplementationOfTest { Name = "Negative Case With Generics", DerivedType = typeof(Host<>), BaseType = typeof(ICollection<>), Expected = false } },
-        { new IsImplementationOfTest { Name = "Negative Case With Non Generics", DerivedType = typeof(Rectangle), BaseType = typeof(IAnimal), Expected = false } },
-        { new IsImplementationOfTest { Name = "Positive Case With Generics", DerivedType = typeof(Host<>), BaseType = typeof(IHost<>), Expected = true } },
-        { new IsImplementationOfTest { Name = "Positive Case With Non Generics", DerivedType = typeof(Rectangle), BaseType = typeof(IShape), Expected = true } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] IsImplementationOfTheoryData =>
+    [
+        new IsImplementationOfTest { Name = "Negative Case With Generics", DerivedType = typeof(Host<>), BaseType = typeof(ICollection<>), Expected = false },
+        new IsImplementationOfTest { Name = "Negative Case With Non Generics", DerivedType = typeof(Rectangle), BaseType = typeof(IAnimal), Expected = false },
+        new IsImplementationOfTest { Name = "Positive Case With Generics", DerivedType = typeof(Host<>), BaseType = typeof(IHost<>), Expected = true },
+        new IsImplementationOfTest { Name = "Positive Case With Non Generics", DerivedType = typeof(Rectangle), BaseType = typeof(IShape), Expected = true },
+    ];
 
-    public static TheoryData<IXUnitTest> IsSimpleTheoryData => new()
-    {
-        { new IsSimpleTest { Name = "Bool", Type = typeof(bool), Expected = true } },
-        { new IsSimpleTest { Name = "ByteArray", Type = typeof(byte[]), Expected = true } },
-        { new IsSimpleTest { Name = "Byte", Type = typeof(byte), Expected = true } },
-        { new IsSimpleTest { Name = "Char", Type = typeof(char), Expected = true } },
-        { new IsSimpleTest { Name = "DateTime", Type = typeof(DateTime), Expected = true } },
-        { new IsSimpleTest { Name = "DateTimeOffset", Type = typeof(DateTimeOffset), Expected = true } },
-        { new IsSimpleTest { Name = "Decimal", Type = typeof(decimal), Expected = true } },
-        { new IsSimpleTest { Name = "Double", Type = typeof(double), Expected = true } },
-        { new IsSimpleTest { Name = "Enum", Type = typeof(PrimaryColor), Expected = true } },
-        { new IsSimpleTest { Name = "Float", Type = typeof(float), Expected = true } },
-        { new IsSimpleTest { Name = "Guid", Type = typeof(Guid), Expected = true } },
-        { new IsSimpleTest { Name = "Int", Type = typeof(int), Expected = true } },
-        { new IsSimpleTest { Name = "Long", Type = typeof(long), Expected = true } },
-        { new IsSimpleTest { Name = "NullableBool", Type = typeof(bool?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableByte", Type = typeof(byte?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableChar", Type = typeof(char?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableDateTime", Type = typeof(DateTime?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableDateTimeOffset", Type = typeof(DateTimeOffset?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableDecimal", Type = typeof(decimal?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableDouble", Type = typeof(double?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableEnum", Type = typeof(PrimaryColor?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableFloat", Type = typeof(float?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableGuid", Type = typeof(Guid?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableInt", Type = typeof(int?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableLong", Type = typeof(long?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableSByte", Type = typeof(sbyte?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableShort", Type = typeof(short?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableTimeSpan", Type = typeof(TimeSpan?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableUInt", Type = typeof(uint?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableULong", Type = typeof(ulong?), Expected = true } },
-        { new IsSimpleTest { Name = "NullableUShort", Type = typeof(ushort?), Expected = true } },
-        { new IsSimpleTest { Name = "SByte", Type = typeof(sbyte), Expected = true } },
-        { new IsSimpleTest { Name = "Short", Type = typeof(short), Expected = true } },
-        { new IsSimpleTest { Name = "String", Type = typeof(string), Expected = true } },
-        { new IsSimpleTest { Name = "TimeSpan", Type = typeof(TimeSpan), Expected = true } },
-        { new IsSimpleTest { Name = "Type", Type = typeof(Type), Expected = true } },
-        { new IsSimpleTest { Name = "UInt", Type = typeof(uint), Expected = true } },
-        { new IsSimpleTest { Name = "ULong", Type = typeof(ulong), Expected = true } },
-        { new IsSimpleTest { Name = "Uri", Type = typeof(Uri), Expected = true } },
-        { new IsSimpleTest { Name = "UShort", Type = typeof(ushort), Expected = true } },
-        { new IsSimpleTest { Name = "Class", Type = typeof(Rectangle), Expected = false } },
-        { new IsSimpleTest { Name = "Interface", Type = typeof(IShape), Expected = false } },
-        { new IsSimpleTest { Name = "OpenGeneric", Type = typeof(ICollection<>), Expected = false } },
-        { new IsSimpleTest { Name = "ClosedGeneric", Type = typeof(ICollection<string>), Expected = false } },
-        { new IsSimpleTest { Name = "Object", Type = typeof(object), Expected = false } },
-    };
+    public static TheoryDataRow<IXUnitTest>[] IsSimpleTheoryData =>
+    [
+        new IsSimpleTest { Name = "Bool", Type = typeof(bool), Expected = true },
+        new IsSimpleTest { Name = "ByteArray", Type = typeof(byte[]), Expected = true },
+        new IsSimpleTest { Name = "Byte", Type = typeof(byte), Expected = true },
+        new IsSimpleTest { Name = "Char", Type = typeof(char), Expected = true },
+        new IsSimpleTest { Name = "DateTime", Type = typeof(DateTime), Expected = true },
+        new IsSimpleTest { Name = "DateTimeOffset", Type = typeof(DateTimeOffset), Expected = true },
+        new IsSimpleTest { Name = "Decimal", Type = typeof(decimal), Expected = true },
+        new IsSimpleTest { Name = "Double", Type = typeof(double), Expected = true },
+        new IsSimpleTest { Name = "Enum", Type = typeof(PrimaryColor), Expected = true },
+        new IsSimpleTest { Name = "Float", Type = typeof(float), Expected = true },
+        new IsSimpleTest { Name = "Guid", Type = typeof(Guid), Expected = true },
+        new IsSimpleTest { Name = "Int", Type = typeof(int), Expected = true },
+        new IsSimpleTest { Name = "Long", Type = typeof(long), Expected = true },
+        new IsSimpleTest { Name = "NullableBool", Type = typeof(bool?), Expected = true },
+        new IsSimpleTest { Name = "NullableByte", Type = typeof(byte?), Expected = true },
+        new IsSimpleTest { Name = "NullableChar", Type = typeof(char?), Expected = true },
+        new IsSimpleTest { Name = "NullableDateTime", Type = typeof(DateTime?), Expected = true },
+        new IsSimpleTest { Name = "NullableDateTimeOffset", Type = typeof(DateTimeOffset?), Expected = true },
+        new IsSimpleTest { Name = "NullableDecimal", Type = typeof(decimal?), Expected = true },
+        new IsSimpleTest { Name = "NullableDouble", Type = typeof(double?), Expected = true },
+        new IsSimpleTest { Name = "NullableEnum", Type = typeof(PrimaryColor?), Expected = true },
+        new IsSimpleTest { Name = "NullableFloat", Type = typeof(float?), Expected = true },
+        new IsSimpleTest { Name = "NullableGuid", Type = typeof(Guid?), Expected = true },
+        new IsSimpleTest { Name = "NullableInt", Type = typeof(int?), Expected = true },
+        new IsSimpleTest { Name = "NullableLong", Type = typeof(long?), Expected = true },
+        new IsSimpleTest { Name = "NullableSByte", Type = typeof(sbyte?), Expected = true },
+        new IsSimpleTest { Name = "NullableShort", Type = typeof(short?), Expected = true },
+        new IsSimpleTest { Name = "NullableTimeSpan", Type = typeof(TimeSpan?), Expected = true },
+        new IsSimpleTest { Name = "NullableUInt", Type = typeof(uint?), Expected = true },
+        new IsSimpleTest { Name = "NullableULong", Type = typeof(ulong?), Expected = true },
+        new IsSimpleTest { Name = "NullableUShort", Type = typeof(ushort?), Expected = true },
+        new IsSimpleTest { Name = "SByte", Type = typeof(sbyte), Expected = true },
+        new IsSimpleTest { Name = "Short", Type = typeof(short), Expected = true },
+        new IsSimpleTest { Name = "String", Type = typeof(string), Expected = true },
+        new IsSimpleTest { Name = "TimeSpan", Type = typeof(TimeSpan), Expected = true },
+        new IsSimpleTest { Name = "Type", Type = typeof(Type), Expected = true },
+        new IsSimpleTest { Name = "UInt", Type = typeof(uint), Expected = true },
+        new IsSimpleTest { Name = "ULong", Type = typeof(ulong), Expected = true },
+        new IsSimpleTest { Name = "Uri", Type = typeof(Uri), Expected = true },
+        new IsSimpleTest { Name = "UShort", Type = typeof(ushort), Expected = true },
+        new IsSimpleTest { Name = "Class", Type = typeof(Rectangle), Expected = false },
+        new IsSimpleTest { Name = "Interface", Type = typeof(IShape), Expected = false },
+        new IsSimpleTest { Name = "OpenGeneric", Type = typeof(ICollection<>), Expected = false },
+        new IsSimpleTest { Name = "ClosedGeneric", Type = typeof(ICollection<string>), Expected = false },
+        new IsSimpleTest { Name = "Object", Type = typeof(object), Expected = false },
+    ];
 
-    public static TheoryData<IXUnitTest> IsSubclassOrImplementationOfTheoryData => new()
-    {
-        { new IsSubclassOrImplementationOfTest { Name = "Negative Case With Generics With Derived And Interface", DerivedType = typeof(Host<>), BaseType = typeof(ICollection<>), Expected = false } },
-        { new IsSubclassOrImplementationOfTest { Name = "Negative Case With Generics With Derived And Abstract", DerivedType = typeof(Host<>), BaseType = typeof(AbstractCollection<>), Expected = false } },
-        { new IsSubclassOrImplementationOfTest { Name = "Negative Case With Generics With Abstract And Interface", DerivedType = typeof(AbstractHost<>), BaseType = typeof(ICollection<>), Expected = false } },
+    public static TheoryDataRow<IXUnitTest>[] IsSubclassOrImplementationOfTheoryData =>
+    [
+        new IsSubclassOrImplementationOfTest { Name = "Negative Case With Generics With Derived And Interface", DerivedType = typeof(Host<>), BaseType = typeof(ICollection<>), Expected = false },
+        new IsSubclassOrImplementationOfTest { Name = "Negative Case With Generics With Derived And Abstract", DerivedType = typeof(Host<>), BaseType = typeof(AbstractCollection<>), Expected = false },
+        new IsSubclassOrImplementationOfTest { Name = "Negative Case With Generics With Abstract And Interface", DerivedType = typeof(AbstractHost<>), BaseType = typeof(ICollection<>), Expected = false },
 
-        { new IsSubclassOrImplementationOfTest { Name = "Negative Case With Non Generics With Derived And Interface", DerivedType = typeof(Rectangle), BaseType = typeof(IAnimal), Expected = false } },
-        { new IsSubclassOrImplementationOfTest { Name = "Negative Case With Non Generics With Derived And Abstract", DerivedType = typeof(Rectangle), BaseType = typeof(AbstractAnimal), Expected = false } },
-        { new IsSubclassOrImplementationOfTest { Name = "Negative Case With Non Generics With Abstract And Interface", DerivedType = typeof(AbstractShape), BaseType = typeof(IAnimal), Expected = false } },
+        new IsSubclassOrImplementationOfTest { Name = "Negative Case With Non Generics With Derived And Interface", DerivedType = typeof(Rectangle), BaseType = typeof(IAnimal), Expected = false },
+        new IsSubclassOrImplementationOfTest { Name = "Negative Case With Non Generics With Derived And Abstract", DerivedType = typeof(Rectangle), BaseType = typeof(AbstractAnimal), Expected = false },
+        new IsSubclassOrImplementationOfTest { Name = "Negative Case With Non Generics With Abstract And Interface", DerivedType = typeof(AbstractShape), BaseType = typeof(IAnimal), Expected = false },
 
-        { new IsSubclassOrImplementationOfTest { Name = "Positive Case With Non Generics With Derived And Interface", DerivedType = typeof(Rectangle), BaseType = typeof(IShape), Expected = true } },
-        { new IsSubclassOrImplementationOfTest { Name = "Positive Case With Non Generics With Derived And Abstract", DerivedType = typeof(Rectangle), BaseType = typeof(AbstractShape), Expected = true } },
-        { new IsSubclassOrImplementationOfTest { Name = "Positive Case With Non Generics With Abstract And Interface", DerivedType = typeof(AbstractShape), BaseType = typeof(IShape), Expected = true } },
+        new IsSubclassOrImplementationOfTest { Name = "Positive Case With Non Generics With Derived And Interface", DerivedType = typeof(Rectangle), BaseType = typeof(IShape), Expected = true },
+        new IsSubclassOrImplementationOfTest { Name = "Positive Case With Non Generics With Derived And Abstract", DerivedType = typeof(Rectangle), BaseType = typeof(AbstractShape), Expected = true },
+        new IsSubclassOrImplementationOfTest { Name = "Positive Case With Non Generics With Abstract And Interface", DerivedType = typeof(AbstractShape), BaseType = typeof(IShape), Expected = true },
 
-        { new IsSubclassOrImplementationOfTest { Name = "Positive Case With Generics With Derived And Interface", DerivedType = typeof(Host<>), BaseType = typeof(IHost<>), Expected = true } },
-        { new IsSubclassOrImplementationOfTest { Name = "Positive Case With Generics With Derived And Abstract", DerivedType = typeof(Host<>), BaseType = typeof(AbstractHost<>), Expected = true } },
-        { new IsSubclassOrImplementationOfTest { Name = "Positive Case With Generics With Abstract And Interface", DerivedType = typeof(AbstractHost<>), BaseType = typeof(IHost<>), Expected = true } },
-    };
+        new IsSubclassOrImplementationOfTest { Name = "Positive Case With Generics With Derived And Interface", DerivedType = typeof(Host<>), BaseType = typeof(IHost<>), Expected = true },
+        new IsSubclassOrImplementationOfTest { Name = "Positive Case With Generics With Derived And Abstract", DerivedType = typeof(Host<>), BaseType = typeof(AbstractHost<>), Expected = true },
+        new IsSubclassOrImplementationOfTest { Name = "Positive Case With Generics With Abstract And Interface", DerivedType = typeof(AbstractHost<>), BaseType = typeof(IHost<>), Expected = true },
+    ];
     #endregion
 
     #region Test Methods

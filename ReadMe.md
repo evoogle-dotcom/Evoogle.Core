@@ -9,8 +9,8 @@ This repository is home to the following **Evoogle** projects. These projects ar
 
 Evoogle Core is a foundational library of C# extensions and other foundational C# components such as:
 
-- **Cloneable**. Abstracts objects to make deep clone of themselves with the following built-in implementations available:
-  - JSON serialization/deserialization of the source object to create a new deep clone of the source object.
+- **Cloneable**. Deep clone framework with the following built-in implementations available:
+  - JSON serialization/deserialization of the source object to create a deep clone of the source object.
 - **NTree**. N-Ary tree library.
 
 ## Evoogle.XUnit
