@@ -5,11 +5,11 @@ using Xunit;
 namespace Evoogle.XUnit;
 
 /// <summary>
-///     Abstracts an xunit tests container.
+///     Abstracts an xUnit tests container.
 /// </summary>
-/// <param name="output">xunit helper object to provide text output with.</param>
+/// <param name="output">xUnit helper object to provide text output with.</param>
 /// <remarks>
-///     Derived classes should annotate methods with either xunit theory or fact as needed.
+///     Derived classes should annotate methods with either xUnit theory or facts as needed.
 /// </remarks>
 public abstract class XUnitTests(ITestOutputHelper output)
 {
@@ -26,22 +26,22 @@ public abstract class XUnitTests(ITestOutputHelper output)
     #endregion
 
     #region Write Methods
-    public void WriteLine()
+    internal void WriteLine()
     {
         this.Output.WriteLine(string.Empty);
     }
 
-    public void WriteLine(string message)
+    internal void WriteLine(string message)
     {
         this.Output.WriteLine(message);
     }
 
-    public void WriteDashedLine()
+    internal void WriteDashedLine()
     {
         this.Output.WriteLine(SingleDashedLine);
     }
 
-    public void WriteDoubleDashedLine()
+    internal void WriteDoubleDashedLine()
     {
         this.Output.WriteLine(DoubleDashedLine);
     }

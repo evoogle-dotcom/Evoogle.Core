@@ -33,11 +33,6 @@ public class DotNetObjectExtensionTests(ITestOutputHelper output) : XUnitTests(o
     public static TheoryDataRow<IXUnitTest>[] SafeToStringTheoryData =>
     [
         new SafeToStringTest {Name = "Null String", Source = null, Expected = "<null>"},
-    ];
-
-    public static TheoryDataRow<IXUnitTest>[] SafeToStringTheoryData2 =>
-    [
-        new SafeToStringTest {Name = "Null String", Source = null, Expected = "<null>"},
         new SafeToStringTest {Name = "Null String And Customized Null Text", Source = null, Expected = "NULL!", NullText = "NULL!"},
         new SafeToStringTest {Name = "Empty String", Source = string.Empty, Expected = "<empty>" },
         new SafeToStringTest {Name = "Empty String and Customized Empty Text", Source = string.Empty, Expected = "EMPTY!", EmtpyText = "EMPTY!" },

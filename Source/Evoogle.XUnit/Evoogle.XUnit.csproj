@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="xunit.v3.core" Version="1.0.0" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.5.1" />
+    <PackageReference Include="xunit.v3.core" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Evoogle.Core\Evoogle.Core.csproj" />
   </ItemGroup>
 
 </Project>

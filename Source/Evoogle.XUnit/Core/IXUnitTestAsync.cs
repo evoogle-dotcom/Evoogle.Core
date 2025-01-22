@@ -1,22 +1,20 @@
 // Copyright (c) 2024 Evoogle.com
 // Licensed under the MIT License. See License.txt in the project root for license information.
-using Xunit.Sdk;
-
 namespace Evoogle.XUnit;
 
 /// <summary>
-///     Abstracts an individual xunit test that is executed asynchronously inside an xunit tests container.
+///     Abstracts an individual xUnit test that is executed asynchronously inside an xUnit tests container.
 /// </summary>
-public interface IXUnitTestAsync : IXunitSerializable
+public interface IXUnitTestAsync
 {
     #region Properties
-    /// <summary>Gets the name of the individual xunit test.</summary>
+    /// <summary>Gets the name of the individual xUnit test.</summary>
     string Name { get; }
     #endregion
 
     #region Methods
-    /// <summary>Exectute asynchronously the named individual xunit test.</summary>
-    /// <param name="parent">Parent xunit texts container to execute this xunit unit test within.</param>
+    /// <summary>Exectute asynchronously the named individual xUnit test.</summary>
+    /// <param name="parent">Parent xUnit tests container to execute this xUnit unit test within.</param>
     Task ExecuteAsync(XUnitTests parent);
     #endregion
 }

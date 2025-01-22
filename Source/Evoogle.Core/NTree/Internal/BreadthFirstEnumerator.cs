@@ -5,8 +5,8 @@ using System.Collections;
 namespace Evoogle.NTree;
 
 /// <summary>
-/// This API supports the Evoogle.Core infrastructure and is not intended to be used directly from your code.
-/// This API may change or be removed in future releases.
+///     This API supports the Evoogle.Core infrastructure and is not intended to be used directly from your code.
+///     This API may change or be removed in future releases.
 /// </summary>
 internal class BreadthFirstEnumerator<TNode>(TNode node) : IEnumerator<TNode>
     where TNode : Node<TNode>

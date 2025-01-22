@@ -1,5 +1,10 @@
 // Copyright (c) 2024 Evoogle.com
 // Licensed under the MIT License. See License.txt in the project root for license information.
+using System.Linq.Expressions;
+using System.Linq.Dynamic.Core.CustomTypeProviders;
+using System.Text.Json.Serialization;
+
+using Evoogle.Json;
 using Evoogle.XUnit;
 
 using FluentAssertions;
@@ -9,6 +14,7 @@ namespace Evoogle.NTree;
 public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
 {
     #region Test Classes
+    [DynamicLinqType]
     public class TestNode : Node<TestNode>
     {
         public override string Name { get; }
@@ -29,6 +35,16 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
             return this.Name;
         }
 
+        public static IEnumerator<TestNode> CreateBreadFirstEnumerator(TestNode testNode)
+        {
+            return testNode.CreateBreadFirstEnumerator();
+        }
+
+        public static IEnumerator<TestNode> CreateDepthFirstEnumerator(TestNode testNode)
+        {
+            return testNode.CreateDepthFirstEnumerator();
+        }
+
         public static TestNode CreateTree(int maxDepth, int maxChildren)
         {
             var root = new TestNode("1");
@@ -38,6 +54,15 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
             BuildTree(maxDepth, maxChildren, 1, root);
 
             return root;
+        }
+
+        public static void RemoveFirstChild(TestNode tree)
+        {
+            var node = tree.FirstChild;
+            if (node == null)
+                return;
+
+            tree.RemoveChild(node);
         }
 
         private static void BuildTree(int maxDepth, int maxChildren, int currentDepth, TestNode parent)
@@ -73,8 +98,12 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         #endregion
 
         #region User Supplied Properties
-        public Func<TestNode> TreeFactory { get; set; } = null!;
-        public Action<TestNode> TreeAction { get; set; } = null!;
+        [JsonConverter(typeof(ExpressionFuncJsonConverter<TestNode>))]
+        public Expression<Func<TestNode>> TreeFactory { get; set; } = null!;
+
+        [JsonConverter(typeof(ExpressionActionJsonConverter<TestNode>))]
+        public Expression<Action<TestNode>> TreeAction { get; set; } = null!;
+
         public string ExpectedBeforeTraversal { get; set; } = null!;
         public string ExpectedAfterTraversal { get; set; } = null!;
         #endregion
@@ -93,11 +122,17 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
 
         protected override void Act()
         {
-            var tree = this.TreeFactory();
+            // Create tree
+            var treeFactory = this.TreeFactory.Compile() ?? throw new InvalidOperationException($"Unable to compile {nameof(this.TreeFactory)} into a function object.");
+            var tree = treeFactory();
+
+            // Create tree enumerator
             var enumerator = tree.CreateBreadFirstEnumerator();
             var nameCollection = new List<string>();
 
-            this.TreeAction(tree);
+            // Perform action on tree
+            var treeAction = this.TreeAction.Compile() ?? throw new InvalidOperationException($"Unable to compile {nameof(this.TreeAction)} into a function object.");
+            treeAction(tree);
 
             tree.Traverse(
                 enumerator,
@@ -128,8 +163,12 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         #endregion
 
         #region User Supplied Properties
-        public Func<TestNode, IEnumerator<TestNode>> EnumeratorFactory { get; set; } = null!;
-        public Func<TestNode> TreeFactory { get; set; } = null!;
+        [JsonConverter(typeof(ExpressionFuncJsonConverter<TestNode>))]
+        public Expression<Func<TestNode>> TreeFactory { get; set; } = null!;
+
+        [JsonConverter(typeof(ExpressionFuncJsonConverter<TestNode, IEnumerator<TestNode>>))]
+        public Expression<Func<TestNode, IEnumerator<TestNode>>> EnumeratorFactory { get; set; } = null!;
+
         public string ExpectedTraversal { get; set; } = null!;
         #endregion
 
@@ -143,8 +182,13 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
 
         protected override void Act()
         {
-            var tree = this.TreeFactory();
-            var enumerator = this.EnumeratorFactory(tree);
+            // Create tree
+            var treeFactory = this.TreeFactory.Compile() ?? throw new InvalidOperationException($"Unable to compile {nameof(this.TreeFactory)} into a function object.");
+            var tree = treeFactory();
+
+            // Create tree enumerator
+            var enumeratorFactory = this.EnumeratorFactory.Compile() ?? throw new InvalidOperationException($"Unable to compile {nameof(this.EnumeratorFactory)} into a function object.");
+            var enumerator = enumeratorFactory(tree);
             var nameCollection = new List<string>();
 
             tree.Traverse(
@@ -177,14 +221,7 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         {
             Name = "RemoveChild Child #1 Depth=0 Children=0",
             TreeFactory = () => TestNode.CreateTree(0, 0),
-            TreeAction = (tree) =>
-            {
-                var node = tree.FirstChild;
-                if (node == null)
-                    return;
-
-                tree.RemoveChild(node);
-            },
+            TreeAction = (a) => TestNode.RemoveFirstChild(a),
             ExpectedBeforeTraversal = "1",
             ExpectedAfterTraversal = "1"
         },
@@ -193,17 +230,10 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         {
             Name = "RemoveChild Child #1 Depth=1 Children=1",
             TreeFactory = () => TestNode.CreateTree(1, 1),
-            TreeAction = (tree) =>
-            {
-                var node = tree.FirstChild;
-                if (node == null)
-                    return;
-
-                tree.RemoveChild(node);
-            },
+            TreeAction = (a) => TestNode.RemoveFirstChild(a),
             ExpectedBeforeTraversal = "1|11",
             ExpectedAfterTraversal = "1"
-        }
+        },
     ];
 
     public static TheoryDataRow<IXUnitTest>[] TraversalTheoryData =>
@@ -212,80 +242,80 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         new TraversalTest
         {
             Name = "BFS Depth=0 Children=0",
-            EnumeratorFactory = (node) => node.CreateBreadFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(0, 0),
+            EnumeratorFactory = (a) => TestNode.CreateBreadFirstEnumerator(a),
             ExpectedTraversal = "1"
         },
 
         new TraversalTest
         {
             Name = "BFS Depth=1 Children=1",
-            EnumeratorFactory = (node) => node.CreateBreadFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(1, 1),
+            EnumeratorFactory = (a) => TestNode.CreateBreadFirstEnumerator(a),
             ExpectedTraversal = "1|11"
         },
 
         new TraversalTest
         {
             Name = "BFS Depth=1 Children=2",
-            EnumeratorFactory = (node) => node.CreateBreadFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(1, 2),
+            EnumeratorFactory = (a) => TestNode.CreateBreadFirstEnumerator(a),
             ExpectedTraversal = "1|11|12"
         },
 
         new TraversalTest
         {
             Name = "BFS Depth=1 Children=3",
-            EnumeratorFactory = node => node.CreateBreadFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(1, 3),
+            EnumeratorFactory = (a) => TestNode.CreateBreadFirstEnumerator(a),
             ExpectedTraversal = "1|11|12|13"
         },
 
         new TraversalTest
         {
             Name = "BFS Depth=2 Children=1",
-            EnumeratorFactory = (node) => node.CreateBreadFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(2, 1),
+            EnumeratorFactory = (a) => TestNode.CreateBreadFirstEnumerator(a),
             ExpectedTraversal = "1|11|111"
         },
 
         new TraversalTest
         {
             Name = "BFS Depth=2 Children=2",
-            EnumeratorFactory = (node) => node.CreateBreadFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(2, 2),
+            EnumeratorFactory = (a) => TestNode.CreateBreadFirstEnumerator(a),
             ExpectedTraversal = "1|11|12|111|112|121|122"
         },
 
         new TraversalTest
         {
             Name = "BFS Depth=2 Children=3",
-            EnumeratorFactory = (node) => node.CreateBreadFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(2, 3),
+            EnumeratorFactory = (a) => TestNode.CreateBreadFirstEnumerator(a),
             ExpectedTraversal = "1|11|12|13|111|112|113|121|122|123|131|132|133"
         },
 
         new TraversalTest
         {
             Name = "BFS Depth=3 Children=1",
-            EnumeratorFactory = (node) => node.CreateBreadFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(3, 1),
+            EnumeratorFactory = (a) => TestNode.CreateBreadFirstEnumerator(a),
             ExpectedTraversal = "1|11|111|1111"
         },
 
         new TraversalTest
         {
             Name = "BFS Depth=3 Children=2",
-            EnumeratorFactory = (node) => node.CreateBreadFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(3, 2),
+            EnumeratorFactory = (a) => TestNode.CreateBreadFirstEnumerator(a),
             ExpectedTraversal = "1|11|12|111|112|121|122|1111|1112|1121|1122|1211|1212|1221|1222"
         },
 
         new TraversalTest
         {
             Name = "BFS Depth=3 Children=3",
-            EnumeratorFactory = (node) => node.CreateBreadFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(3, 3),
+            EnumeratorFactory = (a) => TestNode.CreateBreadFirstEnumerator(a),
             ExpectedTraversal = "1|11|12|13|111|112|113|121|122|123|131|132|133|1111|1112|1113|1121|1122|1123|1131|1132|1133|1211|1212|1213|1221|1222|1223|1231|1232|1233|1311|1312|1313|1321|1322|1323|1331|1332|1333"
         },
 
@@ -293,80 +323,80 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         new TraversalTest
         {
             Name = "DFS Depth=0 Children=0",
-            EnumeratorFactory = (node) => node.CreateDepthFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(0, 0),
+            EnumeratorFactory = (a) => TestNode.CreateDepthFirstEnumerator(a),
             ExpectedTraversal = "1"
         },
 
         new TraversalTest
         {
             Name = "DFS Depth=1 Children=1",
-            EnumeratorFactory = (node) => node.CreateDepthFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(1, 1),
+            EnumeratorFactory = (a) => TestNode.CreateDepthFirstEnumerator(a),
             ExpectedTraversal = "1|11"
         },
 
         new TraversalTest
         {
             Name = "DFS Depth=1 Children=2",
-            EnumeratorFactory = (node) => node.CreateDepthFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(1, 2),
+            EnumeratorFactory = (a) => TestNode.CreateDepthFirstEnumerator(a),
             ExpectedTraversal = "1|11|12"
         },
 
         new TraversalTest
         {
             Name = "DFS Depth=1 Children=3",
-            EnumeratorFactory = node => node.CreateDepthFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(1, 3),
+            EnumeratorFactory = (a) => TestNode.CreateDepthFirstEnumerator(a),
             ExpectedTraversal = "1|11|12|13"
         },
 
         new TraversalTest
         {
             Name = "DFS Depth=2 Children=1",
-            EnumeratorFactory = (node) => node.CreateDepthFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(2, 1),
+            EnumeratorFactory = (a) => TestNode.CreateDepthFirstEnumerator(a),
             ExpectedTraversal = "1|11|111"
         },
 
         new TraversalTest
         {
             Name = "DFS Depth=2 Children=2",
-            EnumeratorFactory = (node) => node.CreateDepthFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(2, 2),
+            EnumeratorFactory = (a) => TestNode.CreateDepthFirstEnumerator(a),
             ExpectedTraversal = "1|11|111|112|12|121|122"
         },
 
         new TraversalTest
         {
             Name = "DFS Depth=2 Children=3",
-            EnumeratorFactory = (node) => node.CreateDepthFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(2, 3),
+            EnumeratorFactory = (a) => TestNode.CreateDepthFirstEnumerator(a),
             ExpectedTraversal = "1|11|111|112|113|12|121|122|123|13|131|132|133"
         },
 
         new TraversalTest
         {
             Name = "DFS Depth=3 Children=1",
-            EnumeratorFactory = (node) => node.CreateDepthFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(3, 1),
+            EnumeratorFactory = (a) => TestNode.CreateDepthFirstEnumerator(a),
             ExpectedTraversal = "1|11|111|1111"
         },
 
         new TraversalTest
         {
             Name = "DFS Depth=3 Children=2",
-            EnumeratorFactory = (node) => node.CreateDepthFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(3, 2),
+            EnumeratorFactory = (a) => TestNode.CreateDepthFirstEnumerator(a),
             ExpectedTraversal = "1|11|111|1111|1112|112|1121|1122|12|121|1211|1212|122|1221|1222"
         },
 
         new TraversalTest
         {
             Name = "DFS Depth=3 Children=3",
-            EnumeratorFactory = (node) => node.CreateDepthFirstEnumerator(),
             TreeFactory = () => TestNode.CreateTree(3, 3),
+            EnumeratorFactory = (a) => TestNode.CreateDepthFirstEnumerator(a),
             ExpectedTraversal = "1|11|111|1111|1112|1113|112|1121|1122|1123|113|1131|1132|1133|12|121|1211|1212|1213|122|1221|1222|1223|123|1231|1232|1233|13|131|1311|1312|1313|132|1321|1322|1323|133|1331|1332|1333"
         },
     ];

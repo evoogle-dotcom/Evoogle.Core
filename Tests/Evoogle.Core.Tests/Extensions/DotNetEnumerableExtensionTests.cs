@@ -1,7 +1,5 @@
 // Copyright (c) 2024 Evoogle.com
 // Licensed under the MIT License. See License.txt in the project root for license information.
-using System.Text.Json;
-
 using Evoogle.XUnit;
 
 using FluentAssertions;
@@ -25,12 +23,12 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         #region XUnitTest Overrides
         protected override void Arrange()
         {
-            var originalJson = JsonSerializer.Serialize(this.Original);
+            var originalJson = this.Original.SafeToJson();
             this.WriteLine($"Original IEnumerable<{typeof(T).Name}> as JSON");
             this.WriteLine(originalJson);
             this.WriteLine();
 
-            var expectedJson = JsonSerializer.Serialize(this.Expected);
+            var expectedJson = this.Expected.SafeToJson();
             this.WriteLine($"Expected IEnumerable<{typeof(T).Name}> as JSON");
             this.WriteLine(expectedJson);
             this.WriteLine();
@@ -40,7 +38,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         {
             this.Actual = this.Original!.EmptyIfNull();
 
-            var actualJson = JsonSerializer.Serialize(this.Actual);
+            var actualJson = this.Actual.SafeToJson();
             this.WriteLine($"Actual IEnumerable<{typeof(T).Name}> as JSON");
             this.WriteLine(actualJson);
             this.WriteLine();
@@ -70,7 +68,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         #region XUnitTest Overrides
         protected override void Arrange()
         {
-            var originalJson = JsonSerializer.Serialize(this.Original);
+            var originalJson = this.Original.SafeToJson();
             this.WriteLine($"Original IEnumerable<{typeof(T).Name}> as JSON");
             this.WriteLine(originalJson);
             this.WriteLine();
@@ -111,12 +109,12 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         #region XUnitTest Overrides
         protected override void Arrange()
         {
-            var originalJson = JsonSerializer.Serialize(this.Original);
+            var originalJson = this.Original.SafeToJson();
             this.WriteLine($"Original IEnumerable<{typeof(TFrom).Name}> as JSON");
             this.WriteLine(originalJson);
             this.WriteLine();
 
-            var expectedJson = JsonSerializer.Serialize(this.Expected);
+            var expectedJson = this.Expected.SafeToJson();
             this.WriteLine($"Expected IEnumerable<{typeof(TTo).Name}> as JSON");
             this.WriteLine(expectedJson);
             this.WriteLine();
@@ -126,7 +124,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         {
             this.Actual = this.Original!.SafeCast<TTo>();
 
-            var actualJson = JsonSerializer.Serialize(this.Actual);
+            var actualJson = this.Actual.SafeToJson();
             this.WriteLine($"Actual IEnumerable<{typeof(TTo).Name}> as JSON");
             this.WriteLine(actualJson);
             this.WriteLine();
@@ -156,12 +154,12 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         #region XUnitTest Overrides
         protected override void Arrange()
         {
-            var originalJson = JsonSerializer.Serialize(this.Original);
+            var originalJson = this.Original.SafeToJson();
             this.WriteLine($"Original IEnumerable<{typeof(T).Name}> as JSON");
             this.WriteLine(originalJson);
             this.WriteLine();
 
-            var expectedJson = JsonSerializer.Serialize(this.Expected);
+            var expectedJson = this.Expected.SafeToJson();
             this.WriteLine($"Expected <{typeof(T).Name}> [] as JSON");
             this.WriteLine(expectedJson);
             this.WriteLine();
@@ -171,7 +169,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         {
             this.Actual = this.Original!.SafeToArray();
 
-            var actualJson = JsonSerializer.Serialize(this.Actual);
+            var actualJson = this.Actual.SafeToJson();
             this.WriteLine($"Actual {typeof(T).Name} [] as JSON");
             this.WriteLine(actualJson);
             this.WriteLine();
@@ -201,12 +199,12 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         #region XUnitTest Overrides
         protected override void Arrange()
         {
-            var originalJson = JsonSerializer.Serialize(this.Original);
+            var originalJson = this.Original.SafeToJson();
             this.WriteLine($"Original IEnumerable<{typeof(T).Name}> as JSON");
             this.WriteLine(originalJson);
             this.WriteLine();
 
-            var expectedJson = JsonSerializer.Serialize(this.Expected);
+            var expectedJson = this.Expected.SafeToJson();
             this.WriteLine($"Expected List<{typeof(T).Name}> as JSON");
             this.WriteLine(expectedJson);
             this.WriteLine();
@@ -216,7 +214,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         {
             this.Actual = this.Original!.SafeToList();
 
-            var actualJson = JsonSerializer.Serialize(this.Actual);
+            var actualJson = this.Actual.SafeToJson();
             this.WriteLine($"Actual List<{typeof(T).Name}> as JSON");
             this.WriteLine(actualJson);
             this.WriteLine();
@@ -246,12 +244,12 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         #region XUnitTest Overrides
         protected override void Arrange()
         {
-            var originalJson = JsonSerializer.Serialize(this.Original);
+            var originalJson = this.Original.SafeToJson();
             this.WriteLine($"Original IEnumerable<{typeof(T).Name}> as JSON");
             this.WriteLine(originalJson);
             this.WriteLine();
 
-            var expectedJson = JsonSerializer.Serialize(this.Expected);
+            var expectedJson = this.Expected.SafeToJson();
             this.WriteLine($"Expected IReadOnlyCollection<{typeof(T).Name}> as JSON");
             this.WriteLine(expectedJson);
             this.WriteLine();
@@ -261,7 +259,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         {
             this.Actual = this.Original!.SafeToReadOnlyCollection();
 
-            var actualJson = JsonSerializer.Serialize(this.Actual);
+            var actualJson = this.Actual.SafeToJson();
             this.WriteLine($"Actual IReadOnlyCollection<{typeof(T).Name}> as JSON");
             this.WriteLine(actualJson);
             this.WriteLine();
@@ -291,12 +289,12 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         #region XUnitTest Overrides
         protected override void Arrange()
         {
-            var originalJson = JsonSerializer.Serialize(this.Original);
+            var originalJson = this.Original.SafeToJson();
             this.WriteLine($"Original IEnumerable<{typeof(T).Name}> as JSON");
             this.WriteLine(originalJson);
             this.WriteLine();
 
-            var expectedJson = JsonSerializer.Serialize(this.Expected);
+            var expectedJson = this.Expected.SafeToJson();
             this.WriteLine($"Expected IReadOnlyList<{typeof(T).Name}> as JSON");
             this.WriteLine(expectedJson);
             this.WriteLine();
@@ -306,7 +304,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         {
             this.Actual = this.Original!.SafeToReadOnlyList();
 
-            var actualJson = JsonSerializer.Serialize(this.Actual);
+            var actualJson = this.Actual.SafeToJson();
             this.WriteLine($"Actual IReadOnlyList<{typeof(T).Name}> as JSON");
             this.WriteLine(actualJson);
             this.WriteLine();
@@ -334,42 +332,42 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
     public static TheoryDataRow<IXUnitTest>[] IsNullOrEmptyTheoryData =>
     [
         new IsNullOrEmptyUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = true },
-        new IsNullOrEmptyUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(), Expected = true },
+        new IsNullOrEmptyUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(),           Expected = true },
         new IsNullOrEmptyUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = false },
     ];
 
     public static TheoryDataRow<IXUnitTest>[] SafeCastTheoryData =>
     [
-        new SafeCastUnitTest<object, string> { Name = "With Null Collection",      Original = default,                              Expected = Enumerable.Empty<string>() },
-        new SafeCastUnitTest<object, string> { Name = "With Empty Collection",     Original = Enumerable.Empty<object>(), Expected = Enumerable.Empty<string>() },
-        new SafeCastUnitTest<object, string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = ["String 1", "String 2", "String 3"] },
+        new SafeCastUnitTest<string, string> { Name = "With Null Collection",      Original = default,                              Expected = Enumerable.Empty<string>() },
+        new SafeCastUnitTest<string, string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(),           Expected = Enumerable.Empty<string>() },
+        new SafeCastUnitTest<string, string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = ["String 1", "String 2", "String 3"] },
     ];
 
     public static TheoryDataRow<IXUnitTest>[] SafeToArrayTheoryData =>
     [
         new SafeToArrayUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = [] },
-        new SafeToArrayUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(), Expected = [] },
+        new SafeToArrayUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(),           Expected = [] },
         new SafeToArrayUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = ["String 1", "String 2", "String 3"] },
     ];
 
     public static TheoryDataRow<IXUnitTest>[] SafeToListTheoryData =>
     [
         new SafeToListUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = new List<string>() },
-        new SafeToListUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(), Expected = new List<string>() },
+        new SafeToListUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(),           Expected = new List<string>() },
         new SafeToListUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = new List<string> { "String 1", "String 2", "String 3" } },
     ];
 
     public static TheoryDataRow<IXUnitTest>[] SafeToReadOnlyCollectionTheoryData =>
     [
         new SafeToReadOnlyCollectionUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = new List<string>() },
-        new SafeToReadOnlyCollectionUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(), Expected = new List<string>() },
+        new SafeToReadOnlyCollectionUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(),           Expected = new List<string>() },
         new SafeToReadOnlyCollectionUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = new List<string> { "String 1", "String 2", "String 3" } },
     ];
 
     public static TheoryDataRow<IXUnitTest>[] SafeToReadOnlyListTheoryData =>
     [
         new SafeToReadOnlyListUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = new List<string>() },
-        new SafeToReadOnlyListUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(), Expected = new List<string>() },
+        new SafeToReadOnlyListUnitTest<string> { Name = "With Empty Collection",     Original = Enumerable.Empty<string>(),           Expected = new List<string>() },
         new SafeToReadOnlyListUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = new List<string> { "String 1", "String 2", "String 3" } },
     ];
     #endregion
