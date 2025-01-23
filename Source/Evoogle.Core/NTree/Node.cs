@@ -48,21 +48,23 @@ public abstract class Node<TNode> : INode<TNode>
     #region Constructors
     protected Node()
     {
+        // Initially, the node is its own root
         this.Root = (TNode)this;
     }
 
-    protected Node(TNode node)
+    protected Node(TNode child)
+        : this()
     {
-        this.Root = (TNode)this;
-
-        this.AddChildImpl(node);
+        this.AddChild(child);
     }
 
-    protected Node(IEnumerable<TNode> nodeCollection)
+    protected Node(IEnumerable<TNode> childCollection)
+        : this()
     {
-        this.Root = (TNode)this;
-
-        this.AddChildRangeImpl(nodeCollection);
+        foreach (var child in childCollection)
+        {
+            this.AddChild(child);
+        }
     }
     #endregion
 
@@ -70,164 +72,174 @@ public abstract class Node<TNode> : INode<TNode>
     /// <summary>
     ///     Adds a node as the last child of this parent node.
     /// </summary>
-    /// <param name="node">Node to add as the last child of this parent node.</param>
-    public void AddChild(TNode node)
+    /// <param name="child">Node to add as the last child of this parent node.</param>
+    public void AddChild(TNode child)
     {
-        this.AddChildImpl(node);
+        ValidateChildCanBeAdded(child);
+
+        /////////////////////////////////////////////////////////////////
+        // Add new child node
+        /////////////////////////////////////////////////////////////////
+
+        // Initialize the root and parent properties of the inserting node.
+        child.Root = this.Root;
+        child.Parent = (TNode)this;
+
+        // Handle special case of the the parent node having no child nodes.
+        if (!this.HasChildren)
+        {
+            // Insert node as the first node of this parent node.
+            this.FirstChild = child;
+            this.LastChild = child;
+
+            child.NextSibling = null;
+            child.PreviousSibling = null;
+            return;
+        }
+
+        // Insert node as the last child of this parent node.
+        var previousLastChild = this.LastChild ?? throw new NullReferenceException(nameof(this.LastChild));
+        this.LastChild = child;
+        previousLastChild.NextSibling = child;
+
+        child.NextSibling = null;
+        child.PreviousSibling = previousLastChild;
     }
 
     /// <summary>
     ///     Adds a range of nodes as the last children of this parent node.
     /// </summary>
-    /// <param name="nodeCollection">Node collection to add as the last children of this parent node.</param>
-    public void AddChildRange(IEnumerable<TNode> nodeCollection)
+    /// <param name="childCollection">Node collection to add as the last children of this parent node.</param>
+    public void AddChildRange(IEnumerable<TNode> childCollection)
     {
-        this.AddChildRangeImpl(nodeCollection);
+        foreach (var child in childCollection)
+        {
+            this.AddChild(child);
+        }
     }
 
     /// <summary>
     ///     Removes an existing child node from this parent node.
     /// </summary>
-    /// <param name="node">Child node to remove from this parent node.</param>
-    public void RemoveChild(TNode node)
+    /// <param name="child">Child node to remove from this parent node.</param>
+    public void RemoveChild(TNode child)
     {
-        // Ensure node exists as a child node to this parent node.
-        var isChild = ReferenceEquals(this, node.Parent);
-        if (!isChild)
-            return;
+        ValidateChildCanBeRemoved((TNode)this, child);
 
         /////////////////////////////////////////////////////////////////
-        // Remove child node
+        // Remove old child node
         /////////////////////////////////////////////////////////////////
 
         // 1. If the child node to be removed is the first child of this parent node.
-        if (ReferenceEquals(node, this.FirstChild))
+        if (ReferenceEquals(child, this.FirstChild))
         {
-            this.FirstChild = node.NextSibling;
+            this.FirstChild = child.NextSibling;
         }
 
         // 2. If the child node to be removed is the last child of this parent node.
-        if (ReferenceEquals(node, this.LastChild))
+        if (ReferenceEquals(child, this.LastChild))
         {
-            this.LastChild = node.PreviousSibling;
+            this.LastChild = child.PreviousSibling;
         }
 
         // 3. If the child node to be removed has a next sibling node.
-        if (node.NextSibling != null)
+        if (child.NextSibling != null)
         {
-            node.NextSibling.PreviousSibling = node.PreviousSibling;
+            child.NextSibling.PreviousSibling = child.PreviousSibling;
         }
 
         // 4. If the child node to be removed has a previous sibling node.
-        if (node.PreviousSibling != null)
+        if (child.PreviousSibling != null)
         {
-            node.PreviousSibling.NextSibling = node.NextSibling;
+            child.PreviousSibling.NextSibling = child.NextSibling;
+        }
+
+        // Child is now the root of a new tree.
+        child.NextSibling = null;
+        child.PreviousSibling = null;
+        child.Parent = null; // Remove the parent link
+        child.Root = child; // Reset the root link to itself        
+    }
+
+    /// <summary>
+    ///     Removes a range of child nodes from this parent node.
+    /// </summary>
+    /// <param name="childCollection">Node collection to remove from this parent node.</param>
+    public void RemoveChildRange(IEnumerable<TNode> childCollection)
+    {
+        foreach (var child in childCollection)
+        {
+            this.AddChild(child);
         }
     }
 
     /// <summary>
     ///     Replaces an existing child node with a new child node for this parent node.
     /// </summary>
-    /// <param name="oldNode">Old child node to remove from this parent node.</param>
-    /// <param name="newNode">New child node to replace the old node with for this parent node.</param>
-    public void ReplaceChild(TNode oldNode, TNode newNode)
+    /// <param name="oldChild">Old child node to remove from this parent node.</param>
+    /// <param name="newChild">New child node to replace the old node with for this parent node.</param>
+    public void ReplaceChild(TNode oldChild, TNode newChild)
     {
-        // Ensure old node exists as a child before removing.
-        var oldNodeIsChild = ReferenceEquals(this, oldNode.Parent);
-        if (!oldNodeIsChild)
-            return;
-
-        // Validate node has not already been added to the tree.
-        newNode.ValidateChildCanBeAdded();
+        ValidateChildCanBeRemoved((TNode)this, oldChild);
+        ValidateChildCanBeAdded(newChild);
 
         /////////////////////////////////////////////////////////////////
         // Replace old child node with new child node.
         /////////////////////////////////////////////////////////////////
-        newNode.Root = oldNode.Root;
-        newNode.Parent = oldNode.Parent;
-        newNode.NextSibling = oldNode.NextSibling;
-        newNode.PreviousSibling = oldNode.PreviousSibling;
+        newChild.Root = oldChild.Root;
+        newChild.Parent = oldChild.Parent;
+        newChild.NextSibling = oldChild.NextSibling;
+        newChild.PreviousSibling = oldChild.PreviousSibling;
 
         // Handle special cases where the old node was referenced by other nodes.
 
         // 1. If the child node to be replaced is the first child of this parent node.
-        if (ReferenceEquals(oldNode, this.FirstChild))
+        if (ReferenceEquals(oldChild, this.FirstChild))
         {
-            this.FirstChild = newNode;
+            this.FirstChild = newChild;
         }
 
         // 2. If the child node to be replaced is the last child of this parent node.
-        if (ReferenceEquals(oldNode, this.LastChild))
+        if (ReferenceEquals(oldChild, this.LastChild))
         {
-            this.LastChild = newNode;
+            this.LastChild = newChild;
         }
 
         // 3. If the node to be replaced previous node was not null.
-        if (oldNode.PreviousSibling != null)
+        if (oldChild.PreviousSibling != null)
         {
-            oldNode.PreviousSibling.NextSibling = newNode;
+            oldChild.PreviousSibling.NextSibling = newChild;
         }
 
         // 4. If the node to be replaced next node was not null.
-        if (oldNode.NextSibling != null)
+        if (oldChild.NextSibling != null)
         {
-            oldNode.NextSibling.PreviousSibling = newNode;
+            oldChild.NextSibling.PreviousSibling = newChild;
         }
     }
 
-    private void AddChildImpl(TNode node)
+    private static void ValidateChildCanBeAdded(TNode child)
     {
-        // Validate node can be inserted into the tree.
-        node.ValidateChildCanBeAdded();
-
-        // Initialize the root and parent properties of the inserting node.
-        node.Root = this.Root;
-        node.Parent = (TNode)this;
-
-        // Handle special case of the the parent node having no child nodes.
-        if (!this.HasChildren)
-        {
-            // Insert node as the first node of this parent node.
-            this.FirstChild = node;
-            this.LastChild = node;
-
-            node.NextSibling = null;
-            node.PreviousSibling = null;
-            return;
-        }
-
-        // Insert node as the last child of this parent node.
-        var previousLastChild = this.LastChild ?? throw new NullReferenceException(nameof(this.LastChild));
-        this.LastChild = node;
-        previousLastChild.NextSibling = node;
-
-        node.NextSibling = null;
-        node.PreviousSibling = previousLastChild;
-    }
-
-    private void AddChildRangeImpl(IEnumerable<TNode> nodeCollection)
-    {
-        if (nodeCollection == null)
-            return;
-
-        foreach (var node in nodeCollection)
-        {
-            this.AddChildImpl(node);
-        }
-    }
-
-    private void ValidateChildCanBeAdded()
-    {
-        if (this.Parent == null &&
-            this.FirstChild == null &&
-            this.LastChild == null &&
-            this.NextSibling == null &&
-            this.PreviousSibling == null)
+        if (child.Parent == null &&
+            child.FirstChild == null &&
+            child.LastChild == null &&
+            child.NextSibling == null &&
+            child.PreviousSibling == null)
         {
             return;
         }
 
-        var message = $"Node {{Name={this.Name}}} has already been added to a previous tree.";
+        var message = $"Node {{Name={child.Name}}} has already been added to a previous tree.";
+        throw new InvalidOperationException(message);
+    }
+
+    private static void ValidateChildCanBeRemoved(TNode parent, TNode child)
+    {
+        // Ensure child node exists as a child node to parent node.
+        if (ReferenceEquals(parent, child.Parent))
+            return;
+
+        var message = $"Can not remove child node {{Name={child.Name} ParentName={child.Parent.SafeToString()}}} as it is not a child of parent node {{{parent.Name}}}.";
         throw new InvalidOperationException(message);
     }
     #endregion
