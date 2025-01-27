@@ -13,6 +13,7 @@ Evoogle Core is a foundational library of C# extensions and other foundational C
   - JSON serialization/deserialization of the source object to create a deep clone of the source object.
 - **Extensions**. Useful extension methods for .NET types.
 - **NTree**. N-Ary tree library.
+- **Reflection**. Useful utility level classes to make working with .NET reflection classes easier.
 
 ## Evoogle.XUnit
 
