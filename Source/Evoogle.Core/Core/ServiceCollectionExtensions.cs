@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Evoogle.com
 // Licensed under the MIT License. See License.txt in the project root for license information.
 using System.Reflection;
-
+using Evoogle.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Evoogle;
@@ -146,7 +146,7 @@ public static class ServiceCollectionExtensions
             if (isAbstract)
                 continue;
 
-            var isImplementationOf = implementationType.IsImplementationOf(interfaceType);
+            var isImplementationOf = TypeReflection.IsImplementationOf(implementationType, interfaceType);
             if (!isImplementationOf)
                 continue;
 

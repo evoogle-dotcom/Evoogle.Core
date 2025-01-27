@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Evoogle.Reflection;
 
 namespace Evoogle.Json;
 
@@ -31,7 +32,7 @@ public class TypeJsonConverter : JsonConverter<Type>
     /// </summary>
     public override void Write(Utf8JsonWriter writer, Type type, JsonSerializerOptions options)
     {
-        var typeCompactQualilfiedName = type.GetCompactQualifiedName();
+        var typeCompactQualilfiedName = TypeReflection.GetCompactQualifiedName(type);
         writer.WriteStringValue(typeCompactQualilfiedName);
     }
     #endregion
