@@ -23,6 +23,8 @@ public abstract class XUnitTestAsync : XUnitTestBase, IXUnitTestAsync
         await this.ArrangeAsync();
         await this.ActAsync();
         await this.AssertAsync();
+
+        this.WriteLine();
     }
     #endregion
 

@@ -11,13 +11,14 @@ Evoogle Core is a foundational library of C# extensions and other foundational C
 
 - **Cloneable**. Deep clone framework with the following built-in implementations available:
   - JSON serialization/deserialization of the source object to create a deep clone of the source object.
+- **Coercion**. Implicit type coercion library.
 - **Extensions**. Useful extension methods for .NET types.
 - **NTree**. N-Ary tree library.
 - **Reflection**. Useful utility level classes to make working with .NET reflection classes easier.
 
 ## Evoogle.XUnit
 
-Evoogle XUnit is a unit testing library using the features of the excellent [xunit](https://github.com/xunit/xunit) library to standardize unit testing by defining abstractions/implementations of unit test classes that break the unit test down into the following fundamental steps of a unit test:
+Evoogle XUnit is a unit testing library using the features of the excellent [xunit v3](https://github.com/xunit/xunit) library to standardize unit testing by defining abstractions/implementations of unit test classes that break the unit test down into the following fundamental steps of a unit test:
 
 - *Arrange*
 - *Act*

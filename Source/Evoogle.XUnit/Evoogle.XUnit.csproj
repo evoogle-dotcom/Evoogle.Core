@@ -2,13 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.1" />
-    <PackageReference Include="xunit.v3.core" Version="1.0.1" />
+    <PackageReference Include="xunit.v3.core" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>

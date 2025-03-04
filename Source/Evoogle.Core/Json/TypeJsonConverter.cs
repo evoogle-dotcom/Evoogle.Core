@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 using System.Text.Json;
 using System.Text.Json.Serialization;
+
 using Evoogle.Reflection;
 
 namespace Evoogle.Json;
@@ -23,7 +24,7 @@ public class TypeJsonConverter : JsonConverter<Type>
             throw new NullReferenceException("Can not convert JSON to .NET Type object because the JSON text was null instead of the type compact qualified name as expected.");
         }
 
-        var type = Type.GetType(typeCompactQualilfiedName);
+        var type = Type.GetType(typeCompactQualilfiedName, throwOnError: true);
         return type;
     }
 

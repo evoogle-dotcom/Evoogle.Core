@@ -23,6 +23,8 @@ public abstract class XUnitTest : XUnitTestBase, IXUnitTest
         this.Arrange();
         this.Act();
         this.Assert();
+
+        this.WriteLine();
     }
     #endregion
 

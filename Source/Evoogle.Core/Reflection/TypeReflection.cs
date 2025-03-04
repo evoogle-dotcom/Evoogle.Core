@@ -12,7 +12,7 @@ public static class TypeReflection
 {
     #region Fields
     private const BindingFlags DefaultConstructorReflectionFlags =
-        BindingFlags.Public;
+        BindingFlags.DeclaredOnly | BindingFlags.Public;
 
     private const BindingFlags DefaultFieldReflectionFlags =
         BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
@@ -62,114 +62,140 @@ public static class TypeReflection
     #region Constructor Methods
     public static ConstructorInfo? GetConstructor(Type type, params Type[] parameterTypes)
     {
-        if (parameterTypes == null || parameterTypes.Length == 0)
-            return GetDefaultConstructor(type, DefaultConstructorReflectionFlags);
-
-        return GetConstructors(type.GetTypeInfo(), DefaultConstructorReflectionFlags, parameterTypes).SingleOrDefault();
+        return GetConstructor(type, DefaultConstructorReflectionFlags, parameterTypes);
     }
 
     public static ConstructorInfo? GetConstructor(Type type, BindingFlags bindingFlags, params Type[] parameterTypes)
     {
-        if (parameterTypes == null || parameterTypes.Length == 0)
-            return GetDefaultConstructor(type, bindingFlags);
-
-        return GetConstructors(type.GetTypeInfo(), bindingFlags, parameterTypes).SingleOrDefault();
+        return type.GetConstructor(bindingFlags, parameterTypes ?? EmptyTypes);
     }
 
     public static ConstructorInfo? GetConstructor(Type type, IEnumerable<Type> parameterTypes)
     {
-        return GetConstructors(type.GetTypeInfo(), DefaultConstructorReflectionFlags, parameterTypes).SingleOrDefault();
+        return GetConstructor(type, DefaultConstructorReflectionFlags, parameterTypes);
     }
 
     public static ConstructorInfo? GetConstructor(Type type, BindingFlags bindingFlags, IEnumerable<Type> parameterTypes)
     {
-        return GetConstructors(type.GetTypeInfo(), bindingFlags, parameterTypes).SingleOrDefault();
-    }
-
-    public static ConstructorInfo? GetDefaultConstructor(Type type)
-    {
-        return GetConstructors(type.GetTypeInfo(), DefaultConstructorReflectionFlags, EmptyTypes).SingleOrDefault();
-    }
-
-    public static ConstructorInfo? GetDefaultConstructor(Type type, BindingFlags bindingFlags)
-    {
-        return GetConstructors(type.GetTypeInfo(), bindingFlags, EmptyTypes).SingleOrDefault();
+        return type.GetConstructor(bindingFlags, [.. parameterTypes ?? EmptyTypes]);
     }
 
     public static IEnumerable<ConstructorInfo> GetConstructors(Type type)
     {
-        return GetConstructors(type.GetTypeInfo(), DefaultConstructorReflectionFlags, null);
+        return GetConstructors(type, DefaultConstructorReflectionFlags);
     }
 
     public static IEnumerable<ConstructorInfo> GetConstructors(Type type, BindingFlags bindingFlags)
     {
-        return GetConstructors(type.GetTypeInfo(), bindingFlags, null);
+        return type.GetConstructors(bindingFlags);
+    }
+
+    public static ConstructorInfo? GetDefaultConstructor(Type type)
+    {
+        return GetConstructor(type, DefaultConstructorReflectionFlags, EmptyTypes);
+    }
+
+    public static ConstructorInfo? GetDefaultConstructor(Type type, BindingFlags bindingFlags)
+    {
+        return GetConstructor(type, bindingFlags, EmptyTypes);
     }
     #endregion
 
     #region Field Methods
     public static FieldInfo? GetField(Type type, string fieldName)
     {
-        return GetFields(type.GetTypeInfo(), fieldName, DefaultFieldReflectionFlags).SingleOrDefault();
+        return GetField(type, fieldName, DefaultFieldReflectionFlags);
     }
 
     public static FieldInfo? GetField(Type type, string fieldName, BindingFlags bindingFlags)
     {
-        return GetFields(type.GetTypeInfo(), fieldName, bindingFlags).SingleOrDefault();
+        var field = type.GetField(fieldName, bindingFlags);
+        return field;
     }
 
     public static IEnumerable<FieldInfo> GetFields(Type type)
     {
-        return GetFields(type.GetTypeInfo(), null, DefaultFieldReflectionFlags);
+        return GetFields(type, DefaultFieldReflectionFlags);
     }
 
     public static IEnumerable<FieldInfo> GetFields(Type type, BindingFlags bindingFlags)
     {
-        return GetFields(type.GetTypeInfo(), null, bindingFlags);
+        var fields = type.GetFields(bindingFlags);
+        return fields;
     }
     #endregion
 
     #region Method Methods
+    public static MethodInfo? GetGenericMethodDefinition(Type type, string methodName)
+    {
+        return GetGenericMethodDefinition(type, methodName, DefaultMethodReflectionFlags);
+    }
+
+    public static MethodInfo? GetGenericMethodDefinition(Type type, string methodName, BindingFlags bindingFlags)
+    {
+        return type
+            .GetMethods(bindingFlags)
+            .SingleOrDefault(method => method.Name == methodName && method.IsGenericMethodDefinition);
+    }
+
+    public static MethodInfo? GetGenericMethodDefinition(Type type, string methodName, int parameterCount)
+    {
+        return GetGenericMethodDefinition(type, methodName, DefaultMethodReflectionFlags, parameterCount);
+    }
+
+    public static MethodInfo? GetGenericMethodDefinition(Type type, string methodName, BindingFlags bindingFlags, int parameterCount)
+    {
+        return type
+            .GetMethods(bindingFlags)
+            .SingleOrDefault(method => method.Name == methodName && method.IsGenericMethodDefinition && method.GetParameters().Length == parameterCount);
+    }
+
     public static MethodInfo? GetMethod(Type type, string methodName)
     {
-        return GetMethods(type.GetTypeInfo(), methodName, DefaultMethodReflectionFlags, EmptyTypes).SingleOrDefault();
+        return GetMethod(type, methodName, DefaultMethodReflectionFlags);
+    }
+
+    public static MethodInfo? GetMethod(Type type, string methodName, BindingFlags bindingFlags)
+    {
+        return type.GetMethod(methodName, bindingFlags);
     }
 
     public static MethodInfo? GetMethod(Type type, string methodName, params Type[] parameterTypes)
     {
-        return GetMethods(type.GetTypeInfo(), methodName, DefaultMethodReflectionFlags, parameterTypes ?? EmptyTypes).SingleOrDefault();
+        return GetMethod(type, methodName, DefaultMethodReflectionFlags, parameterTypes);
     }
 
     public static MethodInfo? GetMethod(Type type, string methodName, BindingFlags bindingFlags, params Type[] parameterTypes)
     {
-        return GetMethods(type.GetTypeInfo(), methodName, bindingFlags, parameterTypes ?? EmptyTypes).SingleOrDefault();
+        return type.GetMethod(methodName, bindingFlags, parameterTypes ?? EmptyTypes);
     }
 
     public static MethodInfo? GetMethod(Type type, string methodName, IEnumerable<Type> parameterTypes)
     {
-        return GetMethods(type.GetTypeInfo(), methodName, DefaultMethodReflectionFlags, parameterTypes).SingleOrDefault();
+        return GetMethod(type, methodName, DefaultMethodReflectionFlags, parameterTypes);
     }
 
     public static MethodInfo? GetMethod(Type type, string methodName, BindingFlags bindingFlags, IEnumerable<Type> parameterTypes)
     {
-        return GetMethods(type.GetTypeInfo(), methodName, bindingFlags, parameterTypes).SingleOrDefault();
+        return type.GetMethod(methodName, bindingFlags, [.. parameterTypes ?? EmptyTypes]);
     }
 
     public static IEnumerable<MethodInfo> GetMethods(Type type)
     {
-        return GetMethods(type.GetTypeInfo(), null, DefaultMethodReflectionFlags, null);
+        return GetMethods(type, DefaultMethodReflectionFlags);
     }
 
     public static IEnumerable<MethodInfo> GetMethods(Type type, BindingFlags bindingFlags)
     {
-        return GetMethods(type.GetTypeInfo(), null, bindingFlags, null);
+        var methods = type.GetMethods(bindingFlags);
+        return methods;
     }
     #endregion
 
     #region Miscellaneous Methods
     public static Type? GetBaseType(Type type)
     {
-        return type.GetTypeInfo().BaseType;
+        return type.BaseType;
     }
 
     public static IEnumerable<Type> GetBaseTypes(Type type)
@@ -190,26 +216,53 @@ public static class TypeReflection
     ///     The compact(partial) type name can be used by the static method Type.GetType(string) to create .NET <c>Type</c> object like a factory method.
     /// </summary>
     /// <param name="type">.NET type to call extension method on.</param>
-    public static string? GetCompactQualifiedName(Type type)
+    public static string GetCompactQualifiedName(Type type)
     {
-        var assemblyQualifiedName = type.AssemblyQualifiedName;
-        if (assemblyQualifiedName == null)
-            return null;
-
+        var assemblyQualifiedName = type.AssemblyQualifiedName ?? throw new NullReferenceException($"{nameof(Type)} property {{Name={nameof(Type.AssemblyQualifiedName)}}} is null.");
         var compactQualifiedName = RemoveAssemblyDetails(assemblyQualifiedName);
         return compactQualifiedName;
     }
     #endregion
 
     #region Predicate Methods
+    /// <summary>
+    ///     Predicate if objects of this type can be null or not.
+    ///     Works with nullable type definitions.
+    ///     Performant with big O notation of O(1) because it uses two checks, both optimized in the .NET runtime.
+    /// </summary>
+    /// <param name="type">Type object to check if objects of this type can be null or not.</param>
+    /// <returns>True if objects of this type can be null, false otherwise.</returns>
+    public static bool CanBeNull(Type type)
+    {
+        if (!type.IsValueType)
+            return true; // Reference types can be null
+
+        if (Nullable.GetUnderlyingType(type) != null)
+            return true; // Nullable<T> can be null
+
+        return false; // Non-nullable value types (e.g., int, bool) cannot be null
+    }
+
+    /// <summary>
+    ///     Predicate if objects of this type can be null or not.
+    ///     Works with nullable type definitions.
+    ///     Performant with big O notation of O(1) because no reflection of typeof(T) needed and inline at compile time for known types.
+    /// </summary>
+    /// <typeparam name="T">Type object to check if objects of this type can be null or not.</typeparam>
+    /// <returns>True if objects of this type can be null, false otherwise.</returns>
+    public static bool CanBeNull<T>()
+    {
+        return default(T) == null;
+    }
+
     public static bool IsAbstract(Type type)
     {
-        return type.GetTypeInfo().IsAbstract;
+        return type.IsAbstract;
     }
 
     public static bool IsAssignableFrom(Type type, Type fromType)
     {
-        return fromType != null && type.GetTypeInfo().IsAssignableFrom(fromType.GetTypeInfo());
+        return fromType != null && type.IsAssignableFrom(fromType);
     }
 
     public static bool IsBoolean(Type type)
@@ -219,7 +272,7 @@ public static class TypeReflection
 
     public static bool IsClass(Type type)
     {
-        return type.GetTypeInfo().IsClass;
+        return type.IsClass;
     }
 
     /// <summary>
@@ -234,7 +287,7 @@ public static class TypeReflection
 
     public static bool IsEnum(Type type)
     {
-        return type.GetTypeInfo().IsEnum;
+        return type.IsEnum;
     }
 
     public static bool IsEnumerableOfT(Type type)
@@ -246,25 +299,23 @@ public static class TypeReflection
     {
         enumerableType = null;
 
-        var typeInfo = type.GetTypeInfo();
-
         if (type == typeof(IEnumerable<>))
         {
-            enumerableType = typeInfo.GenericTypeParameters.FirstOrDefault();
+            enumerableType = type.GetGenericArguments().FirstOrDefault();
             return true;
         }
 
-        if (typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
         {
-            enumerableType = typeInfo.GenericTypeArguments.FirstOrDefault();
+            enumerableType = type.GenericTypeArguments.FirstOrDefault();
             return true;
         }
 
-        if (!typeInfo.IsGenericType && !typeInfo.IsArray)
+        if (!type.IsGenericType && !type.IsArray)
             return false;
 
-        var enumerableGenericTypeArguments = typeInfo
-            .ImplementedInterfaces
+        var enumerableGenericTypeArguments = type
+            .GetInterfaces()
             .Where(t => IsGenericType(t) && t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
             .Select(t => t.GenericTypeArguments.FirstOrDefault())
             .Where(t => t != null)
@@ -291,12 +342,12 @@ public static class TypeReflection
 
     public static bool IsGenericTypeDefinition(Type type)
     {
-        return type.GetTypeInfo().IsGenericTypeDefinition;
+        return type.IsGenericTypeDefinition;
     }
 
     public static bool IsGenericType(Type type)
     {
-        return type.GetTypeInfo().IsGenericType;
+        return type.IsGenericType;
     }
 
     public static bool IsGuid(Type type)
@@ -306,7 +357,12 @@ public static class TypeReflection
 
     public static bool IsImplementationOf(Type type, Type interfaceType)
     {
-        return interfaceType != null && IsImplementationOf(type.GetTypeInfo(), interfaceType.GetTypeInfo());
+        if (type == null || interfaceType == null)
+            return false;
+
+        return interfaceType.IsGenericType
+            ? type.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition().Equals(interfaceType))
+            : type.GetInterfaces().Any(x => !x.IsGenericType && x.Equals(interfaceType));
     }
 
     public static bool IsInteger(Type type)
@@ -339,7 +395,7 @@ public static class TypeReflection
 
     public static bool IsPrimitive(Type type)
     {
-        return type.GetTypeInfo().IsPrimitive || PrimitiveTypes.Contains(type);
+        return type.IsPrimitive || PrimitiveTypes.Contains(type);
     }
 
     /// <summary>
@@ -385,17 +441,46 @@ public static class TypeReflection
 
     public static bool IsSubclassOf(Type type, Type baseClass)
     {
-        return baseClass != null && type.GetTypeInfo().IsSubclassOf(baseClass);
+        return baseClass != null && type.IsSubclassOf(baseClass);
     }
 
     public static bool IsSubclassOrImplementationOf(Type type, Type baseClassOrInterfaceType)
     {
-        return baseClassOrInterfaceType != null && IsSubclassOrImplementationOf(type.GetTypeInfo(), baseClassOrInterfaceType.GetTypeInfo());
+        if (type.IsSubclassOf(baseClassOrInterfaceType))
+            return true;
+
+        if (IsImplementationOf(type, baseClassOrInterfaceType))
+            return true;
+
+        if (!baseClassOrInterfaceType.IsGenericType)
+            return false;
+
+        if (type.BaseType != null)
+        {
+            var baseType = type.BaseType;
+            while (!baseType.Equals(typeof(object)))
+            {
+                if (baseClassOrInterfaceType.Equals(baseType))
+                    return true;
+
+                if (baseType.IsGenericType)
+                {
+                    var baseGenericTypeDefinition = baseType.GetGenericTypeDefinition();
+                    if (baseClassOrInterfaceType.Equals(baseGenericTypeDefinition))
+                        return true;
+                }
+
+                if (baseType.BaseType != null)
+                    baseType = baseType.BaseType;
+            }
+        }
+
+        return false;
     }
 
     public static bool IsValueType(Type type)
     {
-        return type.GetTypeInfo().IsValueType;
+        return type.IsValueType;
     }
 
     public static bool IsVoid(Type type)
@@ -407,341 +492,28 @@ public static class TypeReflection
     #region Property Methods
     public static PropertyInfo? GetProperty(Type type, string propertyName)
     {
-        return GetProperties(type.GetTypeInfo(), propertyName, DefaultPropertyReflectionFlags).SingleOrDefault();
+        return GetProperty(type, propertyName, DefaultPropertyReflectionFlags);
     }
 
     public static PropertyInfo? GetProperty(Type type, string propertyName, BindingFlags bindingFlags)
     {
-        return GetProperties(type.GetTypeInfo(), propertyName, bindingFlags).SingleOrDefault();
+        var property = type.GetProperty(propertyName, bindingFlags);
+        return property;
     }
 
     public static IEnumerable<PropertyInfo> GetProperties(Type type)
     {
-        return GetProperties(type.GetTypeInfo(), null, DefaultPropertyReflectionFlags);
+        return GetProperties(type, DefaultPropertyReflectionFlags);
     }
 
     public static IEnumerable<PropertyInfo> GetProperties(Type type, BindingFlags bindingFlags)
     {
-        return GetProperties(type.GetTypeInfo(), null, bindingFlags);
+        var properties = type.GetProperties(bindingFlags);
+        return properties;
     }
     #endregion
 
     #region Methods
-    private static IEnumerable<T> FilterOnName<T>(IEnumerable<T> query, string? name, BindingFlags bindingFlags)
-        where T : MemberInfo
-    {
-        if (string.IsNullOrWhiteSpace(name))
-            return query;
-
-        var comparisonType = bindingFlags.HasFlag(BindingFlags.IgnoreCase) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-        return query.Where(x => string.Equals(x.Name, name, comparisonType));
-    }
-
-    private static IEnumerable<T> FilterOnParameterTypes<T>(IEnumerable<T> query, IEnumerable<Type>? parameterTypes)
-        where T : MethodBase
-    {
-        if (parameterTypes == null)
-            return query;
-
-        return query.Where(x => x.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameterTypes));
-    }
-
-    private static IEnumerable<T> FilterOnInstanceAndStatic<T>(IEnumerable<T> query, BindingFlags bindingFlags)
-        where T : MethodBase
-    {
-        var isInstance = bindingFlags.HasFlag(BindingFlags.Instance);
-        var isStatic = bindingFlags.HasFlag(BindingFlags.Static);
-
-        ValidateInstanceAndStaticBindingFlags(isInstance, isStatic);
-
-        if (isInstance && !isStatic)
-        {
-            return query.Where(x => !x.IsStatic);
-        }
-        else if (!isInstance && isStatic)
-        {
-            return query.Where(x => x.IsStatic);
-        }
-
-        return query;
-    }
-
-    private static IEnumerable<T> FilterOnPublicAndNonPublic<T>(IEnumerable<T> query, BindingFlags bindingFlags)
-        where T : MethodBase
-    {
-        var isPublic = bindingFlags.HasFlag(BindingFlags.Public);
-        var isNonPublic = bindingFlags.HasFlag(BindingFlags.NonPublic);
-
-        ValidatePublicAndNonPublicBindingFlags(isPublic, isNonPublic);
-
-        if (isPublic && !isNonPublic)
-        {
-            return query.Where(x => x.IsPublic);
-        }
-        else if (!isPublic && isNonPublic)
-        {
-            // IsFamilyOrAssembly == protected internal
-            // IsFamily == protected
-            // IsAssembly == internal
-            // IsPrivate == private
-            return query.Where(x => x.IsFamilyOrAssembly || x.IsFamily || x.IsAssembly || x.IsPrivate);
-        }
-
-        return query;
-    }
-
-    private static IEnumerable<FieldInfo> FilterOnInstanceAndStatic(IEnumerable<FieldInfo> query, BindingFlags bindingFlags)
-    {
-        var isInstance = bindingFlags.HasFlag(BindingFlags.Instance);
-        var isStatic = bindingFlags.HasFlag(BindingFlags.Static);
-
-        ValidateInstanceAndStaticBindingFlags(isInstance, isStatic);
-
-        if (isInstance && !isStatic)
-        {
-            return query.Where(x => !x.IsStatic);
-        }
-        else if (!isInstance && isStatic)
-        {
-            return query.Where(x => x.IsStatic);
-        }
-
-        return query;
-    }
-
-    private static IEnumerable<FieldInfo> FilterOnPublicAndNonPublic(IEnumerable<FieldInfo> query, BindingFlags bindingFlags)
-    {
-        var isPublic = bindingFlags.HasFlag(BindingFlags.Public);
-        var isNonPublic = bindingFlags.HasFlag(BindingFlags.NonPublic);
-
-        ValidatePublicAndNonPublicBindingFlags(isPublic, isNonPublic);
-
-        if (isPublic && !isNonPublic)
-        {
-            return query.Where(x => x.IsPublic);
-        }
-        else if (!isPublic && isNonPublic)
-        {
-            // IsFamilyOrAssembly == protected internal
-            // IsFamily == protected
-            // IsAssembly == internal
-            // IsPrivate == private
-            return query.Where(x => x.IsFamilyOrAssembly || x.IsFamily || x.IsAssembly || x.IsPrivate);
-        }
-
-        return query;
-    }
-
-    private static IEnumerable<PropertyInfo> FilterOnInstanceAndStatic(IEnumerable<PropertyInfo> query, BindingFlags bindingFlags)
-    {
-        var isInstance = bindingFlags.HasFlag(BindingFlags.Instance);
-        var isStatic = bindingFlags.HasFlag(BindingFlags.Static);
-
-        ValidateInstanceAndStaticBindingFlags(isInstance, isStatic);
-
-        if (isInstance && !isStatic)
-        {
-            return query.Where(x => x.SetMethod is { } && x.GetMethod is { } && ((x.CanRead && !x.GetMethod.IsStatic) || (x.CanWrite && !x.SetMethod.IsStatic)));
-        }
-        else if (!isInstance && isStatic)
-        {
-            return query.Where(x => x.SetMethod is { } && x.GetMethod is { } && ((x.CanRead && x.GetMethod.IsStatic) || (x.CanWrite && x.SetMethod.IsStatic)));
-        }
-
-        return query;
-    }
-
-    private static IEnumerable<PropertyInfo> FilterOnPublicAndNonPublic(IEnumerable<PropertyInfo> query, BindingFlags bindingFlags)
-    {
-        var isPublic = bindingFlags.HasFlag(BindingFlags.Public);
-        var isNonPublic = bindingFlags.HasFlag(BindingFlags.NonPublic);
-
-        ValidatePublicAndNonPublicBindingFlags(isPublic, isNonPublic);
-
-        if (isPublic && !isNonPublic)
-        {
-            return query.Where(x => x.SetMethod is { } && x.GetMethod is { } && ((x.CanRead && x.GetMethod.IsPublic) || (x.CanWrite && x.SetMethod.IsPublic)));
-        }
-        else if (!isPublic && isNonPublic)
-        {
-            // IsFamilyOrAssembly == protected internal
-            // IsFamily == protected
-            // IsAssembly == internal
-            // IsPrivate == private
-            return query.Where(x => x.SetMethod is { } && x.GetMethod is { } && ((x.CanRead && (x.GetMethod.IsFamilyOrAssembly || x.GetMethod.IsFamily || x.GetMethod.IsAssembly || x.GetMethod.IsPrivate)) ||
-                                                                                 (x.CanWrite && (x.SetMethod.IsFamilyOrAssembly || x.SetMethod.IsFamily || x.SetMethod.IsAssembly || x.SetMethod.IsPrivate))));
-        }
-
-        return query;
-    }
-
-    private static IEnumerable<ConstructorInfo> GetConstructors(TypeInfo typeInfo, BindingFlags bindingFlags, IEnumerable<Type>? parameterTypes)
-    {
-        if (typeInfo == null)
-            return Enumerable.Empty<ConstructorInfo>();
-
-        var constructors = new List<ConstructorInfo>();
-
-        var constructorsToAdd = typeInfo.DeclaredConstructors;
-
-        constructorsToAdd = FilterOnParameterTypes(constructorsToAdd, parameterTypes);
-        constructorsToAdd = FilterOnPublicAndNonPublic(constructorsToAdd, bindingFlags);
-
-        constructors.AddRange(constructorsToAdd);
-
-        return constructors;
-    }
-
-    private static IEnumerable<FieldInfo> GetFields(TypeInfo typeInfo, string? fieldName, BindingFlags bindingFlags)
-    {
-        if (typeInfo == null)
-            return Enumerable.Empty<FieldInfo>();
-
-        var fields = new List<FieldInfo>();
-        while (true)
-        {
-            var fieldsToAdd = typeInfo.DeclaredFields;
-
-            fieldsToAdd = FilterOnName(fieldsToAdd, fieldName, bindingFlags);
-            fieldsToAdd = FilterOnInstanceAndStatic(fieldsToAdd, bindingFlags);
-            fieldsToAdd = FilterOnPublicAndNonPublic(fieldsToAdd, bindingFlags);
-
-            fields.AddRange(fieldsToAdd);
-
-            if (bindingFlags.HasFlag(BindingFlags.DeclaredOnly))
-            {
-                break;
-            }
-
-            var baseTypeInfo = typeInfo.BaseType?.GetTypeInfo();
-            if (baseTypeInfo == null)
-            {
-                break;
-            }
-
-            typeInfo = baseTypeInfo;
-        }
-
-        return fields;
-    }
-
-    private static IEnumerable<MethodInfo> GetMethods(TypeInfo typeInfo, string? methodName, BindingFlags bindingFlags, IEnumerable<Type>? parameterTypes)
-    {
-        if (typeInfo == null)
-            return Enumerable.Empty<MethodInfo>();
-
-        var methods = new List<MethodInfo>();
-        while (true)
-        {
-            var methodsToAdd = typeInfo.DeclaredMethods;
-
-            methodsToAdd = FilterOnName(methodsToAdd, methodName, bindingFlags);
-            methodsToAdd = FilterOnParameterTypes(methodsToAdd, parameterTypes);
-            methodsToAdd = FilterOnInstanceAndStatic(methodsToAdd, bindingFlags);
-            methodsToAdd = FilterOnPublicAndNonPublic(methodsToAdd, bindingFlags);
-
-            methods.AddRange(methodsToAdd);
-
-            if (bindingFlags.HasFlag(BindingFlags.DeclaredOnly))
-            {
-                break;
-            }
-
-            var baseTypeInfo = typeInfo.BaseType?.GetTypeInfo();
-            if (baseTypeInfo == null)
-            {
-                break;
-            }
-
-            typeInfo = baseTypeInfo;
-        }
-
-        return methods;
-    }
-
-    private static IEnumerable<PropertyInfo> GetProperties(TypeInfo typeInfo, string? propertyName, BindingFlags bindingFlags)
-    {
-        if (typeInfo == null)
-            return Enumerable.Empty<PropertyInfo>();
-
-        var properties = new List<PropertyInfo>();
-        while (true)
-        {
-            var propertiesToAdd = typeInfo.DeclaredProperties;
-
-            propertiesToAdd = FilterOnName(propertiesToAdd, propertyName, bindingFlags);
-            propertiesToAdd = FilterOnInstanceAndStatic(propertiesToAdd, bindingFlags);
-            propertiesToAdd = FilterOnPublicAndNonPublic(propertiesToAdd, bindingFlags);
-
-            properties.AddRange(propertiesToAdd);
-
-            if (bindingFlags.HasFlag(BindingFlags.DeclaredOnly))
-            {
-                break;
-            }
-
-            var baseTypeInfo = typeInfo.BaseType?.GetTypeInfo();
-            if (baseTypeInfo == null)
-            {
-                break;
-            }
-
-            typeInfo = baseTypeInfo;
-        }
-
-        return properties;
-    }
-
-    private static bool IsImplementationOf(TypeInfo instanceTypeInfo, TypeInfo interfaceTypeInfo)
-    {
-        if (instanceTypeInfo == null || interfaceTypeInfo == null)
-            return false;
-
-        return interfaceTypeInfo.IsGenericType
-            ? instanceTypeInfo.ImplementedInterfaces
-                              .Select(x => x.GetTypeInfo())
-                              .Any(x => x.IsGenericType && x.GetGenericTypeDefinition().GetTypeInfo().Equals(interfaceTypeInfo))
-            : instanceTypeInfo.ImplementedInterfaces
-                              .Select(x => x.GetTypeInfo())
-                              .Any(x => !x.IsGenericType && x.Equals(interfaceTypeInfo));
-    }
-
-    private static bool IsSubclassOrImplementationOf(TypeInfo instanceTypeInfo, TypeInfo baseClassOrInterfaceTypeInfo)
-    {
-        if (instanceTypeInfo == null || baseClassOrInterfaceTypeInfo == null)
-            return false;
-
-        if (instanceTypeInfo.IsSubclassOf(baseClassOrInterfaceTypeInfo.AsType()))
-            return true;
-
-        if (IsImplementationOf(instanceTypeInfo, baseClassOrInterfaceTypeInfo))
-            return true;
-
-        if (!baseClassOrInterfaceTypeInfo.IsGenericType)
-            return false;
-
-        if (instanceTypeInfo.BaseType != null)
-        {
-            var baseTypeInfo = instanceTypeInfo.BaseType.GetTypeInfo();
-            while (!baseTypeInfo.Equals(typeof(object).GetTypeInfo()))
-            {
-                if (baseClassOrInterfaceTypeInfo.Equals(baseTypeInfo))
-                    return true;
-
-                if (baseTypeInfo.IsGenericType)
-                {
-                    var baseGenericTypeDefinitionInfo = baseTypeInfo.GetGenericTypeDefinition().GetTypeInfo();
-                    if (baseClassOrInterfaceTypeInfo.Equals(baseGenericTypeDefinitionInfo))
-                        return true;
-                }
-
-                if (baseTypeInfo.BaseType != null) baseTypeInfo = baseTypeInfo.BaseType.GetTypeInfo();
-            }
-        }
-
-        return false;
-    }
-
     private static string RemoveAssemblyDetails(string assemblyQualifiedName)
     {
         // Loop through the type name and filter out qualified assembly
@@ -797,24 +569,6 @@ public static class TypeReflection
         }
 
         return stringBuilder.ToString();
-    }
-
-    private static void ValidateInstanceAndStaticBindingFlags(bool isInstance, bool isStatic)
-    {
-        if (isInstance || isStatic)
-            return;
-
-        var message = $"{nameof(BindingFlags)} must at least specify either {BindingFlags.Instance} or {BindingFlags.Static}";
-        throw new ArgumentException(message);
-    }
-
-    private static void ValidatePublicAndNonPublicBindingFlags(bool isPublic, bool isNonPublic)
-    {
-        if (isPublic || isNonPublic)
-            return;
-
-        var message = $"{nameof(BindingFlags)} must at least specify either {BindingFlags.Public} or {BindingFlags.NonPublic}";
-        throw new ArgumentException(message);
     }
     #endregion
 }
