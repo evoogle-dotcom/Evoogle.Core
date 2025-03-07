@@ -22,7 +22,9 @@ public interface ITypeCoercionDefinition
     /// </summary>
     /// <param name="input">Input object to coerce from. May be null.</param>
     /// <param name="context">Runtime context for the coerce execution.</param>
-    /// <returns>The coerced output object from the input object, otherwise a <see cref="TypeCoercionException"/> is thrown.</returns>
+    /// <returns>
+    ///     The coerced output object from the input object, otherwise a <see cref="TypeCoercionException"/> is thrown.
+    /// </returns>
     object Coerce(object input, TypeCoercionContext context);
     #endregion
 }
@@ -41,7 +43,9 @@ public interface ITypeCoercionDefinition<TInput, TOutput> : ITypeCoercionDefinit
     /// </summary>
     /// <param name="input">Input object to coerce from. May be null.</param>
     /// <param name="context">Runtime context for the coerce execution.</param>
-    /// <returns>The coerced output object from the input object, otherwise a <see cref="TypeCoercionException"/> is thrown.</returns>
+    /// <returns>
+    ///     The coerced output object from the input object, otherwise a <see cref="TypeCoercionException"/> is thrown.
+    /// </returns>
     TOutput Coerce(TInput input, TypeCoercionContext context);
     #endregion
 }
