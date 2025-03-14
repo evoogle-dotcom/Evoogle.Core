@@ -140,7 +140,7 @@ public abstract class CoerceTest<TInput, TOutput> : CoerceTest
         if (this.ActualResult == false)
             return;
 
-        AssertOutputForSuccessResult();
+        this.AssertOutputForSuccessResult();
     }
     #endregion
 

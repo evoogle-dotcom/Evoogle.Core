@@ -220,6 +220,8 @@ public abstract class Node<TNode> : INode<TNode>
 
     private static void ValidateChildCanBeAdded(TNode child)
     {
+        ArgumentNullException.ThrowIfNull(child);
+
         if (child.Parent == null &&
             child.FirstChild == null &&
             child.LastChild == null &&

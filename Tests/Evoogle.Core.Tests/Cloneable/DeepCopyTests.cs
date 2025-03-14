@@ -88,7 +88,6 @@ public class DeepCopyTests(ITestOutputHelper output) : XUnitTests(output)
         #endregion
     }
 
-    [DynamicLinqType]
     public class EmptyObject : DeepCloneable<EmptyObject>;
 
     public class Person : DeepCloneable<Person>
@@ -157,6 +156,12 @@ public class DeepCopyTests(ITestOutputHelper output) : XUnitTests(output)
             EmployeeNumber = "1234567890"
         };
         return employee;
+    }
+
+    public static EmptyObject CreateEmptyObject()
+    {
+        var emptyObject = new EmptyObject();
+        return emptyObject;
     }
 
     public static Person CreatePerson()
@@ -250,7 +255,7 @@ public class DeepCopyTests(ITestOutputHelper output) : XUnitTests(output)
         new SafeDeepCopyTest<EmptyObject>
         {
             Name = "Empty object",
-            ExpectedSafeDeepCopyAccessorExpression = () => new EmptyObject()
+            ExpectedSafeDeepCopyAccessorExpression = () => CreateEmptyObject()
         },
 
         new SafeDeepCopyTest<Person>

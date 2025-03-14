@@ -23,8 +23,8 @@ public static class TypeCoercionExtensions
     /// <param name="defaultValue">The default value to return if coercion fails.</param>
     /// <returns><c>true</c> if coercion succeeds, <c>false</c> if coercion fails and the default value is returned.</returns>
     /// <remarks>
-    ///     This method safely attempts to coerce the input value to the output type. If coercion fails, 
-    ///     the output is assigned the default value and <c>false</c> is returned.
+    ///     This method safely attempts to coerce the input value to the output type.
+    ///     If coercion fails, the output is assigned the default value and <c>false</c> is returned.
     /// </remarks>
     public static bool TryCoerce<TInput, TOutput>(this ITypeCoercion typeCoercion, TInput? input, out TOutput? output, TypeCoercionContext context, TOutput? defaultValue = default)
     {
@@ -53,8 +53,8 @@ public static class TypeCoercionExtensions
     /// <param name="defaultValue">The default value to return if coercion fails.</param>
     /// <returns><c>true</c> if coercion succeeds, <c>false</c> if coercion fails and the default value is returned.</returns>
     /// <remarks>
-    ///     This method safely attempts to coerce the input value to the output type. If coercion fails, 
-    ///     the output is assigned the default value and <c>false</c> is returned.
+    ///     This method safely attempts to coerce the input value to the output type.
+    ///     If coercion fails, the output is assigned the default value and <c>false</c> is returned.
     /// </remarks>
     public static bool TryCoerce(this ITypeCoercion typeCoercion, object? input, Type outputType, out object? output, TypeCoercionContext context, object? defaultValue = null)
     {
