@@ -30,6 +30,8 @@ public interface IExtensible
     ///     Removes an extension of type T from the implementing class.
     /// </summary>
     /// <typeparam name="TExtension">The type of the extension to remove.</typeparam>
-    void DetachExtension<TExtension>();
+    /// <returns>Extension object if the extension is found; otherwise, null.</returns>
+    TExtension? DetachExtension<TExtension>()
+        where TExtension : class;
     #endregion
 }

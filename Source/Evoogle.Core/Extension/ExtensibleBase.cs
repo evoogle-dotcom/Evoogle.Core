@@ -28,7 +28,7 @@ public abstract class ExtensibleBase : IExtensible
     {
         ArgumentNullException.ThrowIfNull(extension);
 
-        // Store the extension in the dictionary using its type as the key.
+        // Add the extension to the dictionary using its type as the key.
         var key = typeof(TExtension);
         this.Extensions[key] = extension;
     }
@@ -59,11 +59,19 @@ public abstract class ExtensibleBase : IExtensible
     ///     Detaches the extension of the specified type.
     /// </summary>
     /// <typeparam name="TExtension">The type of the extension to detach.</typeparam>
-    public void DetachExtension<TExtension>()
+    /// <returns>Extension object if the extension is found; otherwise, null.</returns>
+    public TExtension? DetachExtension<TExtension>()
+        where TExtension : class
     {
         // Remove the extension from the dictionary.
         var key = typeof(TExtension);
-        this.Extensions.TryRemove(key, out _);
+        var result = this.Extensions.TryRemove(key, out var extension);
+        if (result && extension != null)
+        {
+            return (TExtension)extension;
+        }
+
+        return null;
     }
     #endregion
 }
