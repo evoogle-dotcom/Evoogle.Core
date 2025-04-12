@@ -15,22 +15,22 @@ public abstract class Node<TNode> : INode<TNode>
     /// <summary>Gets the name of this node.</summary>
     public abstract string Name { get; }
 
-    /// <summary>Gets the root node of the 1-N tree.</summary>
+    /// <inheritdoc />
     public TNode Root { get; private set; }
 
-    /// <summary>Gets the parent node of this node.</summary>
+    /// <inheritdoc />
     public TNode? Parent { get; private set; }
 
-    /// <summary>Gets the first child node of this node.</summary>
+    /// <inheritdoc />
     public TNode? FirstChild { get; private set; }
 
-    /// <summary>Gets the last child node of this node.</summary>
+    /// <inheritdoc />
     public TNode? LastChild { get; private set; }
 
-    /// <summary>Gets the next sibling node of this node.</summary>
+    /// <inheritdoc />
     public TNode? NextSibling { get; private set; }
 
-    /// <summary>Gets the previous sibling node of this node.</summary>
+    /// <inheritdoc />
     public TNode? PreviousSibling { get; private set; }
     #endregion
 

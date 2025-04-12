@@ -20,7 +20,7 @@ public abstract class XUnitTestBase
     }
     #endregion
 
-    #region Object Overrides
+    #region Object Methods
     /// <summary>Returns the name of the unit test.</summary>
     /// <returns>Name of the unit test.</returns>
     public override string ToString()

@@ -15,7 +15,7 @@ namespace Evoogle.Json;
 /// <typeparam name="TResult">Type of the lambda result.</typeparam>
 public class ExpressionFuncJsonConverter<TResult> : JsonConverter<Expression<Func<TResult>>>
 {
-    #region JsonConverter Overrides
+    #region JsonConverter Methods
     /// <summary>
     ///     Override of <see cref="JsonConverter{T}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/> method.
     /// </summary>
@@ -63,7 +63,7 @@ public class ExpressionFuncJsonConverter<T, TResult> : JsonConverter<Expression<
     private static ParameterExpression[] ParameterExpressions { get; } = [Expression.Parameter(typeof(T), "a")];
     #endregion
 
-    #region JsonConverter Overrides
+    #region JsonConverter Methods
     /// <summary>
     ///     Override of <see cref="JsonConverter{T}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/> method.
     /// </summary>

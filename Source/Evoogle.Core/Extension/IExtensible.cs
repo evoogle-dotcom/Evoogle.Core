@@ -11,27 +11,25 @@ public interface IExtensible
 {
     #region Methods
     /// <summary>
-    ///     Attaches an extension object of type T to the implementing class.
+    ///     Attaches an extension object based on the extension type.
     /// </summary>
-    /// <typeparam name="TExtension">The type of the extension.</typeparam>
+    /// <param name="extensionType">The type of extension to attach.</param>
     /// <param name="extension">The extension object to attach.</param>
-    void AttachExtension<TExtension>(TExtension extension);
+    void AttachExtension(Type extensionType, object extension);
 
     /// <summary>
-    ///     Tries to retrieve the attached extension of the specified type.
+    ///     Detaches an extension object based on the extension type.
     /// </summary>
-    /// <typeparam name="TExtension">The type of the extension.</typeparam>
-    /// <param name="extension">When this method returns, contains the attached extension if found; otherwise, null.</param>
+    /// <param name="extensionType">The type of extension to detach.</param>
+    /// <returns>Extension object if the extension is detached; otherwise, null.</returns>
+    object? DetachExtension(Type extensionType);
+
+    /// <summary>
+    ///     Tries to retrieve the attached extension object of the specified extension type.
+    /// </summary>
+    /// <param name="extensionType">The type of extension to retrieve.</param>
+    /// <param name="extension">When this method returns, contains the attached extension object if found; otherwise, null.</param>
     /// <returns>True if the extension is found; otherwise, false.</returns>
-    bool TryGetExtension<TExtension>([NotNullWhen(true)] out TExtension? extension)
-        where TExtension : class;
-
-    /// <summary>
-    ///     Removes an extension of type T from the implementing class.
-    /// </summary>
-    /// <typeparam name="TExtension">The type of the extension to remove.</typeparam>
-    /// <returns>Extension object if the extension is found; otherwise, null.</returns>
-    TExtension? DetachExtension<TExtension>()
-        where TExtension : class;
+    bool TryGetExtension(Type extensionType, [NotNullWhen(true)] out object? extension);
     #endregion
 }

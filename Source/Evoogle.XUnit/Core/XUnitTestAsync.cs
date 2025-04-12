@@ -28,7 +28,7 @@ public abstract class XUnitTestAsync : XUnitTestBase, IXUnitTestAsync
     }
     #endregion
 
-    #region XUnitTestAsync Overrides
+    #region XUnitTestAsync Methods
     /// <summary>Noop implementation of the arrange step.</summary>
     protected virtual Task ArrangeAsync()
     {

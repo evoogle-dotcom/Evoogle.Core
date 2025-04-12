@@ -24,12 +24,16 @@ public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
 
         public static void AttachExtension(TestExtensible testExtensible, string? name)
         {
+#pragma warning disable CS8634 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'class' constraint.
             testExtensible.AttachExtension(name != null ? new TestExtension(name) : null);
+#pragma warning restore CS8634 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'class' constraint.
         }
 
         public static void AttachAndDetachExtension(TestExtensible testExtensible, string? name)
         {
+#pragma warning disable CS8634 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'class' constraint.
             testExtensible.AttachExtension(name != null ? new TestExtension(name) : null);
+#pragma warning restore CS8634 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'class' constraint.
             testExtensible.DetachExtension<TestExtension>();
         }
     }

@@ -55,6 +55,7 @@ public static class TypeReflection
             typeof(Guid),
             typeof(TimeSpan),
             typeof(Type),
+            typeof(Ulid),
             typeof(Uri)
         ];
     #endregion

@@ -9,10 +9,6 @@ using Evoogle.XUnit;
 
 using FluentAssertions;
 
-using Xunit.Sdk;
-
-[assembly: RegisterXunitSerializer(typeof(XUnitTestSerializer), typeof(XUnitTest), typeof(XUnitTestAsync))]
-
 namespace Evoogle.Cloneable;
 
 [DynamicLinqType]

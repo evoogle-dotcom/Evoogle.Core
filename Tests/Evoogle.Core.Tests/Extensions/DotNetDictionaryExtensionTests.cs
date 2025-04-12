@@ -23,7 +23,7 @@ public class DotNetDictionaryExtensionTests(ITestOutputHelper output) : XUnitTes
         private bool ActualExceptionThrown { get; set; }
         #endregion
 
-        #region XUnitTest Overrides
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine("Expected");

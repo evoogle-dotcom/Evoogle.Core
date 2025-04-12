@@ -14,64 +14,45 @@ public abstract class ExtensibleBase : IExtensible
     /// <summary>
     ///     Gets thread-safe dictionary to store extensions keyed by their type.
     /// </summary>
-    private ConcurrentDictionary<Type, object> Extensions { get; } = new();
+    public ConcurrentDictionary<Type, object> Extensions { get; } = new();
     #endregion
 
     #region IExtensible Methods
-    /// <summary>
-    ///     Attaches an extension to the object.
-    /// </summary>
-    /// <typeparam name="TExtension">The type of the extension.</typeparam>
-    /// <param name="extension">The extension instance to attach.</param>
-    /// <exception cref="ArgumentNullException">Thrown if the extension is null.</exception>
-    public void AttachExtension<TExtension>(TExtension extension)
+    /// <inheritdoc />
+    public void AttachExtension(Type extensionType, object extension)
     {
         ArgumentNullException.ThrowIfNull(extension);
 
         // Add the extension to the dictionary using its type as the key.
-        var key = typeof(TExtension);
-        this.Extensions[key] = extension;
+        this.Extensions[extensionType] = extension;
     }
 
-    /// <summary>
-    ///     Tries to retrieve the attached extension of the specified type.
-    /// </summary>
-    /// <typeparam name="TExtension">The type of the extension to retrieve.</typeparam>
-    /// <param name="extension">When this method returns, contains the attached extension if found; otherwise, null.</param>
-    /// <returns>True if the extension is found; otherwise, false.</returns>
-    public bool TryGetExtension<TExtension>([NotNullWhen(true)] out TExtension? extension)
-        where TExtension : class
+    /// <inheritdoc />
+    public object? DetachExtension(Type extensionType)
     {
-        var key = typeof(TExtension);
-        if (this.Extensions.TryGetValue(key, out var ext))
+        // Remove the extension from the dictionary.
+        var result = this.Extensions.TryRemove(extensionType, out var extension);
+        if (result && extension != null)
+        {
+            return extension;
+        }
+
+        return null;
+    }
+
+    /// <inheritdoc />
+    public bool TryGetExtension(Type extensionType, [NotNullWhen(true)] out object? extension)
+    {
+        if (this.Extensions.TryGetValue(extensionType, out var ext))
         {
             // Set output to extension object found.
-            extension = (TExtension)ext;
+            extension = ext;
             return true;
         }
 
         // If not found, set output to null.
         extension = null;
         return false;
-    }
-
-    /// <summary>
-    ///     Detaches the extension of the specified type.
-    /// </summary>
-    /// <typeparam name="TExtension">The type of the extension to detach.</typeparam>
-    /// <returns>Extension object if the extension is found; otherwise, null.</returns>
-    public TExtension? DetachExtension<TExtension>()
-        where TExtension : class
-    {
-        // Remove the extension from the dictionary.
-        var key = typeof(TExtension);
-        var result = this.Extensions.TryRemove(key, out var extension);
-        if (result && extension != null)
-        {
-            return (TExtension)extension;
-        }
-
-        return null;
     }
     #endregion
 }

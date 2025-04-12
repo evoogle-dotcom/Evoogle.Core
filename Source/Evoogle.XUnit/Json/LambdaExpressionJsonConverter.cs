@@ -165,7 +165,7 @@ public class LambdaExpressionJsonConverter : JsonConverter<LambdaExpression>
     }
     #endregion
 
-    #region JsonConverter Overrides
+    #region JsonConverter Methods
     /// <summary>
     ///     Override of <see cref="JsonConverter{LambdaExpression}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/> method.
     /// </summary>

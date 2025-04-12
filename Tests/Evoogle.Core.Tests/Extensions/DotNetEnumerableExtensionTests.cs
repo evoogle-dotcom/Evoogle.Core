@@ -20,7 +20,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         private IEnumerable<T> Actual { get; set; } = null!;
         #endregion
 
-        #region XUnitTest Overrides
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             var originalJson = this.Original.SafeToJson();
@@ -65,7 +65,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         private bool Actual { get; set; }
         #endregion
 
-        #region XUnitTest Overrides
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             var originalJson = this.Original.SafeToJson();
@@ -106,7 +106,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         private IEnumerable<TTo> Actual { get; set; } = null!;
         #endregion
 
-        #region XUnitTest Overrides
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             var originalJson = this.Original.SafeToJson();
@@ -151,7 +151,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         private T[] Actual { get; set; } = null!;
         #endregion
 
-        #region XUnitTest Overrides
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             var originalJson = this.Original.SafeToJson();
@@ -196,7 +196,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         private IList<T> Actual { get; set; } = null!;
         #endregion
 
-        #region XUnitTest Overrides
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             var originalJson = this.Original.SafeToJson();
@@ -241,7 +241,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         private IReadOnlyCollection<T> Actual { get; set; } = null!;
         #endregion
 
-        #region XUnitTest Overrides
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             var originalJson = this.Original.SafeToJson();
@@ -286,7 +286,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
         private IReadOnlyList<T> Actual { get; set; } = null!;
         #endregion
 
-        #region XUnitTest Overrides
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             var originalJson = this.Original.SafeToJson();

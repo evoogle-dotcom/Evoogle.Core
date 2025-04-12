@@ -28,7 +28,7 @@ public abstract class XUnitTest : XUnitTestBase, IXUnitTest
     }
     #endregion
 
-    #region XUnitTest Overrides
+    #region XUnitTest Methods
     /// <summary>Noop implementation of the arrange step.</summary>
     protected virtual void Arrange()
     {

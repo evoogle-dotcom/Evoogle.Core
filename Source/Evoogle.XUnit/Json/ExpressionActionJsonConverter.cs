@@ -20,7 +20,7 @@ public class ExpressionActionJsonConverter<T> : JsonConverter<Expression<Action<
     private static ParameterExpression[] ParameterExpressions { get; } = [Expression.Parameter(typeof(T), "a")];
     #endregion
 
-    #region JsonConverter Overrides
+    #region JsonConverter Methods
     /// <summary>
     ///     Override of <see cref="JsonConverter{T}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/> method.
     /// </summary>
@@ -67,7 +67,7 @@ public class ExpressionActionJsonConverter<T1, T2> : JsonConverter<Expression<Ac
     private static ParameterExpression[] ParameterExpressions { get; } = [Expression.Parameter(typeof(T1), "a"), Expression.Parameter(typeof(T2), "b")];
     #endregion
 
-    #region JsonConverter Overrides
+    #region JsonConverter Methods
     /// <summary>
     ///     Override of <see cref="JsonConverter{T}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/> method.
     /// </summary>

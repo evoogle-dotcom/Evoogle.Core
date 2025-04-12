@@ -12,7 +12,7 @@
 
 `dotnet new web -n <PROJECT_PATH>`
 
-`dotnet new xunit -n <PROJECT_PATH>`
+`dotnet new xunit3 -n <PROJECT_PATH>`
 
 ## Clean Solutions/Projects ##
 

@@ -1,5 +1,7 @@
 // Copyright (c) 2024 Evoogle.com
 // Licensed under the MIT License. See License.txt in the project root for license information.
+using System.Diagnostics.CodeAnalysis;
+
 namespace Evoogle.Extension;
 
 /// <summary>
@@ -8,6 +10,19 @@ namespace Evoogle.Extension;
 public static class ExtensibleExtensions
 {
     #region Extension Methods
+    /// <summary>
+    ///     Attaches an extension object based on the extension type.
+    /// </summary>
+    /// <typeparam name="TExtension">The type of extension to attach.</typeparam>
+    /// <param name="extension">The extension object to attach.</param>
+    public static void AttachExtension<TExtension>(this IExtensible extensible, TExtension extension)
+        where TExtension : class
+    {
+        var extensionType = typeof(TExtension);
+        extensible.AttachExtension(extensionType, extension);
+
+    }
+
     /// <summary>
     ///     Determines whether the specified extension type is already attached to the extensible object.
     /// </summary>
@@ -36,6 +51,18 @@ public static class ExtensibleExtensions
         // Create a default extension and attach it.
         var extension = new TExtension();
         extensible.AttachExtension(extension);
+    }
+
+    /// <summary>
+    ///     Detaches an extension object based on the extension type.
+    /// </summary>
+    /// <typeparam name="TExtension">The type of extension to detach.</typeparam>
+    /// <returns>Extension object if the extension is detached; otherwise, null.</returns>
+    public static TExtension? DetachExtension<TExtension>(this IExtensible extensible)
+        where TExtension : class
+    {
+        var extensionType = typeof(TExtension);
+        return extensible.DetachExtension(extensionType) as TExtension;
     }
 
     /// <summary>
@@ -80,6 +107,26 @@ public static class ExtensibleExtensions
 
         // Modify new and default extension instance.
         modifyExtensionAction(extension);
+    }
+
+    /// <summary>
+    ///     Tries to retrieve the attached extension object of the specified extension type.
+    /// </summary>
+    /// <typeparam name="TExtension">The type of extension to retrieve.</typeparam>
+    /// <param name="extension">When this method returns, contains the attached extension object if found; otherwise, null.</param>
+    /// <returns>True if the extension is found; otherwise, false.</returns>
+    public static bool TryGetExtension<TExtension>(this IExtensible extensible, [NotNullWhen(true)] out TExtension? extension)
+        where TExtension : class
+    {
+        var extensionType = typeof(TExtension);
+        if (extensible.TryGetExtension(extensionType, out var ext))
+        {
+            extension = (TExtension)ext;
+            return true;
+        }
+
+        extension = null;
+        return false;
     }
     #endregion
 }
