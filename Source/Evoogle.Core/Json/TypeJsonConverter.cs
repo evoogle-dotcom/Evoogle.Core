@@ -8,14 +8,20 @@ using Evoogle.Reflection;
 namespace Evoogle.Json;
 
 /// <summary>
-///     JSON converter for the <see cref="Type"/>> .NET class.
+///     A custom JSON converter for serializing and deserializing .NET <see cref="Type"/> objects.
+///     This converter allows for the conversion of <see cref="Type"/> instances to and from JSON strings, using a compact, fully-qualified type name representation.
 /// </summary>
 public class TypeJsonConverter : JsonConverter<Type>
 {
     #region JsonConverter Methods
     /// <summary>
-    ///     Override of <see cref="JsonConverter{T}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/> method.
+    ///     Deserializes a JSON string into a .NET <see cref="Type"/> object.
     /// </summary>
+    /// <param name="reader">The UTF-8 JSON reader providing the string value.</param>
+    /// <param name="typeToConvert">The type of object to convert to (in this case, <see cref="Type"/>).</param>
+    /// <param name="options">Options for the JSON serializer.</param>
+    /// <returns>The deserialized <see cref="Type"/> object.</returns>
+    /// <exception cref="JsonException">Thrown when the JSON string is null or cannot be resolved to a valid .NET type.</exception>
     public override Type? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var typeName = reader.GetString();
@@ -24,36 +30,46 @@ public class TypeJsonConverter : JsonConverter<Type>
             throw new JsonException("Unable deserialize .NET type because JSON text was null.");
         }
 
-        var type = DeserializeTypeName(typeName);
+        var type = GetDeserializeType(typeName);
         return type;
     }
 
     /// <summary>
-    ///     Override of <see cref="JsonConverter{T}.Write(Utf8JsonWriter, T, JsonSerializerOptions)"/> method.
+    ///     Serializes a .NET <see cref="Type"/> object into a JSON string.
     /// </summary>
+    /// <param name="writer">The UTF-8 JSON writer to output the string.</param>
+    /// <param name="type">The <see cref="Type"/> object to serialize.</param>
+    /// <param name="options">Options for the JSON serializer.</param>
     public override void Write(Utf8JsonWriter writer, Type type, JsonSerializerOptions options)
     {
-        var typeName = SerializeTypeName(type);
+        var typeName = GetSerializeTypeName(type);
         writer.WriteStringValue(typeName);
     }
     #endregion
 
-    #region Implementation Methods
+    #region Utility Methods
     /// <summary>
     ///     Deserializes a string representation of a .NET type into its corresponding <see cref="Type"/> object.
     /// </summary>
     /// <param name="typeName">The string representation of the type, typically a compact qualified name (e.g., "System.String").</param>
     /// <returns>The <see cref="Type"/> object corresponding to the provided <paramref name="typeName"/>.</returns>
     /// <exception cref="JsonException">Thrown when the <paramref name="typeName"/> cannot be resolved to a valid .NET type.</exception>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="typeName"/> is null.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="typeName"/> is null (handled internally by <see cref="Type.GetType"/>).</exception>
     /// <remarks>
     ///     This method uses <see cref="Type.GetType(string, bool)"/> to resolve the type name. The <paramref name="typeName"/>
-    ///     should match the format produced by <see cref="SerializeTypeName(Type)"/> to ensure successful roundtrip conversion.
+    ///     should match the format produced by <see cref="GetSerializeTypeName(Type)"/> to ensure successful roundtrip conversion.
     /// </remarks>    
-    public static Type DeserializeTypeName(string typeName)
+    public static Type GetDeserializeType(string typeName)
     {
-        var type = Type.GetType(typeName, throwOnError: true) ?? throw new JsonException("Unable deserialize .NET type from incoming parameter {{typeName={typeName}}}.");
-        return type;
+        try
+        {
+            var type = Type.GetType(typeName, throwOnError: true) ?? throw new JsonException("Unable deserialize .NET type from incoming parameter {{typeName={typeName}}}.");
+            return type;
+        }
+        catch (Exception exception)
+        {
+            throw new JsonException("Unable deserialize .NET type from incoming parameter {{typeName={typeName}}}.", exception);
+        }
     }
 
     /// <summary>
@@ -63,10 +79,10 @@ public class TypeJsonConverter : JsonConverter<Type>
     /// <returns>A compact qualified name of the <paramref name="type"/> (e.g., "System.String").</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> is null.</exception>
     /// <remarks>
-    ///     This method relies on <see cref="TypeReflection.GetCompactQualifiedName(Type)"/> to produce a compact, 
-    ///     fully-qualified type name that can be deserialized back into the original <see cref="Type"/> using <see cref="DeserializeTypeName(string)"/>.
+    ///     This method relies on <see cref="TypeReflection.GetCompactQualifiedName(Type)"/> to produce a compact,
+    ///     fully-qualified type name that can be deserialized back into the original <see cref="Type"/> using <see cref="GetDeserializeType(string)"/>.
     /// </remarks>
-    public static string SerializeTypeName(Type type)
+    public static string GetSerializeTypeName(Type type)
     {
         var typeCompactQualilfiedName = TypeReflection.GetCompactQualifiedName(type);
         return typeCompactQualilfiedName;
