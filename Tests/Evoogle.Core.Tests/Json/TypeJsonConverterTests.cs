@@ -16,19 +16,20 @@ public class TypeJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
     #region Test Classes
     public class JsonDeserializeTest : XUnitTest
     {
-        #region Calculated Properties
-        public Type? ActualType { get; set; }
-        public string? ActualException { get; set; }
-
-        private static JsonSerializerOptions Options { get; } = new JsonSerializerOptions { Converters = { new TypeJsonConverter() } };
-        #endregion
-
         #region User Supplied Properties
         public string? SourceJson { get; set; }
         public Type? ExpectedType { get; set; }
         public string? ExpectedException { get; set; }
         #endregion
 
+        #region Calculated Properties
+        private Type? ActualType { get; set; }
+        private string? ActualException { get; set; }
+
+        private static JsonSerializerOptions Options { get; } = new JsonSerializerOptions { Converters = { new TypeJsonConverter() } };
+        #endregion
+
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Source        JSON: {this.SourceJson.SafeToString()}");
@@ -77,20 +78,22 @@ public class TypeJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
                 this.ActualException.Should().Be(this.ExpectedException);
             }
         }
+        #endregion
     }
 
     public class JsonSerializeTest : XUnitTest
     {
-        #region Calculated Properties
-        public string? ActualJson { get; set; }
-        private static JsonSerializerOptions Options { get; } = new JsonSerializerOptions { Converters = { new TypeJsonConverter() } };
-        #endregion
-
         #region User Supplied Properties
         public Type? SourceType { get; set; }
         public string? ExpectedJson { get; set; }
         #endregion
 
+        #region Calculated Properties
+        private string? ActualJson { get; set; }
+        private static JsonSerializerOptions Options { get; } = new JsonSerializerOptions { Converters = { new TypeJsonConverter() } };
+        #endregion
+
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Source    Type: {this.SourceType.SafeToString()}");
@@ -110,6 +113,7 @@ public class TypeJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
 
             actualJsonMinusWhitespace.Should().Be(expectedJsonMinusWhitespace);
         }
+        #endregion
     }
     #endregion
 

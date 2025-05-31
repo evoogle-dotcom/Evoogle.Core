@@ -48,7 +48,7 @@ public class DeepCopyTests(ITestOutputHelper output) : XUnitTests(output)
         }
         #endregion
 
-        #region Methods
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             var expectedSafeDeepCopyAccessorLambda = this.ExpectedSafeDeepCopyAccessorExpression?.Compile();

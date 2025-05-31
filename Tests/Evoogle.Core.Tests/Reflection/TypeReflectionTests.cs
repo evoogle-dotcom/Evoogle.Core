@@ -25,6 +25,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         public Type? ActualBaseType { get; set; }
         public string ActualBaseTypeName { get; set; } = null!;
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Type = {this.Type.Name}");
@@ -46,6 +47,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         {
             this.ActualBaseTypeName.Should().Be(this.ExpectedBaseTypeName);
         }
+        #endregion
     }
 
     public class GetBaseTypesTest : XUnitTest
@@ -58,6 +60,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         public IEnumerable<Type> ActualBaseTypes { get; set; } = null!;
         public string ActualBaseTypeNames { get; set; } = null!;
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Type = {this.Type.Name}");
@@ -79,6 +82,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         {
             this.ActualBaseTypeNames.Should().Be(this.ExpectedBaseTypeNames);
         }
+        #endregion        
     }
 
     public class GetConstructorTest : XUnitTest
@@ -90,6 +94,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         public bool ActualConstructorFound { get; set; }
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             var parameterTypes = this.ParameterTypes.EmptyIfNull().Select(x => x.Name).SafeToDelimitedString(',');
@@ -113,6 +118,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         {
             this.ActualConstructorFound.Should().Be(this.ExpectedConstructorFound);
         }
+        #endregion
     }
 
     public class GetConstructorsTest : XUnitTest
@@ -123,6 +129,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         public long ActualConstructorCount { get; set; }
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Type          = {this.Type.Name}");
@@ -143,6 +150,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         {
             this.ActualConstructorCount.Should().Be(this.ExpectedConstructorCount);
         }
+        #endregion
     }
 
     public class GetFieldTest : XUnitTest
@@ -154,6 +162,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         public string? ActualFieldName { get; set; }
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Type          = {this.Type.Name}");
@@ -181,6 +190,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
             this.ActualFieldName.Should().Be(this.ExpectedFieldName);
         }
+        #endregion
     }
 
     public class GetFieldsTest : XUnitTest
@@ -191,6 +201,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         public IEnumerable<string> ActualFieldNames { get; set; } = null!;
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Type          = {this.Type.Name}");
@@ -209,6 +220,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         {
             this.ActualFieldNames.Order().Should().BeEquivalentTo(this.ExpectedFieldNames.Order());
         }
+        #endregion
     }
 
     public class GetMethodTest : XUnitTest
@@ -221,6 +233,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         public string? ActualMethodName { get; set; }
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             var parameterTypes = this.ParameterTypes.EmptyIfNull().Select(x => x.Name).SafeToDelimitedString(',');
@@ -251,6 +264,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
             this.ActualMethodName.Should().Be(this.ExpectedMethodName);
         }
+        #endregion
     }
 
     public class GetMethodsTest : XUnitTest
@@ -261,6 +275,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         public IEnumerable<string> ActualMethodNames { get; set; } = null!;
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Type          = {this.Type.Name}");
@@ -281,6 +296,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             // So assert actual at least contains all of expected but may have more.
             this.ActualMethodNames.Order().Should().Contain(this.ExpectedMethodNames.Order());
         }
+        #endregion
     }
 
     public class GetPropertyTest : XUnitTest
@@ -292,6 +308,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         public string? ActualPropertyName { get; set; }
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Type          = {this.Type.Name}");
@@ -319,6 +336,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
             this.ActualPropertyName.Should().Be(this.ExpectedPropertyName);
         }
+        #endregion
     }
 
     public class GetPropertiesTest : XUnitTest
@@ -329,6 +347,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         public IEnumerable<string> ActualPropertyNames { get; set; } = null!;
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Type          = {this.Type.Name}");
@@ -347,6 +366,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         {
             this.ActualPropertyNames.Order().Should().BeEquivalentTo(this.ExpectedPropertyNames.Order());
         }
+        #endregion
     }
 
     public class IsComplexTest : XUnitTest
@@ -356,6 +376,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         public bool Actual { get; set; }
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Type = {this.Type.Name}");
@@ -374,6 +395,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         {
             this.Actual.Should().Be(this.Expected);
         }
+        #endregion
     }
 
     public class IsEnumerableOfTTest : XUnitTest
@@ -383,6 +405,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         public bool Actual { get; set; }
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Type = {this.Type.Name}");
@@ -401,6 +424,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         {
             this.Actual.Should().Be(this.Expected);
         }
+        #endregion
     }
 
     public class IsImplementationOfTest : XUnitTest
@@ -411,6 +435,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         public bool Actual { get; set; }
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Derived Type = {this.DerivedType.Name}");
@@ -430,6 +455,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         {
             this.Actual.Should().Be(this.Expected);
         }
+        #endregion
     }
 
     public class IsSimpleTest : XUnitTest
@@ -439,6 +465,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         public bool Actual { get; set; }
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Type = {this.Type.Name}");
@@ -457,6 +484,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         {
             this.Actual.Should().Be(this.Expected);
         }
+        #endregion
     }
 
     public class IsSubclassOrImplementationOfTest : XUnitTest
@@ -467,6 +495,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         public bool Actual { get; set; }
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Derived Type = {this.DerivedType.Name}");
@@ -486,6 +515,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         {
             this.Actual.Should().Be(this.Expected);
         }
+        #endregion
     }
     #endregion
 

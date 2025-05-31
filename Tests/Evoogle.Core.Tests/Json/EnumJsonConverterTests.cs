@@ -17,19 +17,20 @@ public class EnumJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
     public class JsonDeserializeTest<TEnum> : XUnitTest
         where TEnum : struct, Enum
     {
-        #region Calculated Properties
-        public TEnum? ActualEnum { get; set; }
-        public string? ActualException { get; set; }
-
-        private static JsonSerializerOptions Options { get; } = new JsonSerializerOptions { Converters = { new EnumJsonConverter<TEnum>() } };
-        #endregion
-
         #region User Supplied Properties
         public string? SourceJson { get; set; }
         public TEnum? ExpectedEnum { get; set; }
         public string? ExpectedException { get; set; }
         #endregion
 
+        #region Calculated Properties
+        private TEnum? ActualEnum { get; set; }
+        private string? ActualException { get; set; }
+
+        private static JsonSerializerOptions Options { get; } = new JsonSerializerOptions { Converters = { new EnumJsonConverter<TEnum>() } };
+        #endregion
+
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Source        JSON: {this.SourceJson.SafeToString()}");
@@ -78,21 +79,23 @@ public class EnumJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
                 this.ActualException.Should().Be(this.ExpectedException);
             }
         }
+        #endregion
     }
 
     public class JsonSerializeTest<TEnum> : XUnitTest
         where TEnum : struct, Enum
     {
-        #region Calculated Properties
-        public string? ActualJson { get; set; }
-        private static JsonSerializerOptions Options { get; } = new JsonSerializerOptions { Converters = { new EnumJsonConverter<TEnum>() } };
-        #endregion
-
         #region User Supplied Properties
         public TEnum? SourceEnum { get; set; }
         public string? ExpectedJson { get; set; }
         #endregion
 
+        #region Calculated Properties
+        private string? ActualJson { get; set; }
+        private static JsonSerializerOptions Options { get; } = new JsonSerializerOptions { Converters = { new EnumJsonConverter<TEnum>() } };
+        #endregion
+
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Source    Enum: {this.SourceEnum.SafeToString()}");
@@ -112,6 +115,7 @@ public class EnumJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
 
             actualJsonMinusWhitespace.Should().Be(expectedJsonMinusWhitespace);
         }
+        #endregion
     }
     #endregion
 

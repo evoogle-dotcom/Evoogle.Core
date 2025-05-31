@@ -20,6 +20,7 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         private bool Actual { get; set; }
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Type     = {this.Type.Name}");
@@ -40,6 +41,7 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
         {
             this.Actual.Should().Be(this.Expected);
         }
+        #endregion
     }
     #endregion
 

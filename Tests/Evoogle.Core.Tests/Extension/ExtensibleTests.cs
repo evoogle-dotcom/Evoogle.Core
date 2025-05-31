@@ -48,13 +48,6 @@ public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class ExtensibleMutateTest : XUnitTest
     {
-        #region Calculated Properties
-        private bool ActualResult { get; set; }
-        private bool ActualArgumentNullExceptionThrown { get; set; }
-
-        private TestExtension? ActualExtension { get; set; }
-        #endregion
-
         #region User Supplied Properties
         [JsonConverter(typeof(ExpressionFuncJsonConverter<TestExtensible>))]
         public Expression<Func<TestExtensible>> ExtensibleFactoryExpression { get; set; } = null!;
@@ -66,6 +59,13 @@ public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
         public bool ExpectedArgumentNullExceptionThrown { get; set; }
 
         public TestExtension? ExpectedExtension { get; set; }
+        #endregion
+
+        #region Calculated Properties
+        private bool ActualResult { get; set; }
+        private bool ActualArgumentNullExceptionThrown { get; set; }
+
+        private TestExtension? ActualExtension { get; set; }
         #endregion
 
         #region XUnitTest Methods

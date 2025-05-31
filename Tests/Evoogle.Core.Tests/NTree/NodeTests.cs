@@ -18,10 +18,6 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
     #region Test Classes
     public class TreeMutateWithParentTest : XUnitTest
     {
-        #region Calculated Properties
-        private string ActualAfterTraversal { get; set; } = null!;
-        #endregion
-
         #region User Supplied Properties
         [JsonConverter(typeof(ExpressionFuncJsonConverter<TestNode>))]
         public Expression<Func<TestNode>> TreeFactoryExpression { get; set; } = null!;
@@ -33,7 +29,11 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         public string ExpectedAfterTraversal { get; set; } = null!;
         #endregion
 
-        #region Methods
+        #region Calculated Properties
+        private string ActualAfterTraversal { get; set; } = null!;
+        #endregion
+
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             var expectedBeforeTraversalString = this.ExpectedBeforeTraversal.SafeToString();
@@ -84,10 +84,6 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class TreeMutateWithParentAndChildTest : XUnitTest
     {
-        #region Calculated Properties
-        private string ActualAfterTraversal { get; set; } = null!;
-        #endregion
-
         #region User Supplied Properties
         [JsonConverter(typeof(ExpressionFuncJsonConverter<TestNode>))]
         public Expression<Func<TestNode>> TreeFactoryExpression { get; set; } = null!;
@@ -98,11 +94,15 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         [JsonConverter(typeof(ExpressionActionJsonConverter<TestNode, TestNode>))]
         public Expression<Action<TestNode, TestNode>> TreeMutateExpression { get; set; } = null!;
 
+        #region Calculated Properties
+        private string ActualAfterTraversal { get; set; } = null!;
+        #endregion
+
         public string ExpectedBeforeTraversal { get; set; } = null!;
         public string ExpectedAfterTraversal { get; set; } = null!;
         #endregion
 
-        #region Methods
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             var expectedBeforeTraversalString = this.ExpectedBeforeTraversal.SafeToString();
@@ -157,10 +157,6 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class TraversalTest : XUnitTest
     {
-        #region Calculated Properties
-        private string ActualTraversal { get; set; } = null!;
-        #endregion
-
         #region User Supplied Properties
         [JsonConverter(typeof(ExpressionFuncJsonConverter<TestNode>))]
         public Expression<Func<TestNode>> TreeFactoryExpression { get; set; } = null!;
@@ -171,7 +167,11 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         public string ExpectedTraversal { get; set; } = null!;
         #endregion
 
-        #region Methods
+        #region Calculated Properties
+        private string ActualTraversal { get; set; } = null!;
+        #endregion
+
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             var expectedTraversalString = this.ExpectedTraversal.SafeToString();

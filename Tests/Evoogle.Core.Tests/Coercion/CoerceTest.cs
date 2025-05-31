@@ -48,13 +48,6 @@ public class CoerceTest : XUnitTest
 
 public abstract class CoerceTest<TInput, TOutput> : CoerceTest
 {
-    #region Calculated Properties
-    private ITypeCoercion TypeCoercion { get; set; } = null!;
-    private TypeCoercionContext TypeCoercionContext { get; set; } = null!;
-    private bool ActualResult { get; set; }
-    private TOutput? ActualOutput { get; set; }
-    #endregion
-
     #region User Supplied Properties
     public TInput? Input { get; set; }
 
@@ -64,6 +57,13 @@ public abstract class CoerceTest<TInput, TOutput> : CoerceTest
     public bool ExpectedResult { get; set; }
 
     public TOutput? ExpectedOutput { get; set; }
+    #endregion
+
+    #region Calculated Properties
+    private ITypeCoercion TypeCoercion { get; set; } = null!;
+    private TypeCoercionContext TypeCoercionContext { get; set; } = null!;
+    private bool ActualResult { get; set; }
+    private TOutput? ActualOutput { get; set; }
     #endregion
 
     #region XUnitTest Methods

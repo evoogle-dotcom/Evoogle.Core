@@ -21,6 +21,7 @@ public class StaticReflectionTests(ITestOutputHelper output) : XUnitTests(output
         public static Widget Instance { get; } = new Widget();
         #endregion
 
+        #region XUnitTest Methods
         protected override void Arrange()
         {
             this.WriteLine($"Expected = {this.Expected.SafeToString()}");
@@ -31,6 +32,7 @@ public class StaticReflectionTests(ITestOutputHelper output) : XUnitTests(output
         {
             this.Actual.Should().Be(this.Expected);
         }
+        #endregion
     }
     #endregion
 
