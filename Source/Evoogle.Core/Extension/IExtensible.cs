@@ -12,6 +12,13 @@ namespace Evoogle.Extension;
 /// </summary>
 public interface IExtensible
 {
+    #region Properties
+    /// <summary>
+    ///     Gets the extension count for the extensible object.
+    /// </summary>
+    long ExtensionCount { get; }
+    #endregion
+
     #region Methods
     /// <summary>
     ///     Attaches an extension object based on the extension type.

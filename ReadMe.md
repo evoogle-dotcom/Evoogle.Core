@@ -12,12 +12,12 @@ This repository hosts the **Evoogle** projects, maintained by [Evoogle](https://
 **Evoogle.Core** is a foundational library offering C# extensions and core components. It includes:
 
 * **Cloneable**: A deep cloning framework with the following built-in implementation:
-
   * JSON-based cloning via serialization/deserialization of the source object.
 * **Coercion**: A library for implicit type coercion.
 * **Extension**: A dynamic extension framework.
 * **Extensions**: A set of helpful extension methods for core .NET types.
 * **Json**: A utility library and set of extensions that simplify working with the `System.Text.Json` library.
+* **Logging**: A flexible and extensible logging utility that enables developers to log messages to multiple destinations simultaneously, making it ideal for both runtime applications and diagnostics during development or testing.
 * **NTree**: An N-ary tree data structure implementation.
 * **Reflection**: Utility classes to streamline working with .NET reflection APIs.
 

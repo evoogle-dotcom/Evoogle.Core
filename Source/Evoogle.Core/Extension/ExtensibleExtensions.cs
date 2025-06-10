@@ -23,7 +23,6 @@ public static class ExtensibleExtensions
     {
         var extensionType = typeof(TExtension);
         extensible.AttachExtension(extensionType, extension);
-
     }
 
     /// <summary>
@@ -31,7 +30,7 @@ public static class ExtensibleExtensions
     /// </summary>
     /// <typeparam name="TExtension">The type of the extension to check.</typeparam>
     /// <param name="extensible">The extensible object.</param>
-    /// <returns>True if the extension is attached; otherwise, false.</returns>    
+    /// <returns>True if the extension is attached; otherwise, false.</returns>
     public static bool ContainsExtension<TExtension>(this IExtensible extensible)
         where TExtension : class
     {
