@@ -22,6 +22,8 @@ public abstract class XUnitTests(ITestOutputHelper output)
 
     private const string SingleDashedLine =
         "-----------------------------------------------------------------------------";
+
+    private static readonly bool _suppressOutput = Environment.GetEnvironmentVariable("XUNIT_SUPPRESS_OUTPUT") == "1";
     #endregion
 
     #region Properties
@@ -31,21 +33,49 @@ public abstract class XUnitTests(ITestOutputHelper output)
     #region Write Methods
     internal void WriteLine()
     {
+        // If the output is suppressed, do not write anything.
+        // This is useful for CI environments where output can be noisy.
+        if (_suppressOutput)
+        {
+            return;
+        }
+
         this.Output.WriteLine(string.Empty);
     }
 
     internal void WriteLine(string message)
     {
+        // If the output is suppressed, do not write anything.
+        // This is useful for CI environments where output can be noisy.
+        if (_suppressOutput)
+        {
+            return;
+        }
+
         this.Output.WriteLine(message);
     }
 
     internal void WriteDashedLine()
     {
+        // If the output is suppressed, do not write anything.
+        // This is useful for CI environments where output can be noisy.
+        if (_suppressOutput)
+        {
+            return;
+        }
+
         this.Output.WriteLine(SingleDashedLine);
     }
 
     internal void WriteDoubleDashedLine()
     {
+        // If the output is suppressed, do not write anything.
+        // This is useful for CI environments where output can be noisy.
+        if (_suppressOutput)
+        {
+            return;
+        }
+
         this.Output.WriteLine(DoubleDashedLine);
     }
     #endregion
