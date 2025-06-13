@@ -20,8 +20,9 @@ public abstract class XUnitTestAsync : XUnitTestBase, IXUnitTestAsync
     {
         this.Parent = parent;
 
-        this.WriteLine($"Test Name: {this.Name}");
         this.WriteDashedLine();
+        this.WriteLine($"Test Name: {this.Name}");
+        this.WriteLine();
 
         await this.ArrangeAsync();
         await this.ActAsync();

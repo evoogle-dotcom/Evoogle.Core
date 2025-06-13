@@ -11,14 +11,14 @@ namespace Evoogle.Logging;
 
 /// <summary>
 ///     A flexible implementation of <see cref="ILogger{T}"/> that can forward log messages to multiple outputs depending on configuration.
-/// 
+///
 ///     <para>This logger supports:</para>
 ///     <list type="bullet">
 ///         <item><description><see cref="ILogger{T}"/> forwarding, if injected</description></item>
 ///         <item><description><see cref="Debug.WriteLine(string)"/> when debugging</description></item>
 ///         <item><description><see cref="Console.WriteLine(string)"/> for command-line diagnostics or visibility</description></item>
 ///     </list>
-/// 
+///
 ///     <para>
 ///         Configure the desired behavior via <see cref="MultiplexingLoggerMode"/>.
 ///     </para>
@@ -83,7 +83,9 @@ public sealed class MultiplexingLogger<T> : ILogger<T>
         Func<TState, Exception?, string> formatter)
     {
         if (!IsEnabled(logLevel))
+        {
             return;
+        }
 
         var message = formatter(state, exception);
         var levelName = logLevel.ToString().ToUpperInvariant().PadRight(7); // e.g. "WARNING"
