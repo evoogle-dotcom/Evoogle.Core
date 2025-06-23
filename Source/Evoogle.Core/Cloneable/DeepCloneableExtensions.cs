@@ -58,11 +58,7 @@ public static class DeepCloneableExtensions
     public static T? SafeDeepCopy<T>(this T? source)
         where T : IDeepCloneable
     {
-        var clone = source?.DeepClone();
-        if (clone == null)
-            return default;
-
-        return (T)clone;
+        return source is null ? default : (T?)source.DeepClone();
     }
 
     /// <summary>
@@ -72,28 +68,14 @@ public static class DeepCloneableExtensions
     /// <param name="sourceCollection">Source collection to create a deep copy of.</param>
     /// <returns>Collection of deep copy objects of the source collection.</returns>
     /// <returns>Null if the source collection is null, otherwise a deep copy collection of the source collection.</returns>
-    public static IEnumerable<T?> SafeDeepCopyRange<T>(this IEnumerable<T?> sourceCollection)
+    public static IEnumerable<T?> SafeDeepCopyRange<T>(this IEnumerable<T?>? sourceCollection)
         where T : IDeepCloneable
     {
-        if (sourceCollection != null)
-        {
-            foreach (var source in sourceCollection)
-            {
-                // Check for possible item null reference.
-                if (source != null)
-                {
-                    yield return source.DeepCopy();
-                }
-                else
-                {
-                    yield return default;
-                }
-            }
-        }
-        else
-        {
-            yield return default;
-        }
+        if (sourceCollection == null)
+            yield break;
+
+        foreach (var source in sourceCollection)
+            yield return source.SafeDeepCopy();
     }
     #endregion
 }

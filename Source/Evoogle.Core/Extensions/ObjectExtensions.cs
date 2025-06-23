@@ -22,14 +22,15 @@ public static class ObjectExtensions
     #region Properties
     private static JsonSerializerOptions DefaultDeepCopyWithJsonOptions { get; } = new()
     {
-        WriteIndented = false,
-        DefaultIgnoreCondition = JsonIgnoreCondition.Never
+        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+        ReferenceHandler = ReferenceHandler.Preserve,
+        WriteIndented = false
     };
 
     private static JsonSerializerOptions DefaultToJsonOptions { get; } = new()
     {
-        WriteIndented = false,
-        DefaultIgnoreCondition = JsonIgnoreCondition.Never
+        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+        WriteIndented = true,
     };
     #endregion
 

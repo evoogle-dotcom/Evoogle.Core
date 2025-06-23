@@ -12,7 +12,7 @@ namespace Evoogle.Coercion;
 /// <summary>
 ///     Type coercion runtime context when converting from one type to another type.
 /// </summary>
-public class TypeCoercionContext : DeepCloneable<TypeCoercionContext>
+public class TypeCoercionContext : DeepCloneable
 {
     #region Fields
     /// <summary>
@@ -53,7 +53,7 @@ public class TypeCoercionContext : DeepCloneable<TypeCoercionContext>
     ///     Retrieves the format string associated with the specified type.
     /// </summary>
     /// <param name="type">The CLR type for which to retrieve the format string.</param>
-    /// <returns>The format string if found, otherwise <c>null</c>.</returns>    
+    /// <returns>The format string if found, otherwise <c>null</c>.</returns>
     public string? GetFormat(Type type)
     {
         return this.FormatMapping.TryGetValue(type, out var format) ? format : null;
