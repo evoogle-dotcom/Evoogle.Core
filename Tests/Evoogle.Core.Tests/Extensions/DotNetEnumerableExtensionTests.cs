@@ -7,7 +7,7 @@ using Evoogle.XUnit;
 
 using FluentAssertions;
 
-namespace Evoogle;
+namespace Evoogle.Extensions;
 
 public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTests(output)
 {

@@ -4,7 +4,7 @@
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
 using System.Text.Json;
-
+using Evoogle.Extensions;
 using Evoogle.XUnit;
 
 using FluentAssertions;
@@ -32,11 +32,12 @@ public class TypeJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
         #region XUnitTest Methods
         protected override void Arrange()
         {
-            this.WriteLine($"Source        JSON: {this.SourceJson.SafeToString()}");
+            this.WriteLine($"Source JSON: {this.SourceJson.SafeToString()}");
+            this.WriteLine();
 
             if (this.ExpectedType != null)
             {
-                this.WriteLine($"Expected      Type: {this.ExpectedType.SafeToString()}");
+                this.WriteLine($"Expected      Type: {this.ExpectedType.SafeToName()}");
             }
 
             if (this.ExpectedException != null)
@@ -50,7 +51,7 @@ public class TypeJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
             try
             {
                 this.ActualType = JsonSerializer.Deserialize<Type?>(this.SourceJson!, Options);
-                this.WriteLine($"Actual        Type: {this.ActualType.SafeToString()}");
+                this.WriteLine($"Actual        Type: {this.ActualType.SafeToName()}");
             }
             catch (Exception exception)
             {
@@ -96,14 +97,16 @@ public class TypeJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
         #region XUnitTest Methods
         protected override void Arrange()
         {
-            this.WriteLine($"Source    Type: {this.SourceType.SafeToString()}");
-            this.WriteLine($"Expected  JSON: {this.ExpectedJson.SafeToString()}");
+            this.WriteLine($"Source Type: {this.SourceType.SafeToName()}");
+            this.WriteLine();
+
+            this.WriteLine($"Expected JSON: {this.ExpectedJson.SafeToString()}");
         }
 
         protected override void Act()
         {
             this.ActualJson = JsonSerializer.Serialize(this.SourceType, Options);
-            this.WriteLine($"Actual    JSON: {this.ActualJson.SafeToString()}");
+            this.WriteLine($"Actual   JSON: {this.ActualJson.SafeToString()}");
         }
 
         protected override void Assert()

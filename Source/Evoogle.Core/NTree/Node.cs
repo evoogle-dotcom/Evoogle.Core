@@ -3,6 +3,8 @@
 //
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
+using Evoogle.Extensions;
+
 namespace Evoogle.NTree;
 
 /// <summary>
@@ -161,7 +163,7 @@ public abstract class Node<TNode> : INode<TNode>
         child.NextSibling = null;
         child.PreviousSibling = null;
         child.Parent = null; // Remove the parent link
-        child.Root = child; // Reset the root link to itself        
+        child.Root = child; // Reset the root link to itself
     }
 
     /// <summary>

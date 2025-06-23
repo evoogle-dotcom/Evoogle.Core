@@ -5,13 +5,18 @@
 // See the LICENSE file in the project root for more information.
 using System.Collections;
 
-namespace Evoogle;
+namespace Evoogle.Extensions;
 
 /// <summary>
 ///     Extension methods for the .NET <see cref="IEnumerable"/>  and <see cref="IEnumerable{T}"/> interfaces.
 /// </summary>
 public static class EnumerableExtensions
 {
+    #region Fields
+    private const string DefaultNullText = "<null>";
+    private const string DefaultEmptyText = "<empty>";
+    #endregion
+
     #region Extension Methods
     /// <summary>
     ///     Check if enumerable has the same value throughout and if so return the value.
@@ -102,17 +107,171 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    ///     Returns underlying collection if enumerable is an actual collection, otherwise a collection is created from the enumerable.
-    ///     If null, returns an empty collection of the specified type.
+    ///     Joins all the elements in the enumerable into a single string using the specified character delimiter,
+    ///     with optional null and empty text substitution and optional custom formatting.
     /// </summary>
-    /// <typeparam name="T">Type of objects contained in the enumerable object.</typeparam>
-    /// <param name="enumerable">Enumerable object to call extension method on.</param>
-    /// <returns>Underlying collection if enumerable is an actual collection, otherwise a collection is created from the enumerable or an empty collection if null.</returns>
-    public static ICollection<T> SafeToCollection<T>(this IEnumerable<T>? enumerable)
+    /// <typeparam name="T">The type of elements in the enumerable.</typeparam>
+    /// <param name="enumerable">
+    ///     The enumerable to join. If null, <paramref name="nullText"/> will be returned. If empty, <paramref name="emptyText"/> will be returned.
+    /// </param>
+    /// <param name="delimiter">The character to use as a delimiter between elements in the resulting string.</param>
+    /// <param name="nullText">
+    ///     Optional text to use if the enumerable is null. Defaults to "&lt;null&gt;".
+    /// </param>
+    /// <param name="emptyText">
+    ///     Optional text to use if the enumerable is empty. Defaults to "&lt;empty&gt;".
+    /// </param>
+    /// <param name="formatter">
+    ///     Optional formatter function to convert each element to a string. If not provided, <c>ToString()</c> will be used.
+    /// </param>
+    /// <returns>
+    ///     A delimited string of formatted elements, or <paramref name="nullText"/>/<paramref name="emptyText"/> as appropriate.
+    /// </returns>
+    public static string SafeToDelimitedString<T>(
+        this IEnumerable<T>? enumerable,
+        char delimiter,
+        string? nullText = DefaultNullText,
+        string? emptyText = DefaultEmptyText,
+        Func<T?, string>? formatter = null)
     {
-        enumerable ??= Enumerable.Empty<T>();
-        var collection = enumerable as ICollection<T> ?? enumerable.ToList();
-        return collection;
+        return SafeToDelimitedStringCore
+        (
+            enumerable,
+            delimiter,
+            nullText,
+            emptyText,
+            formatter,
+            string.Join
+        );
+    }
+
+    /// <summary>
+    ///     Joins all the elements in the enumerable into a single string using the specified string delimiter,
+    ///     with optional null and empty text substitution and optional custom formatting.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the enumerable.</typeparam>
+    /// <param name="enumerable">
+    ///     The enumerable to join. If null, <paramref name="nullText"/> will be returned. If empty, <paramref name="emptyText"/> will be returned.
+    /// </param>
+    /// <param name="delimiter">The string to use as a delimiter between elements in the resulting string.</param>
+    /// <param name="nullText">
+    ///     Optional text to use if the enumerable is null. Defaults to "&lt;null&gt;".
+    /// </param>
+    /// <param name="emptyText">
+    ///     Optional text to use if the enumerable is empty. Defaults to "&lt;empty&gt;".
+    /// </param>
+    /// <param name="formatter">
+    ///     Optional formatter function to convert each element to a string. If not provided, <c>ToString()</c> will be used.
+    /// </param>
+    /// <returns>
+    ///     A delimited string of formatted elements, or <paramref name="nullText"/>/<paramref name="emptyText"/> as appropriate.
+    /// </returns>
+    public static string SafeToDelimitedString<T>(
+        this IEnumerable<T>? enumerable,
+        string delimiter,
+        string? nullText = DefaultNullText,
+        string? emptyText = DefaultEmptyText,
+        Func<T?, string>? formatter = null)
+    {
+        return SafeToDelimitedStringCore
+        (
+            enumerable,
+            delimiter,
+            nullText,
+            emptyText,
+            formatter,
+            string.Join
+        );
+    }
+
+    /// <summary>
+    ///     Joins all key/value pairs in the enumerable into a single string using the specified character delimiter,
+    ///     with optional formatting and substitution text for nulls and empties.
+    /// </summary>
+    /// <typeparam name="TKey">The type of keys in the dictionary.</typeparam>
+    /// <typeparam name="TValue">The type of values in the dictionary.</typeparam>
+    /// <param name="enumerable">
+    ///     The enumerable of key/value pairs to join. If null, <paramref name="nullText"/> is returned. If empty, <paramref name="emptyText"/> is returned.
+    /// </param>
+    /// <param name="delimiter">The character used to delimit each key=value pair in the output.</param>
+    /// <param name="nullText">
+    ///     Optional text to return if the enumerable is null. Defaults to "&lt;null&gt;".
+    /// </param>
+    /// <param name="emptyText">
+    ///     Optional text to return if the enumerable is empty. Defaults to "&lt;empty&gt;".
+    /// </param>
+    /// <param name="keyFormatter">
+    ///     Optional formatter function to convert each key to a string. If not provided, <c>ToString()</c> is used.
+    /// </param>
+    /// <param name="valueFormatter">
+    ///     Optional formatter function to convert each value to a string. If not provided, <c>ToString()</c> is used.
+    /// </param>
+    /// <returns>
+    ///     A delimited string of key=value formatted pairs, or <paramref name="nullText"/>/<paramref name="emptyText"/> if applicable.
+    /// </returns>
+    public static string SafeToDelimitedString<TKey, TValue>(
+        this IEnumerable<KeyValuePair<TKey, TValue>>? enumerable,
+        char delimiter,
+        string? nullText = DefaultNullText,
+        string? emptyText = DefaultEmptyText,
+        Func<TKey?, string?>? keyFormatter = null,
+        Func<TValue?, string?>? valueFormatter = null)
+    {
+        return SafeToDelimitedStringCore
+        (
+            enumerable,
+            delimiter,
+            nullText,
+            emptyText,
+            keyFormatter,
+            valueFormatter,
+            string.Join
+        );
+    }
+
+    /// <summary>
+    ///     Joins all key/value pairs in the enumerable into a single string using the specified string delimiter,
+    ///     with optional formatting and substitution text for nulls and empties.
+    /// </summary>
+    /// <typeparam name="TKey">The type of keys in the dictionary.</typeparam>
+    /// <typeparam name="TValue">The type of values in the dictionary.</typeparam>
+    /// <param name="enumerable">
+    ///     The enumerable of key/value pairs to join. If null, <paramref name="nullText"/> is returned. If empty, <paramref name="emptyText"/> is returned.
+    /// </param>
+    /// <param name="delimiter">The string used to delimit each key=value pair in the output.</param>
+    /// <param name="nullText">
+    ///     Optional text to return if the enumerable is null. Defaults to "&lt;null&gt;".
+    /// </param>
+    /// <param name="emptyText">
+    ///     Optional text to return if the enumerable is empty. Defaults to "&lt;empty&gt;".
+    /// </param>
+    /// <param name="keyFormatter">
+    ///     Optional formatter function to convert each key to a string. If not provided, <c>ToString()</c> is used.
+    /// </param>
+    /// <param name="valueFormatter">
+    ///     Optional formatter function to convert each value to a string. If not provided, <c>ToString()</c> is used.
+    /// </param>
+    /// <returns>
+    ///     A delimited string of key=value formatted pairs, or <paramref name="nullText"/>/<paramref name="emptyText"/> if applicable.
+    /// </returns>
+    public static string SafeToDelimitedString<TKey, TValue>(
+        this IEnumerable<KeyValuePair<TKey, TValue>>? enumerable,
+        string delimiter,
+        string? nullText = DefaultNullText,
+        string? emptyText = DefaultEmptyText,
+        Func<TKey?, string?>? keyFormatter = null,
+        Func<TValue?, string?>? valueFormatter = null)
+    {
+        return SafeToDelimitedStringCore
+        (
+            enumerable,
+            delimiter,
+            nullText,
+            emptyText,
+            keyFormatter,
+            valueFormatter,
+            string.Join
+        );
     }
 
     /// <summary>
@@ -122,10 +281,10 @@ public static class EnumerableExtensions
     /// <typeparam name="T">Type of objects contained in the enumerable object.</typeparam>
     /// <param name="enumerable">Enumerable object to call extension method on.</param>
     /// <returns>Underlying list if enumerable is an actual list, otherwise a list is created from the enumerable or an empty list if null.</returns>
-    public static IList<T> SafeToList<T>(this IEnumerable<T>? enumerable)
+    public static List<T> SafeToList<T>(this IEnumerable<T>? enumerable)
     {
         enumerable ??= Enumerable.Empty<T>();
-        var list = enumerable as IList<T> ?? enumerable.ToList();
+        var list = enumerable as List<T> ?? enumerable.ToList();
         return list;
     }
 
@@ -156,161 +315,82 @@ public static class EnumerableExtensions
         var readOnlyList = enumerable as IReadOnlyList<T> ?? enumerable.ToList();
         return readOnlyList;
     }
+    #endregion
 
-    /// <summary>
-    ///     Joins all the enumerable items representations as strings (via ToString) into a single string with respect to the given delimiter string even if the enumerable is null.
-    ///     If the enumerable is null, returns null text.
-    ///     If the enumerable is empty, returns empty text.
-    /// </summary>
-    /// <typeparam name="T">Type of objects contained in the enumerable object.</typeparam>
-    /// <param name="enumerable">Enumerable object to call extension method on.</param>
-    /// <param name="delimiter">
-    ///     String to use as a delimiter.
-    ///     Delimiter is included in the returned string only if value has more than one element.
-    /// </param>
-    /// <param name="nullText">
-    ///     Optional parameter to set what text should be used if the enumable is indeed null.
-    ///     Defaults to the text '<null>' if not supplied.
-    /// </param>
-    /// <param name="emptyText">
-    ///     Optional parameter to set what text should be used if the delimited string is indeed empty.
-    ///     Defaults to the text '<empty>' if not supplied.
-    /// </param>
-    /// <returns>
-    ///     Delimited string of all the enumerable items converted to a string if not null or empty, otherwise the null or empty text if the enumerable is null or empty respectively.
-    /// </returns>
-    public static string SafeToDelimitedString<T>(
-        this IEnumerable<T>? enumerable,
-        string delimiter,
-        string? nullText = "<null>",
-        string? emptyText = "<empty>")
+    #region Implementation Methods
+    private static Func<T?, string?> GetSafeToDelimitedStringFormatter<T>()
     {
-        if (enumerable == null)
-            return nullText!;
-
-        var delimitedString = string.Join(delimiter, enumerable);
-        if (string.IsNullOrWhiteSpace(delimitedString))
-            return emptyText!;
-
-        return delimitedString;
+        return x => x?.ToString();
     }
 
-    /// <summary>
-    ///     Joins all the enumerable items representations as strings (via ToString) into a single string with respect to the given delimiter character even if the enumerable is null.
-    ///     If the enumerable is null, returns null text.
-    ///     If the enumerable is empty, returns empty text.
-    /// </summary>
-    /// <typeparam name="T">Type of objects contained in the enumerable object.</typeparam>
-    /// <param name="enumerable">Enumerable object to call extension method on.</param>
-    /// <param name="delimiter">
-    ///     Character to use as a delimiter.
-    ///     Delimiter is included in the returned string only if value has more than one element.
-    /// </param>
-    /// <param name="nullText">
-    ///     Optional parameter to set what text should be used if the enumable is indeed null.
-    ///     Defaults to the text '<null>' if not supplied.
-    /// </param>
-    /// <param name="emptyText">
-    ///     Optional parameter to set what text should be used if the delimited string is indeed empty.
-    ///     Defaults to the text '<empty>' if not supplied.
-    /// </param>
-    /// <returns>
-    ///     Delimited string of all the enumerable items converted to a string if not null or empty, otherwise the null or empty text if the enumerable is null or empty respectively.
-    /// </returns>
-    public static string SafeToDelimitedString<T>(
-        this IEnumerable<T>? enumerable,
-        char delimiter,
-        string? nullText = "<null>",
-        string? emptyText = "<empty>")
+    private static string GetSafeToDelimitedStringPart(string? part, string? nullText, string? emptyText)
     {
-        if (enumerable == null)
-            return nullText!;
+        if (!string.IsNullOrEmpty(part))
+            return part;
 
-        var delimitedString = string.Join(delimiter, enumerable);
-        if (string.IsNullOrWhiteSpace(delimitedString))
-            return emptyText!;
-
-        return delimitedString;
+        return part == null ? nullText ?? DefaultNullText : emptyText ?? DefaultEmptyText;
     }
 
-    /// <summary>
-    ///     Joins all the enumerable key/value pairs representations as strings (via ToString) into a single string with respect to the given delimiter string even if the enumerable is null.
-    ///     If the enumerable is null, returns null text.
-    ///     If the enumerable is empty, returns empty text.
-    /// </summary>
-    /// <typeparam name="TKey">Type of key in the key/value pair contained in the enumerable object.</typeparam>
-    /// <typeparam name="TValue">Type of value in the key/value pair contained in the enumerable object.</typeparam>
-    /// <param name="enumerable">Enumerable object to call extension method on.</param>
-    /// <param name="delimiter">
-    ///     Character to use as a delimiter.
-    ///     Delimiter is included in the returned string only if value has more than one element.
-    /// </param>
-    /// <param name="nullText">
-    ///     Optional parameter to set what text should be used if the enumable is indeed null.
-    ///     Defaults to the text '<null>' if not supplied.
-    /// </param>
-    /// <param name="emptyText">
-    ///     Optional parameter to set what text should be used if the delimited string is indeed empty.
-    ///     Defaults to the text '<empty>' if not supplied.
-    /// </param>
-    /// <returns>
-    ///     Delimited string of all the enumerable key/value pairs converted to a string if not null or empty, otherwise the null or empty text if the enumerable is null or empty respectively.
-    /// </returns>
-    public static string SafeToDelimitedString<TKey, TValue>(
+    private static string SafeToDelimitedStringCore<T, TDelimiter>
+    (
+        this IEnumerable<T?>? enumerable,
+        TDelimiter delimiter,
+        string? nullText,
+        string? emptyText,
+        Func<T?, string?>? formatter,
+        Func<TDelimiter, IEnumerable<string>, string> joiner
+    )
+    {
+        if (enumerable == null)
+        {
+            return nullText ?? DefaultNullText;
+        }
+
+        if (!enumerable.Any())
+        {
+            return emptyText ?? DefaultEmptyText;
+        }
+
+        formatter ??= GetSafeToDelimitedStringFormatter<T>();
+
+        var parts = enumerable.Select(x => GetSafeToDelimitedStringPart(formatter(x), nullText, emptyText));
+
+        var delimited = joiner(delimiter, parts);
+
+        return delimited;
+    }
+
+    private static string SafeToDelimitedStringCore<TKey, TValue, TDelimiter>
+    (
         this IEnumerable<KeyValuePair<TKey, TValue>>? enumerable,
-        string delimiter,
-        string? nullText = "<null>",
-        string? emptyText = "<empty>")
+        TDelimiter delimiter,
+        string? nullText,
+        string? emptyText,
+        Func<TKey?, string?>? keyFormatter,
+        Func<TValue?, string?>? valueFormatter,
+        Func<TDelimiter, IEnumerable<string>, string> joiner
+    )
     {
         if (enumerable == null)
-            return nullText!;
+            return nullText ?? DefaultNullText;
 
-        var delimitedString = string.Join(delimiter, enumerable.Select(x => $"{x.Key}={x.Value}"));
-        if (string.IsNullOrWhiteSpace(delimitedString))
-            return emptyText!;
+        if (!enumerable.Any())
+            return emptyText ?? DefaultEmptyText;
 
-        return delimitedString;
-    }
+        keyFormatter ??= GetSafeToDelimitedStringFormatter<TKey>();
+        valueFormatter ??= GetSafeToDelimitedStringFormatter<TValue>();
 
-    /// <summary>
-    ///     Joins all the enumerable key/value pairs representations as strings (via ToString) into a single string with respect to the given delimiter character even if the enumerable is null.
-    ///     If the enumerable is null, returns null text.
-    ///     If the enumerable is empty, returns empty text.
-    /// </summary>
-    /// <typeparam name="TKey">Type of key in the key/value pair contained in the enumerable object.</typeparam>
-    /// <typeparam name="TValue">Type of value in the key/value pair contained in the enumerable object.</typeparam>
-    /// <param name="enumerable">Enumerable object to call extension method on.</param>
-    /// <param name="delimiter">
-    ///     Character to use as a delimiter.
-    ///     Delimiter is included in the returned string only if value has more than one element.
-    /// </param>
-    /// <param name="nullText">
-    ///     Optional parameter to set what text should be used if the enumable is indeed null.
-    ///     Defaults to the text '<null>' if not supplied.
-    /// </param>
-    /// <param name="emptyText">
-    ///     Optional parameter to set what text should be used if the delimited string is indeed empty.
-    ///     Defaults to the text '<empty>' if not supplied.
-    /// </param>
-    /// <returns>
-    ///     Delimited string of all the enumerable key/value pairs converted to a string if not null or empty, otherwise the null or empty text if the enumerable is null or empty respectively.
-    /// </returns>
-    public static string SafeToDelimitedString<TKey, TValue>(
-        this IEnumerable<KeyValuePair<TKey, TValue>>? enumerable,
-        char delimiter,
-        string? emptyText = "<empty>",
-        string? nullText = "<null>")
-    {
-        if (enumerable == null)
-            return !string.IsNullOrWhiteSpace(nullText) ? nullText : "<null>";
+        var parts = enumerable.Select(x =>
+        {
+            var keyPart = GetSafeToDelimitedStringPart(keyFormatter(x.Key), nullText, emptyText);
+            var valuePart = GetSafeToDelimitedStringPart(valueFormatter(x.Value), nullText, emptyText);
 
-        var sourceAsKeyValuePairStringCollection = enumerable.Select(x => $"{x.Key}={x.Value}");
+            return $"{keyPart}={valuePart}";
+        });
 
-        var delimitedString = string.Join(delimiter, sourceAsKeyValuePairStringCollection);
-        if (string.IsNullOrWhiteSpace(delimitedString))
-            return !string.IsNullOrWhiteSpace(emptyText) ? emptyText : "<empty>";
+        var delimited = joiner(delimiter, parts);
 
-        return delimitedString;
+        return delimited;
     }
     #endregion
 }

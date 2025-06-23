@@ -3,7 +3,7 @@
 //
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
-namespace Evoogle;
+namespace Evoogle.Extensions;
 
 /// <summary>
 ///     Extension methods for the .NET <see cref="IDictionary{TKey,TValue}"/> interface.
@@ -26,6 +26,15 @@ public static class DictionaryExtensions
 
         var message = $"Unable to get value for given key '{key}' from dictionary, key does not exist in dictionary.";
         throw new KeyNotFoundException(message);
+    }
+
+    public static bool TryGetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, out TValue? value, TValue? defaultValue = default)
+    {
+        if (dictionary.TryGetValue(key, out value))
+            return true;
+
+        value = defaultValue;
+        return false;
     }
     #endregion
 }

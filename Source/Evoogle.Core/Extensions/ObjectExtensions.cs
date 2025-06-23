@@ -3,16 +3,22 @@
 //
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Evoogle;
+namespace Evoogle.Extensions;
 
 /// <summary>
 ///     Extension methods for .NET <see cref="object"> class.
 /// </summary>
 public static class ObjectExtensions
 {
+    #region Fields
+    private const string DefaultNullText = "<null>";
+    private const string DefaultEmptyText = "<empty>";
+    #endregion
+
     #region Properties
     private static JsonSerializerOptions DefaultDeepCopyWithJsonOptions { get; } = new()
     {
@@ -50,15 +56,9 @@ public static class ObjectExtensions
         if (sourceObject == null)
             return null;
 
-        var sourceJson = JsonSerializer.Serialize(
-            sourceObject,
-            sourceType,
-            options ?? DefaultDeepCopyWithJsonOptions);
+        var sourceJson = JsonSerializer.Serialize(sourceObject, sourceType, options ?? DefaultDeepCopyWithJsonOptions);
 
-        var resultObject = JsonSerializer.Deserialize(
-            sourceJson,
-            sourceType,
-            options ?? DefaultDeepCopyWithJsonOptions);
+        var resultObject = JsonSerializer.Deserialize(sourceJson, sourceType, options ?? DefaultDeepCopyWithJsonOptions);
 
         return resultObject;
     }
@@ -87,15 +87,9 @@ public static class ObjectExtensions
         if (sourceObject == null)
             return null;
 
-        var sourceJson = JsonSerializer.Serialize(
-            sourceObject,
-            sourceType,
-            options ?? DefaultDeepCopyWithJsonOptions);
+        var sourceJson = JsonSerializer.Serialize(sourceObject, sourceType, options ?? DefaultDeepCopyWithJsonOptions);
 
-        var resultObject = JsonSerializer.Deserialize(
-            sourceJson,
-            resultType,
-            options ?? DefaultDeepCopyWithJsonOptions);
+        var resultObject = JsonSerializer.Deserialize(sourceJson, resultType, options ?? DefaultDeepCopyWithJsonOptions);
 
         return resultObject;
     }
@@ -158,15 +152,50 @@ public static class ObjectExtensions
     }
 
     /// <summary>
-    ///     Gets a fully qualified method name for any .NET object.
+    ///     Gets a fully qualified method name for any .NET object, with an option to include the namespace.
     /// </summary>
-    /// <param name="obj">.NET object to call extension method on.</param>
-    /// <param name="callerMethodName">The .NET object method name typically resolved by using the .NET CallerMemberName compile type attribute.</param>
-    /// <returns>The fully qualified method name: TypeName.MethodName</returns>
-    public static string GetFullyQualifiedMethodName(this object obj, string callerMethodName)
+    /// <param name="obj">The object whose method context is being described.</param>
+    /// <param name="callerMethodName">
+    ///     The name of the calling method, typically resolved using the <see cref="CallerMemberNameAttribute"/>.
+    /// </param>
+    /// <param name="includeNamespace">
+    ///     If <see langword="true"/>, includes the full namespace in the type name; otherwise, uses just the type name. Defaults to <see langword="false"/>.
+    /// </param>
+    /// <returns>
+    ///     A string in the form <c>TypeName.MethodName</c> or <c>Namespace.TypeName.MethodName</c> depending on <paramref name="includeNamespace"/>.
+    /// </returns>
+    public static string GetFullyQualifiedMethodName(this object obj, string callerMethodName, bool includeNamespace = false)
     {
-        var fullyQualifiedMethodName = $"{obj.GetType().Name}.{callerMethodName}";
-        return fullyQualifiedMethodName;
+        var type = obj.GetType();
+        var typeName = includeNamespace
+            ? type.FullName ?? type.Name
+            : type.Name;
+
+        return $"{typeName}.{callerMethodName}";
+    }
+
+    /// <summary>
+    ///     Gets a fully qualified method name for any .NET object, with an option to include the namespace.
+    ///     Automatically captures the calling method name.
+    /// </summary>
+    /// <param name="obj">The object whose method context is being described.</param>
+    /// <param name="includeNamespace">
+    ///     If <see langword="true"/>, includes the full namespace in the type name; otherwise, uses just the type name.
+    /// </param>
+    /// <param name="callerMethodName">
+    ///     Automatically supplied by the compiler. You don't need to pass this manually.
+    /// </param>
+    /// <returns>
+    ///     A string in the form <c>TypeName.MethodName</c> or <c>Namespace.TypeName.MethodName</c> depending on <paramref name="includeNamespace"/>.
+    /// </returns>
+    public static string GetFullyQualifiedMethodName(this object obj, bool includeNamespace = false, [CallerMemberName] string callerMethodName = "")
+    {
+        var type = obj.GetType();
+        var typeName = includeNamespace
+            ? type.FullName ?? type.Name
+            : type.Name;
+
+        return $"{typeName}.{callerMethodName}";
     }
 
     /// <summary>
@@ -182,8 +211,8 @@ public static class ObjectExtensions
     /// <returns>JSON string of the .NET object.</returns>
     public static string SafeToJson<T>(this T? obj, JsonSerializerOptions? options = null)
     {
-        var toJson = JsonSerializer.Serialize(obj, options ?? DefaultToJsonOptions);
-        return toJson;
+        var json = JsonSerializer.Serialize(obj, options ?? DefaultToJsonOptions);
+        return json;
     }
 
     /// <summary>
@@ -192,28 +221,28 @@ public static class ObjectExtensions
     /// </summary>
     /// <typeparam name="T">Type of object to get a safe <c>ToString</c> representation of.</typeparam>
     /// <param name="obj">.NET object to call extension method on.</param>
-    /// <param name="emptyText">
-    ///     Optional parameter to set what text should be used if the reference object ToString is indeed empty.
-    ///     Defaults to the text '<empty>' if not supplied.
-    /// </param>
     /// <param name="nullText">
     ///     Optional parameter to set what text should be used if the reference object or the ToString result is indeed null.
     ///     Defaults to the text '<null>' if not supplied.
+    /// </param>
+    /// <param name="emptyText">
+    ///     Optional parameter to set what text should be used if the reference object ToString is indeed empty.
+    ///     Defaults to the text '<empty>' if not supplied.
     /// </param>
     /// <returns>
     ///     The actual <c>ToString</c> representation if available.
     ///     If the reference type is null or the actual <c>ToString</c> representation is null, then the parameter nullText is returned.
     ///     If the reference type <c>ToString</c> representation is empty, then the parameter emptyText is returned.
     /// </returns>
-    public static string SafeToString<T>(this T? obj, string? emptyText = "<empty>", string? nullText = "<null>")
+    public static string SafeToString<T>(this T? obj, string? nullText = DefaultNullText, string? emptyText = DefaultEmptyText)
     {
         var toStringResult = obj?.ToString();
 
         if (toStringResult == null)
-            return nullText ?? "<null>";
+            return nullText ?? DefaultNullText;
 
         if (string.IsNullOrWhiteSpace(toStringResult))
-            return emptyText ?? "<empty>";
+            return emptyText ?? DefaultEmptyText;
 
         return toStringResult;
     }

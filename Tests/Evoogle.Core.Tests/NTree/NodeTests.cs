@@ -5,7 +5,7 @@
 // See the LICENSE file in the project root for more information.
 using System.Linq.Expressions;
 using System.Text.Json.Serialization;
-
+using Evoogle.Extensions;
 using Evoogle.Json;
 using Evoogle.XUnit;
 

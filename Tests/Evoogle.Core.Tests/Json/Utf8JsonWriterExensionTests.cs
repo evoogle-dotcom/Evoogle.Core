@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-
+using Evoogle.Extensions;
 using Evoogle.XUnit;
 
 using FluentAssertions;
@@ -242,7 +242,7 @@ public class Utf8JsonWriterExensionTests(ITestOutputHelper output) : XUnitTests(
 
         // Serializer Tests
 
-        // .. Boolean 
+        // .. Boolean
         new WritePropertyTest
         {
             Name = "Type=Boolean With Serializer, Value=false, Condition=WhenWritingNull",

@@ -6,7 +6,7 @@
 using System.Linq.Dynamic.Core.CustomTypeProviders;
 using System.Linq.Expressions;
 using System.Text.Json.Serialization;
-
+using Evoogle.Extensions;
 using Evoogle.Json;
 using Evoogle.XUnit;
 

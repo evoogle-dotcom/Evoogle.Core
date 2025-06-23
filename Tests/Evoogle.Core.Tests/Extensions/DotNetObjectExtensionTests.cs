@@ -7,7 +7,7 @@ using Evoogle.XUnit;
 
 using FluentAssertions;
 
-namespace Evoogle;
+namespace Evoogle.Extensions;
 
 public class DotNetObjectExtensionTests(ITestOutputHelper output) : XUnitTests(output)
 {
@@ -22,7 +22,7 @@ public class DotNetObjectExtensionTests(ITestOutputHelper output) : XUnitTests(o
 
         protected override void Act()
         {
-            this.Actual = this.Source!.SafeToString(this.EmtpyText!, this.NullText!);
+            this.Actual = this.Source!.SafeToString(this.NullText!, this.EmtpyText!);
         }
 
         protected override void Assert()

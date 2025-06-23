@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Text.Json.Serialization;
 
 using Evoogle.Coercion.Internal;
+using Evoogle.Extensions;
 using Evoogle.Json;
 using Evoogle.Reflection;
 using Evoogle.XUnit;
