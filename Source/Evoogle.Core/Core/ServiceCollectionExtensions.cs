@@ -4,7 +4,7 @@
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
 using System.Reflection;
-
+using Evoogle.Extensions;
 using Evoogle.Reflection;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -140,11 +140,7 @@ public static class ServiceCollectionExtensions
         bool useOpenGenericImplementation,
         Action<IServiceCollection, Type, Type> addAction)
     {
-        var interfaceTypeName = interfaceType.Name;
-
-        var implementationTypes = (assemblyCollection ?? Enumerable.Empty<Assembly>())
-                                  .SelectMany(x => x.GetTypes())
-                                  .ToList();
+        var implementationTypes = assemblyCollection.EmptyIfNull().SelectMany(x => x.GetTypes());
         foreach (var implementationType in implementationTypes)
         {
             var isAbstract = implementationType.IsAbstract;
@@ -168,7 +164,7 @@ public static class ServiceCollectionExtensions
             }
 
             var interfaceTypeClosed = implementationType.GetInterfaces()
-                                                        .SingleOrDefault(x => x.Name == interfaceTypeName);
+                                                        .SingleOrDefault(interfaceType.IsAssignableFrom);
             if (interfaceTypeClosed == null)
                 continue;
 
