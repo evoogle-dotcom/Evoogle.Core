@@ -95,20 +95,7 @@ public static class ExtensibleExtensions
     public static void ModifyExtension<TExtension>(this IExtensible extensible, Action<TExtension> modifyExtensionAction)
         where TExtension : class, new()
     {
-        // Add an extension if it does not already exist.
-        if (extensible.TryGetExtension<TExtension>(out var extension))
-        {
-            // Modify existing extension instance.
-            modifyExtensionAction(extension);
-            return;
-        }
-
-        // Create a default extension and attach it.
-        extension = new TExtension();
-        extensible.AttachExtension(extension);
-
-        // Modify new and default extension instance.
-        modifyExtensionAction(extension);
+        modifyExtensionAction(extensible.GetOrAttachExtension<TExtension>());
     }
 
     /// <summary>
@@ -121,9 +108,9 @@ public static class ExtensibleExtensions
         where TExtension : class
     {
         var extensionType = typeof(TExtension);
-        if (extensible.TryGetExtension(extensionType, out var ext))
+        if (extensible.TryGetExtension(extensionType, out var ext) && ext is TExtension typedExtension)
         {
-            extension = (TExtension)ext;
+            extension = typedExtension;
             return true;
         }
 

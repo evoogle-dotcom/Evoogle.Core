@@ -28,6 +28,7 @@ public abstract class ExtensibleBase : IExtensible
     /// <inheritdoc />
     public void AttachExtension(Type extensionType, object extension)
     {
+        ArgumentNullException.ThrowIfNull(extensionType);
         ArgumentNullException.ThrowIfNull(extension);
 
         // Add the extension to the dictionary using its type as the key.
@@ -38,15 +39,15 @@ public abstract class ExtensibleBase : IExtensible
     /// <inheritdoc />
     public object? DetachExtension(Type extensionType)
     {
+        ArgumentNullException.ThrowIfNull(extensionType);
+
         if (this.Extensions == null)
             return null;
 
         // Remove the extension from the dictionary.
         var result = this.Extensions.Remove(extensionType, out var extension);
         if (result && extension != null)
-        {
             return extension;
-        }
 
         return null;
     }
@@ -54,6 +55,8 @@ public abstract class ExtensibleBase : IExtensible
     /// <inheritdoc />
     public bool TryGetExtension(Type extensionType, [NotNullWhen(true)] out object? extension)
     {
+        ArgumentNullException.ThrowIfNull(extensionType);
+
         if (this.Extensions == null)
         {
             extension = null;

@@ -16,6 +16,7 @@ namespace Evoogle.Extension;
 
 public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
 {
+
     #region Test Classes
     [DynamicLinqType]
     public class TestExtensible : ExtensibleBase
