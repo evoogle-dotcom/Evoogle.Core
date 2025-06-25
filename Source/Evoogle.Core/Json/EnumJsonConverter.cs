@@ -26,6 +26,8 @@ public class EnumJsonConverter<TEnum> : JsonConverter<TEnum>
     ///     An array of all valid enum names for the specified enum type, used to validate input during deserialization.
     /// </summary>
     private static string[] Names { get; } = Enum.GetNames<TEnum>();
+
+    private static HashSet<string> NameSet { get; } = new(Names, StringComparer.Ordinal);
     #endregion
 
     #region JsonConverter Methods
@@ -44,37 +46,27 @@ public class EnumJsonConverter<TEnum> : JsonConverter<TEnum>
 
         if (IsFlags)
         {
-            // Splits the string into parts for [Flags] enums, trimming whitespace from each.
-            var parts = value.Split(',').Select(p => p.Trim()).ToArray();
-            if (parts.All(part => Names.Any(name => string.Equals(name, part, StringComparison.OrdinalIgnoreCase))))
+            var parts = value.Split(',').Select(p => p.Trim());
+            if (!parts.All(NameSet.Contains))
             {
-                // If all parts match valid enum names, parses the combined string into an enum value.
-                return ParseString(value);
+                throw new JsonException($"Invalid enum value '{value}' for [Flags] enum {{Type={typeof(TEnum).Name}}}");
             }
-            else
-            {
-                // Throws an exception if any part of the input is not a valid enum name.
-                throw new JsonException($"Invalid enum value '{value}' for [Flags] enum {{Type={Type.Name}}}");
-            }
+
+            return ParseString(value);
         }
         else
         {
-            // For non-[Flags] enums, checks that the value does not contain commas.
             if (value.Contains(','))
             {
-                throw new JsonException($"Comma is not allowed for non-[Flags] enum {{Type={Type.Name}}}");
+                throw new JsonException($"Comma is not allowed for non-[Flags] enum {{Type={typeof(TEnum).Name}}}");
             }
-            // Validates that the input matches a valid enum name (case-insensitive).
-            if (Names.Any(name => string.Equals(name, value, StringComparison.OrdinalIgnoreCase)))
+
+            if (!NameSet.Contains(value))
             {
-                // Parses the string into an enum value if it matches a valid name.
-                return ParseString(value);
+                throw new JsonException($"Invalid enum value '{value}' for enum {{Type={typeof(TEnum).Name}}}");
             }
-            else
-            {
-                // Throws an exception if the input does not match any valid enum name.
-                throw new JsonException($"Invalid enum value '{value}' for enum {{Type={Type.Name}}}");
-            }
+
+            return ParseString(value);
         }
     }
 
@@ -86,8 +78,25 @@ public class EnumJsonConverter<TEnum> : JsonConverter<TEnum>
     /// <param name="options">Options for the JSON serializer.</param>
     public override void Write(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options)
     {
-        // Writes the enum value as its string representation; for [Flags] enums, this includes comma-separated names.
-        writer.WriteStringValue(value.ToString());
+        var stringValue = Enum.Format(typeof(TEnum), value, "G");
+
+        if (IsFlags)
+        {
+            var parts = stringValue.Split(',').Select(p => p.Trim());
+            if (!parts.All(NameSet.Contains))
+            {
+                throw new JsonException($"Cannot serialize unnamed [Flags] enum value: {stringValue} ({Convert.ToInt64(value)})");
+            }
+        }
+        else
+        {
+            if (!NameSet.Contains(stringValue))
+            {
+                throw new JsonException($"Cannot serialize unnamed enum value: {stringValue} ({Convert.ToInt64(value)})");
+            }
+        }
+
+        writer.WriteStringValue(stringValue);
     }
     #endregion
 

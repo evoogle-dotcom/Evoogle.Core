@@ -13,53 +13,53 @@ public static partial class Utf8JsonWriterExtensions
 {
     #region String Extension Methods
     /// <summary>Conditionally writes a <c>DateTime</c> property as a string.</summary>
-    public static void WritePropertyString(this Utf8JsonWriter writer, string propertyName, DateTime value, JsonSerializerOptions options, EqualityComparer<DateTime>? equalityComparer = null)
+    public static void WritePropertyString(this Utf8JsonWriter writer, string propertyName, DateTime value, JsonSerializerOptions options, EqualityComparer<DateTime>? equalityComparer = null, string format = "O", IFormatProvider? formatProvider = null)
     {
         writer.WritePropertyValueType
         (
             propertyName,
             value,
             options,
-            writer.WriteString,
+            (name, dt) => writer.WriteString(name, dt.ToString(format, formatProvider ?? CultureInfo.InvariantCulture)),
             equalityComparer
         );
     }
 
     /// <summary>Conditionally writes a <c>DateTime?</c> property as a string.</summary>
-    public static void WritePropertyString(this Utf8JsonWriter writer, string propertyName, DateTime? value, JsonSerializerOptions options, EqualityComparer<DateTime>? equalityComparer = null)
+    public static void WritePropertyString(this Utf8JsonWriter writer, string propertyName, DateTime? value, JsonSerializerOptions options, EqualityComparer<DateTime>? equalityComparer = null, string format = "O", IFormatProvider? formatProvider = null)
     {
         writer.WritePropertyNullableValueType
         (
             propertyName,
             value,
             options,
-            writer.WriteString,
+            (name, dt) => writer.WriteString(name, dt.ToString(format, formatProvider ?? CultureInfo.InvariantCulture)),
             equalityComparer
         );
     }
 
     /// <summary>Conditionally writes a <c>DateTimeOffset</c> property as a string.</summary>
-    public static void WritePropertyString(this Utf8JsonWriter writer, string propertyName, DateTimeOffset value, JsonSerializerOptions options, EqualityComparer<DateTimeOffset>? equalityComparer = null)
+    public static void WritePropertyString(this Utf8JsonWriter writer, string propertyName, DateTimeOffset value, JsonSerializerOptions options, EqualityComparer<DateTimeOffset>? equalityComparer = null, string format = "O", IFormatProvider? formatProvider = null)
     {
         writer.WritePropertyValueType
         (
             propertyName,
             value,
             options,
-            writer.WriteString,
+            (name, dto) => writer.WriteString(name, dto.ToString(format, formatProvider ?? CultureInfo.InvariantCulture)),
             equalityComparer
         );
     }
 
     /// <summary>Conditionally writes a <c>DateTimeOffset?</c> property as a string.</summary>
-    public static void WritePropertyString(this Utf8JsonWriter writer, string propertyName, DateTimeOffset? value, JsonSerializerOptions options, EqualityComparer<DateTimeOffset>? equalityComparer = null)
+    public static void WritePropertyString(this Utf8JsonWriter writer, string propertyName, DateTimeOffset? value, JsonSerializerOptions options, EqualityComparer<DateTimeOffset>? equalityComparer = null, string format = "O", IFormatProvider? formatProvider = null)
     {
         writer.WritePropertyNullableValueType
         (
             propertyName,
             value,
             options,
-            writer.WriteString,
+            (name, dto) => writer.WriteString(name, dto.ToString(format, formatProvider ?? CultureInfo.InvariantCulture)),
             equalityComparer
         );
     }
@@ -131,30 +131,31 @@ public static partial class Utf8JsonWriterExtensions
     }
 
     /// <summary>Conditionally writes a <c>TimeSpan</c> property as a string.</summary>
-    public static void WritePropertyString(this Utf8JsonWriter writer, string propertyName, TimeSpan value, JsonSerializerOptions options, EqualityComparer<TimeSpan>? equalityComparer = null)
+    public static void WritePropertyString(this Utf8JsonWriter writer, string propertyName, TimeSpan value, JsonSerializerOptions options, EqualityComparer<TimeSpan>? equalityComparer = null, string format = "c", IFormatProvider? formatProvider = null)
     {
         writer.WritePropertyValueType
         (
             propertyName,
             value,
             options,
-            (name, timeSpan) => writer.WriteString(name, timeSpan.ToString("c", CultureInfo.InvariantCulture)),
+            (name, ts) => writer.WriteString(name, ts.ToString(format, formatProvider ?? CultureInfo.InvariantCulture)),
             equalityComparer
         );
     }
 
     /// <summary>Conditionally writes a <c>TimeSpan?</c> property as a string.</summary>
-    public static void WritePropertyString(this Utf8JsonWriter writer, string propertyName, TimeSpan? value, JsonSerializerOptions options, EqualityComparer<TimeSpan>? equalityComparer = null)
+    public static void WritePropertyString(this Utf8JsonWriter writer, string propertyName, TimeSpan? value, JsonSerializerOptions options, EqualityComparer<TimeSpan>? equalityComparer = null, string format = "c", IFormatProvider? formatProvider = null)
     {
         writer.WritePropertyNullableValueType
         (
             propertyName,
             value,
             options,
-            (name, timeSpan) => writer.WriteString(name, timeSpan.ToString("c", CultureInfo.InvariantCulture)),
+            (name, ts) => writer.WriteString(name, ts.ToString(format, formatProvider ?? CultureInfo.InvariantCulture)),
             equalityComparer
         );
     }
+
 
     /// <summary>Conditionally writes a <c>Ulid</c> property as a string (via UlidJsonConverter).</summary>
     public static void WritePropertyString(this Utf8JsonWriter writer, string propertyName, Ulid value, JsonSerializerOptions options, EqualityComparer<Ulid>? equalityComparer = null)

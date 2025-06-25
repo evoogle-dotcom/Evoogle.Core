@@ -147,17 +147,8 @@ public static partial class Utf8JsonWriterExtensions
 
                 var value = nullableValue!.Value; // value is not null => safe to access .Value
 
-                bool isDefault;
-                if (equalityComparer is null || ReferenceEquals(equalityComparer, EqualityComparer<T>.Default))
-                {
-                    // Fast path using direct comparison
-                    isDefault = EqualityComparer<T>.Default.Equals(value, default);
-                }
-                else
-                {
-                    // Slower but supports custom comparison logic
-                    isDefault = equalityComparer.Equals(value, default);
-                }
+                var comparer = equalityComparer ?? EqualityComparer<T>.Default;
+                var isDefault = comparer.Equals(value, default);
 
                 return isDefault ? (false, false) : (true, false);
 
@@ -195,17 +186,8 @@ public static partial class Utf8JsonWriterExtensions
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        bool isDefault;
-        if (equalityComparer is null || ReferenceEquals(equalityComparer, EqualityComparer<T>.Default))
-        {
-            // Fast path using direct comparison
-            isDefault = EqualityComparer<T>.Default.Equals(value, default);
-        }
-        else
-        {
-            // Slower but supports custom comparison logic
-            isDefault = equalityComparer.Equals(value, default);
-        }
+        var comparer = equalityComparer ?? EqualityComparer<T>.Default;
+        var isDefault = comparer.Equals(value, default);
 
         return options.DefaultIgnoreCondition switch
         {

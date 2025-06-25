@@ -3,6 +3,7 @@
 //
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -12,10 +13,87 @@ namespace Evoogle.Json;
 
 /// <summary>
 ///     A custom JSON converter for serializing and deserializing .NET <see cref="Type"/> objects.
-///     This converter allows for the conversion of <see cref="Type"/> instances to and from JSON strings, using a compact, fully-qualified type name representation.
 /// </summary>
+/// <remarks
+///     Supports filtering deserialization using per-instance namespace and assembly whitelists.
+///     This converter allows for the conversion of <see cref="Type"/> instances to and from JSON strings, using a compact, fully-qualified type name representation.
+/// </remarks>
 public class TypeJsonConverter : JsonConverter<Type>
 {
+    #region Fields
+    private readonly HashSet<Assembly> _allowedAssemblies = [];
+
+    private readonly List<string> _allowedNamespacePrefixes = [];
+    #endregion
+
+    #region Properties
+    /// <summary>
+    ///     Gets the set of allowed <see cref="Assembly"/> instances for deserialization filtering.
+    ///     If empty, no assembly filtering is applied.
+    /// </summary>
+    public IEnumerable<Assembly> AllowedAssemblies => _allowedAssemblies;
+
+    /// <summary>
+    ///     Gets the list of allowed namespace prefixes for deserialization filtering.
+    ///     If empty, no namespace filtering is applied.
+    /// </summary>
+    public IEnumerable<string> AllowedNamespaces => _allowedNamespacePrefixes;
+    #endregion
+
+    #region Fluent Configuration Methods
+    /// <summary>
+    ///     Adds an allowed assembly to the deserialization filter.
+    /// </summary>
+    /// <param name="assembly">The assembly to allow.</param>
+    /// <returns>The current <see cref="TypeJsonConverter"/> instance.</returns>
+    public TypeJsonConverter AddAllowedAssembly(Assembly assembly)
+    {
+        ArgumentNullException.ThrowIfNull(assembly);
+        _allowedAssemblies.Add(assembly);
+        return this;
+    }
+
+    /// <summary>
+    ///     Adds the assembly of a given type <typeparamref name="T"/> to the allowlist.
+    /// </summary>
+    public TypeJsonConverter AddAllowedAssemblyOf<T>() =>
+        AddAllowedAssembly(typeof(T).Assembly);
+
+    /// <summary>
+    ///     Replaces the set of allowed assemblies with the given collection.
+    /// </summary>
+    public TypeJsonConverter SetAllowedAssemblies(IEnumerable<Assembly> assemblies)
+    {
+        _allowedAssemblies.Clear();
+        foreach (var asm in assemblies)
+            AddAllowedAssembly(asm);
+        return this;
+    }
+
+    /// <summary>
+    ///     Adds an allowed namespace prefix for deserialization filtering.
+    /// </summary>
+    /// <param name="prefix">The namespace prefix (e.g., "MyApp.Domain.").</param>
+    /// <returns>The current <see cref="TypeJsonConverter"/> instance.</returns>
+    public TypeJsonConverter AddAllowedNamespace(string prefix)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(prefix);
+        _allowedNamespacePrefixes.Add(prefix);
+        return this;
+    }
+
+    /// <summary>
+    ///     Replaces the set of allowed namespace prefixes.
+    /// </summary>
+    /// <param name="prefixes">The new list of prefixes.</param>
+    public TypeJsonConverter SetAllowedNamespaces(IEnumerable<string> prefixes)
+    {
+        _allowedNamespacePrefixes.Clear();
+        _allowedNamespacePrefixes.AddRange(prefixes);
+        return this;
+    }
+    #endregion
+
     #region JsonConverter Methods
     /// <summary>
     ///     Deserializes a JSON string into a .NET <see cref="Type"/> object.
@@ -28,12 +106,14 @@ public class TypeJsonConverter : JsonConverter<Type>
     public override Type? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var typeName = reader.GetString();
-        if (typeName == null)
-        {
-            throw new JsonException("Unable deserialize .NET type because JSON text was null.");
-        }
+        if (string.IsNullOrWhiteSpace(typeName))
+            throw new JsonException("Cannot deserialize .NET type because the input string was null or empty.");
 
         var type = GetDeserializeType(typeName);
+
+        if (!IsAllowed(type))
+            throw new JsonException($"Type '{type.FullName}' is not allowed for deserialization.");
+
         return type;
     }
 
@@ -61,18 +141,14 @@ public class TypeJsonConverter : JsonConverter<Type>
     /// <remarks>
     ///     This method uses <see cref="Type.GetType(string, bool)"/> to resolve the type name. The <paramref name="typeName"/>
     ///     should match the format produced by <see cref="GetSerializeTypeName(Type)"/> to ensure successful roundtrip conversion.
-    /// </remarks>    
+    /// </remarks>
     public static Type GetDeserializeType(string typeName)
     {
-        try
-        {
-            var type = Type.GetType(typeName, throwOnError: true) ?? throw new JsonException("Unable deserialize .NET type from incoming parameter {{typeName={typeName}}}.");
-            return type;
-        }
-        catch (Exception exception)
-        {
-            throw new JsonException("Unable deserialize .NET type from incoming parameter {{typeName={typeName}}}.", exception);
-        }
+        if (string.IsNullOrWhiteSpace(typeName))
+            throw new JsonException("The JSON type name was null or whitespace.");
+
+        var resolvedType = Type.GetType(typeName, throwOnError: false) ?? throw new JsonException($"Unable to resolve .NET type from name: '{typeName}'.");
+        return resolvedType;
     }
 
     /// <summary>
@@ -89,6 +165,26 @@ public class TypeJsonConverter : JsonConverter<Type>
     {
         var typeCompactQualilfiedName = TypeReflection.GetCompactQualifiedName(type);
         return typeCompactQualilfiedName;
+    }
+
+    /// <summary>
+    ///     Determines if a type passes the namespace and assembly allowlists.
+    /// </summary>
+    /// <param name="type">The type to evaluate.</param>
+    /// <returns><c>true</c> if allowed; otherwise, <c>false</c>.</returns>
+    private bool IsAllowed(Type type)
+    {
+        var ns = type.Namespace ?? string.Empty;
+        var assembly = type.Assembly;
+
+        var namespaceMatch = _allowedNamespacePrefixes.Count == 0 ||
+            _allowedNamespacePrefixes.Any(prefix =>
+                ns.StartsWith(prefix, StringComparison.Ordinal));
+
+        var assemblyMatch = _allowedAssemblies.Count == 0 ||
+            _allowedAssemblies.Contains(assembly);
+
+        return namespaceMatch && assemblyMatch;
     }
     #endregion
 }
