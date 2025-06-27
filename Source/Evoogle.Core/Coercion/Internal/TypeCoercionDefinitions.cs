@@ -249,7 +249,7 @@ internal partial class TypeCoercion : ITypeCoercion
 
             // Ulid To XXX
             new TypeCoercionDefinitionFunc<Ulid, byte[]>((input, context) => input.ToByteArray()),
-            new TypeCoercionDefinitionFunc<Ulid, Guid>((input, context) => input.ToGuid()),
+            new TypeCoercionDefinitionFunc<Ulid, Guid>((input,   context) => input.ToGuid()),
             new TypeCoercionDefinitionFunc<Ulid, Ulid>((input,   context) => input),
             new TypeCoercionDefinitionFunc<Ulid, string>(ConvertUlidToString),
 

@@ -18,17 +18,27 @@ namespace Evoogle.Coercion.Internal;
 internal partial class TypeCoercion : ITypeCoercion
 {
     #region Fields
-    private static readonly MethodInfo CoerceMethodInfoOpen = TypeReflection.GetGenericMethodDefinition(
+    private static readonly MethodInfo _coerceMethodInfoOpen = TypeReflection.GetGenericMethodDefinition(
         typeof(TypeCoercion),
         nameof(Coerce),
         BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance) ?? throw new InvalidOperationException($"Unable to get generic {nameof(Coerce)} method definition on the {nameof(TypeCoercion)} class.");
 
-    private static readonly MethodInfo ParseStringToEnumMethodInfoOpen = TypeReflection.GetGenericMethodDefinition(
+    private static readonly MethodInfo _convertEnumInputToEnumOutputMethodInfoOpen = TypeReflection.GetGenericMethodDefinition(
+        typeof(TypeCoercion),
+        nameof(ConvertEnumInputToEnumOutput),
+        BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Static) ?? throw new InvalidOperationException($"Unable to get generic {nameof(CoerceEnumInputToEnumOutput)} method definition on the {nameof(TypeCoercion)} class.");
+
+    private static readonly MethodInfo _getNameFromEnumMethodInfoOpen = TypeReflection.GetGenericMethodDefinition(
+        typeof(TypeCoercion),
+        nameof(GetNameFromEnum),
+        BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Static) ?? throw new InvalidOperationException($"Unable to get generic {nameof(GetNameFromEnum)} method definition on the {nameof(TypeCoercion)} class.");
+
+    private static readonly MethodInfo _parseStringToEnumMethodInfoOpen = TypeReflection.GetGenericMethodDefinition(
         typeof(TypeCoercion),
         nameof(ParseStringToEnum),
         BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Static) ?? throw new InvalidOperationException($"Unable to get generic {nameof(ParseStringToEnum)} method definition on the {nameof(TypeCoercion)} class.");
 
-    private static readonly string NullableValuePropertyName = nameof(Nullable<int>.Value);
+    private static readonly string _nullableValuePropertyName = nameof(Nullable<int>.Value);
     #endregion
 
     #region Types
@@ -37,22 +47,40 @@ internal partial class TypeCoercion : ITypeCoercion
         #region Properties
         public static Func<TInput, TOutput> CastInputToOutputLambda => LazyCastInputToOutputLambda.Value;
 
+        public static Func<TypeCoercion, TInput, TypeCoercionContext, TOutput> CoerceInputToEnumOutputLambda => LazyCoerceInputToEnumOutputLambda.Value;
+        public static Func<TypeCoercion, TInput, TypeCoercionContext, TOutput> CoerceEnumInputToOutputLambda => LazyCoerceEnumInputToOutputLambda.Value;
+        public static Func<TypeCoercion, TInput, TypeCoercionContext, TOutput> CoerceEnumInputToEnumOutputLambda => LazyCoerceEnumInputToEnumOutputLambda.Value;
+
         public static Func<TypeCoercion, TInput, TypeCoercionContext, TOutput> CoerceInputToNullableOutputLambda => LazyCoerceInputToNullableOutputLambda.Value;
         public static Func<TypeCoercion, TInput, TypeCoercionContext, TOutput> CoerceNullableInputToOutputLambda => LazyCoerceNullableInputToOutputLambda.Value;
         public static Func<TypeCoercion, TInput, TypeCoercionContext, TOutput> CoerceNullableInputToNullableOutputLambda => LazyCoerceNullableInputToNullableOutputLambda.Value;
 
-        public static Func<TypeCoercion, TInput, TypeCoercionContext, TOutput> CoerceInputToEnumOutputLambda => LazyCoerceInputToEnumOutputLambda.Value;
-
         private static Lazy<Func<TInput, TOutput>> LazyCastInputToOutputLambda { get; } = new Lazy<Func<TInput, TOutput>>(CreateCastInputToOutputLambda, LazyThreadSafetyMode.PublicationOnly);
+
+        private static Lazy<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>> LazyCoerceInputToEnumOutputLambda { get; } = new Lazy<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>>(CreateCoerceInputToEnumOutputLambda, LazyThreadSafetyMode.PublicationOnly);
+        private static Lazy<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>> LazyCoerceEnumInputToOutputLambda { get; } = new Lazy<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>>(CreateCoerceEnumInputToOutputLambda, LazyThreadSafetyMode.PublicationOnly);
+        private static Lazy<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>> LazyCoerceEnumInputToEnumOutputLambda { get; } = new Lazy<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>>(CreateCoerceEnumInputToEnumOutputLambda, LazyThreadSafetyMode.PublicationOnly);
 
         private static Lazy<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>> LazyCoerceInputToNullableOutputLambda { get; } = new Lazy<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>>(CreateCoerceInputToNullableOutputLambda, LazyThreadSafetyMode.PublicationOnly);
         private static Lazy<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>> LazyCoerceNullableInputToOutputLambda { get; } = new Lazy<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>>(CreateCoerceNullableInputToOutputLambda, LazyThreadSafetyMode.PublicationOnly);
         private static Lazy<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>> LazyCoerceNullableInputToNullableOutputLambda { get; } = new Lazy<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>>(CreateCoerceNullableInputToNullableOutputLambda, LazyThreadSafetyMode.PublicationOnly);
-
-        private static Lazy<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>> LazyCoerceInputToEnumOutputLambda { get; } = new Lazy<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>>(CreateCoerceInputToEnumOutputLambda, LazyThreadSafetyMode.PublicationOnly);
         #endregion
 
-        #region Methods
+        #region Cast Factory Methods
+        private static Func<TInput, TOutput> CreateCastInputToOutputLambda()
+        {
+            var inputType = typeof(TInput);
+            var outputType = typeof(TOutput);
+
+            var inputParameterExpression = Expression.Parameter(inputType, "input");
+            var castInputToOutputExpression = Expression.ConvertChecked(inputParameterExpression, outputType);
+            var castInputToOutputLambdaExpression = Expression.Lambda<Func<TInput, TOutput>>(castInputToOutputExpression, inputParameterExpression);
+            var castInputToOutputLambda = castInputToOutputLambdaExpression.Compile();
+            return castInputToOutputLambda;
+        }
+        #endregion
+
+        #region Enum Factory Methods
         private static Func<TypeCoercion, TInput, TypeCoercionContext, TOutput> CreateCoerceInputToEnumOutputLambda()
         {
             var coercionType = typeof(TypeCoercion);
@@ -69,7 +97,7 @@ internal partial class TypeCoercion : ITypeCoercion
             // 1. String To Enum
             if (TypeReflection.IsString(inputType))
             {
-                var parseStringToEnumMethodClosed = ParseStringToEnumMethodInfoOpen.MakeGenericMethod(outputType);
+                var parseStringToEnumMethodClosed = _parseStringToEnumMethodInfoOpen.MakeGenericMethod(outputType);
 
                 var callParseStringToEnumMethodExpression = Expression.Call(
                     parseStringToEnumMethodClosed,
@@ -88,9 +116,9 @@ internal partial class TypeCoercion : ITypeCoercion
                 return parseStringToEnumLambda;
             }
 
-            // Default case, coerce input to enumeration underlying type and cast that coerce result to the enumeration.
+            // Default case, coerce input type to output enumeration underlying type.
             var outputUnderlyingType = Enum.GetUnderlyingType(outputType) ?? throw new InvalidOperationException($"Unable to get the enum output underlying type {{Name={outputType.Name}}}.");
-            var coerceMethodInfoClosed = CoerceMethodInfoOpen.MakeGenericMethod(inputType, outputUnderlyingType);
+            var coerceMethodInfoClosed = _coerceMethodInfoOpen.MakeGenericMethod(inputType, outputUnderlyingType);
 
             var callCoerceMethodExpression = Expression.Call(
                 coercionParameterExpression,
@@ -110,6 +138,93 @@ internal partial class TypeCoercion : ITypeCoercion
             return coerceInputToEnumOutputLambda;
         }
 
+        private static Func<TypeCoercion, TInput, TypeCoercionContext, TOutput> CreateCoerceEnumInputToOutputLambda()
+        {
+            var coercionType = typeof(TypeCoercion);
+            var inputType = typeof(TInput);
+            var contextType = typeof(TypeCoercionContext);
+            var outputType = typeof(TOutput);
+
+            var coercionParameterExpression = Expression.Parameter(coercionType, "coercion");
+            var inputParameterExpression = Expression.Parameter(inputType, "input");
+            var contextParameterExpression = Expression.Parameter(contextType, "context");
+
+            // Handle special cases:
+
+            // 1. Enum To String
+            if (TypeReflection.IsString(outputType))
+            {
+                var getNameFromEnumMethodClosed = _getNameFromEnumMethodInfoOpen.MakeGenericMethod(inputType);
+
+                var callGetNameFromEnumMethodExpression = Expression.Call(
+                    getNameFromEnumMethodClosed,
+                    inputParameterExpression,
+                    contextParameterExpression);
+
+                var castCallGetNameFromEnumMethodExpression = Expression.ConvertChecked(callGetNameFromEnumMethodExpression, outputType);
+
+                var getNameFromEnumLambdaExpression = Expression.Lambda<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>>(
+                    castCallGetNameFromEnumMethodExpression,
+                    coercionParameterExpression,
+                    inputParameterExpression,
+                    contextParameterExpression);
+
+                var getNameFromEnumLambda = getNameFromEnumLambdaExpression.Compile();
+                return getNameFromEnumLambda;
+            }
+
+            // Default case, coerce input enumeration underlying type to output type.
+            var inputUnderlyingType = Enum.GetUnderlyingType(inputType) ?? throw new InvalidOperationException($"Unable to get the enum input underlying type {{Name={inputType.Name}}}.");
+            var coerceMethodInfoClosed = _coerceMethodInfoOpen.MakeGenericMethod(inputUnderlyingType, outputType);
+
+            var castInputToUnderlyingTypeExpression = Expression.ConvertChecked(inputParameterExpression, inputUnderlyingType);
+
+            var callCoerceMethodExpression = Expression.Call(
+                coercionParameterExpression,
+                coerceMethodInfoClosed,
+                castInputToUnderlyingTypeExpression,
+                contextParameterExpression);
+
+            var coerceInputToEnumOutputLambdaExpression = Expression.Lambda<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>>(
+                callCoerceMethodExpression,
+                coercionParameterExpression,
+                inputParameterExpression,
+                contextParameterExpression);
+
+            var coerceInputToEnumOutputLambda = coerceInputToEnumOutputLambdaExpression.Compile();
+            return coerceInputToEnumOutputLambda;
+        }
+
+        private static Func<TypeCoercion, TInput, TypeCoercionContext, TOutput> CreateCoerceEnumInputToEnumOutputLambda()
+        {
+            var coercionType = typeof(TypeCoercion);
+            var inputType = typeof(TInput);
+            var contextType = typeof(TypeCoercionContext);
+            var outputType = typeof(TOutput);
+
+            var coercionParameterExpression = Expression.Parameter(coercionType, "coercion");
+            var inputParameterExpression = Expression.Parameter(inputType, "input");
+            var contextParameterExpression = Expression.Parameter(contextType, "context");
+
+            // Call ConvertEnumInputToEnumOutput method with the input and context parameters.
+            var convertEnumInputToEnumOutputMethodInfoClosed = _convertEnumInputToEnumOutputMethodInfoOpen.MakeGenericMethod(inputType, outputType);
+            var callConvertEnumInputToEnumOutputMethodExpression = Expression.Call(
+                convertEnumInputToEnumOutputMethodInfoClosed,
+                inputParameterExpression,
+                contextParameterExpression);
+
+            var convertEnumInputToEnumOutputLambdaExpression = Expression.Lambda<Func<TypeCoercion, TInput, TypeCoercionContext, TOutput>>(
+                callConvertEnumInputToEnumOutputMethodExpression,
+                coercionParameterExpression,
+                inputParameterExpression,
+                contextParameterExpression);
+
+            var convertEnumInputToEnumOutputLambda = convertEnumInputToEnumOutputLambdaExpression.Compile();
+            return convertEnumInputToEnumOutputLambda;
+        }
+        #endregion
+
+        #region Nullable Factory Methods
         private static Func<TypeCoercion, TInput, TypeCoercionContext, TOutput> CreateCoerceInputToNullableOutputLambda()
         {
             var coercionType = typeof(TypeCoercion);
@@ -122,7 +237,7 @@ internal partial class TypeCoercion : ITypeCoercion
             var inputParameterExpression = Expression.Parameter(inputType, "input");
             var contextParameterExpression = Expression.Parameter(contextType, "context");
 
-            var coerceMethodInfoClosed = CoerceMethodInfoOpen.MakeGenericMethod(inputType, outputUnderlyingType);
+            var coerceMethodInfoClosed = _coerceMethodInfoOpen.MakeGenericMethod(inputType, outputUnderlyingType);
 
             var callCoerceMethodExpression = Expression.Call(
                 coercionParameterExpression,
@@ -154,8 +269,8 @@ internal partial class TypeCoercion : ITypeCoercion
             var inputParameterExpression = Expression.Parameter(inputType, "input");
             var contextParameterExpression = Expression.Parameter(contextType, "context");
 
-            var coerceMethodInfoClosed = CoerceMethodInfoOpen.MakeGenericMethod(inputUnderlyingType, outputType);
-            var inputValuePropertyInfo = TypeReflection.GetProperty(inputType, NullableValuePropertyName, BindingFlags.Public | BindingFlags.Instance) ?? throw new InvalidOperationException($"Unable to get the nullable input type {{Name={inputType.Name}}} property {{Name={NullableValuePropertyName}}}.");
+            var coerceMethodInfoClosed = _coerceMethodInfoOpen.MakeGenericMethod(inputUnderlyingType, outputType);
+            var inputValuePropertyInfo = TypeReflection.GetProperty(inputType, _nullableValuePropertyName, BindingFlags.Public | BindingFlags.Instance) ?? throw new InvalidOperationException($"Unable to get the nullable input type {{Name={inputType.Name}}} property {{Name={_nullableValuePropertyName}}}.");
 
             var inputParameterValuePropertyExpression = Expression.Property(inputParameterExpression, inputValuePropertyInfo);
 
@@ -190,8 +305,8 @@ internal partial class TypeCoercion : ITypeCoercion
             var inputParameterExpression = Expression.Parameter(inputType, "input");
             var contextParameterExpression = Expression.Parameter(contextType, "context");
 
-            var coerceMethodInfoClosed = CoerceMethodInfoOpen.MakeGenericMethod(inputUnderlyingType, outputUnderlyingType);
-            var inputValuePropertyInfo = TypeReflection.GetProperty(inputType, NullableValuePropertyName, BindingFlags.Public | BindingFlags.Instance) ?? throw new InvalidOperationException($"Unable to get the nullable input type {{Name={inputType.Name}}} property {{Name={NullableValuePropertyName}}}.");
+            var coerceMethodInfoClosed = _coerceMethodInfoOpen.MakeGenericMethod(inputUnderlyingType, outputUnderlyingType);
+            var inputValuePropertyInfo = TypeReflection.GetProperty(inputType, _nullableValuePropertyName, BindingFlags.Public | BindingFlags.Instance) ?? throw new InvalidOperationException($"Unable to get the nullable input type {{Name={inputType.Name}}} property {{Name={_nullableValuePropertyName}}}.");
 
             var inputParameterValuePropertyExpression = Expression.Property(inputParameterExpression, inputValuePropertyInfo);
 
@@ -212,89 +327,124 @@ internal partial class TypeCoercion : ITypeCoercion
             var coerceNullableInputToNullableOutputLambda = coerceNullableInputToNullableOutputLambdaExpression.Compile();
             return coerceNullableInputToNullableOutputLambda;
         }
-
-        private static Func<TInput, TOutput> CreateCastInputToOutputLambda()
-        {
-            var inputType = typeof(TInput);
-            var outputType = typeof(TOutput);
-
-            var inputParameterExpression = Expression.Parameter(inputType, "input");
-            var castInputToOutputExpression = Expression.ConvertChecked(inputParameterExpression, outputType);
-            var castInputToOutputLambdaExpression = Expression
-               .Lambda<Func<TInput, TOutput>>(castInputToOutputExpression, inputParameterExpression);
-            var castInputToOutputLambda = castInputToOutputLambdaExpression.Compile();
-            return castInputToOutputLambda;
-        }
         #endregion
     }
     #endregion
 
-    #region Methods
-    private static object CoerceInputToNullableOutput(TypeCoercion typeCoercion, object input, Type outputType, TypeCoercionContext context)
+    #region Cast Invocation Methods
+    private static TOutput CastInputToOutput<TInput, TOutput>(TInput input)
     {
-        var outputUnderlyingType = Nullable.GetUnderlyingType(outputType) ?? throw new InvalidOperationException($"Unable to get the nullable output underlying type {{Name={outputType.Name}}}.");
-        return typeCoercion.Coerce(input, outputUnderlyingType, context)!;
-    }
-
-    private static TOutput CoerceInputToNullableOutput<TInput, TOutput>(TypeCoercion typeCoercion, TInput input, TypeCoercionContext context)
-    {
-        var output = CompiledLambdaCache<TInput, TOutput>.CoerceInputToNullableOutputLambda(typeCoercion, input, context);
+        var output = CompiledLambdaCache<TInput, TOutput>.CastInputToOutputLambda(input);
         return output;
     }
+    #endregion
 
-    private static TOutput CoerceNullableInputToOutput<TInput, TOutput>(TypeCoercion typeCoercion, TInput input, TypeCoercionContext context)
-    {
-        var output = CompiledLambdaCache<TInput, TOutput>.CoerceNullableInputToOutputLambda(typeCoercion, input, context);
-        return output;
-    }
-
-    private static object CoerceNullableInputToNullableOutput(TypeCoercion typeCoercion, object input, Type outputType, TypeCoercionContext context)
-    {
-        var outputUnderlyingType = Nullable.GetUnderlyingType(outputType) ?? throw new InvalidOperationException($"Unable to get the nullable output underlying type {{Name={outputType.Name}}}.");
-        return typeCoercion.Coerce(input, outputUnderlyingType, context)!;
-    }
-
-    private static TOutput CoerceNullableInputToNullableOutput<TInput, TOutput>(TypeCoercion typeCoercion, TInput input, TypeCoercionContext context)
-    {
-        var output = CompiledLambdaCache<TInput, TOutput>.CoerceNullableInputToNullableOutputLambda(typeCoercion, input, context);
-        return output;
-    }
-
-    private static object CoerceInputToEnumOutput(TypeCoercion typeCoercion, object input, Type inputType, Type outputType, TypeCoercionContext context)
-    {
-        // Handle special cases:
-
-        // 1. String To Enum
-        if (TypeReflection.IsString(inputType))
-        {
-            var inputAsString = (string)input;
-            return ParseStringToEnum(inputAsString, outputType, context)!;
-        }
-
-        // Default case, coerce input to enumeration underlying type and cast that coerce result to the enumeration.
-        var outputUnderlyingType = Enum.GetUnderlyingType(outputType) ?? throw new InvalidOperationException($"Unable to get the enum output underlying type {{Name={outputType.Name}}}.");
-        var outputUnderlyingValue = typeCoercion.Coerce(input, outputUnderlyingType, context)!;
-
-        var output = Enum.ToObject(outputType, outputUnderlyingValue);
-        return output;
-    }
-
+    #region Enum Invocation Generic Methods
     private static TOutput CoerceInputToEnumOutput<TInput, TOutput>(TypeCoercion typeCoercion, TInput input, TypeCoercionContext context)
     {
         var output = CompiledLambdaCache<TInput, TOutput>.CoerceInputToEnumOutputLambda(typeCoercion, input, context);
         return output;
     }
 
-    private static TOutput CastInputToOutput<TInput, TOutput>(TInput input)
+    private static TOutput CoerceEnumInputToOutput<TInput, TOutput>(TypeCoercion typeCoercion, TInput input, TypeCoercionContext context)
     {
-        var output = CompiledLambdaCache<TInput, TOutput>.CastInputToOutputLambda(input);
+        var output = CompiledLambdaCache<TInput, TOutput>.CoerceEnumInputToOutputLambda(typeCoercion, input, context);
         return output;
+    }
+
+    private static TOutput CoerceEnumInputToEnumOutput<TInput, TOutput>(TypeCoercion typeCoercion, TInput input, TypeCoercionContext context)
+    {
+        var output = CompiledLambdaCache<TInput, TOutput>.CoerceEnumInputToEnumOutputLambda(typeCoercion, input, context);
+        return output;
+    }
+    #endregion
+
+    #region Enum Invocation NonGeneric Methods
+    private static object CoerceInputToEnumOutput(object input, Type inputType, Type outputType, TypeCoercionContext context)
+    {
+        // Try by name
+        if (TypeReflection.IsString(inputType))
+        {
+            var inputAsString = (string)input;
+            return ParseStringToEnum(inputAsString, outputType, context) ?? throw new InvalidOperationException($"Unable to create enumeration {{Type={outputType.Name}}} with input {{Value={input.SafeToString()}}} as the input is not a defined enumeration value.");
+        }
+
+        // Fallback to underlying value transfer (ordinal value)
+        var outputUnderlying = Convert.ChangeType(input, Enum.GetUnderlyingType(outputType)) ?? throw new InvalidOperationException($"Unable to convert input {{Value={input.SafeToString()}}} of type {{Type={inputType.Name}}} to underlying type of enumeration {{Type={outputType.Name}}}.");
+
+        var outputByOrdinal = Enum.ToObject(outputType, outputUnderlying);
+        return outputByOrdinal;
+    }
+
+    private static object CoerceEnumInputToOutput(object input, Type inputType, Type outputType, TypeCoercionContext context)
+    {
+        // Try by name
+        if (TypeReflection.IsString(outputType))
+        {
+            var inputName = Enum.GetName(inputType, input) ?? throw new InvalidOperationException($"Unable to get the name from enumeration {{Type={inputType.Name}}} with input {{Value={input.SafeToString()}}}.");
+            return inputName;
+        }
+
+        // Fallback to underlying value transfer (ordinal value)
+        var inputUnderlying = Convert.ChangeType(input, Enum.GetUnderlyingType(inputType)) ?? throw new InvalidOperationException($"Unable to convert input {{Value={input.SafeToString()}}} of type {{Type={inputType.Name}}} to underlying type of enumeration {{Type={outputType.Name}}}.");
+        var outputByOrdinal = Convert.ChangeType(inputUnderlying, outputType) ?? throw new InvalidOperationException($"Unable to convert input {{Value={inputUnderlying.SafeToString()}}} of type {{Type={Enum.GetUnderlyingType(inputType).Name}}} to underlying type of enumeration {{Type={outputType.Name}}}.");
+        return outputByOrdinal;
+    }
+
+    private static object CoerceEnumInputToEnumOutput(object input, Type inputType, Type outputType, TypeCoercionContext context)
+    {
+        // Try by name
+        var inputName = Enum.GetName(inputType, input);
+        if (inputName != null && Enum.TryParse(outputType, inputName, out var outputByName))
+            return outputByName;
+
+        // Fallback to underlying value transfer (ordinal value)
+        var inputUnderlying = Convert.ChangeType(input, Enum.GetUnderlyingType(inputType)) ?? throw new InvalidOperationException($"Unable to convert input {{Value={input.SafeToString()}}} of type {{Type={inputType.Name}}} to underlying type of enumeration {{Type={outputType.Name}}}.");
+        var outputUnderlying = Convert.ChangeType(inputUnderlying, Enum.GetUnderlyingType(outputType)) ?? throw new InvalidOperationException($"Unable to convert input {{Value={inputUnderlying.SafeToString()}}} of type {{Type={Enum.GetUnderlyingType(inputType).Name}}} to underlying type of enumeration {{Type={outputType.Name}}}.");
+
+        var outputByOrdinal = Enum.ToObject(outputType, outputUnderlying);
+        return outputByOrdinal;
+    }
+    #endregion
+
+    #region Enum Utility Methods
+    private static TOutput ConvertEnumInputToEnumOutput<TInput, TOutput>(TInput input, TypeCoercionContext context)
+        where TInput : Enum
+        where TOutput : struct, Enum
+    {
+        // Try by name
+        var inputType = typeof(TInput);
+        var inputName = Enum.GetName(inputType, input);
+        if (inputName != null && Enum.TryParse<TOutput>(inputName, out var outputByName))
+            return outputByName;
+
+        // Fallback to underlying value transfer (ordinal value)
+        var outputType = typeof(TOutput);
+
+        var inputUnderlying = Convert.ChangeType(input, Enum.GetUnderlyingType(inputType)) ?? throw new InvalidOperationException($"Unable to convert input {{Value={input.SafeToString()}}} of type {{Type={inputType.Name}}} to underlying type of enumeration {{Type={typeof(TOutput).Name}}}.");
+        var outputUnderlying = Convert.ChangeType(inputUnderlying, Enum.GetUnderlyingType(outputType)) ?? throw new InvalidOperationException($"Unable to convert input {{Value={inputUnderlying.SafeToString()}}} of type {{Type={Enum.GetUnderlyingType(inputType).Name}}} to underlying type of enumeration {{Type={typeof(TOutput).Name}}}.");
+
+        var outputByOrdinal = (TOutput)Enum.ToObject(outputType, outputUnderlying!);
+        return outputByOrdinal;
+    }
+
+    private static string GetNameFromEnum(object input, Type inputType, TypeCoercionContext context)
+    {
+        var output = Enum.GetName(inputType, input);
+        return output ?? throw new InvalidOperationException($"Unable to get the name from enumeration {{Type={inputType.Name}}} with input {{Value={input.SafeToString()}}}.");
+    }
+
+    private static string GetNameFromEnum<TEnum>(TEnum input, TypeCoercionContext context)
+        where TEnum : struct, Enum
+    {
+        var output = Enum.GetName(input);
+        return output ?? throw new InvalidOperationException($"Unable to get the name from enumeration {{Type={typeof(TEnum).Name}}} with input {{Value={input.SafeToString()}}}.");
     }
 
     private static object ParseStringToEnum(string input, Type outputType, TypeCoercionContext context)
     {
         var output = Enum.Parse(outputType, input);
-        return output;
+        return output ?? throw new InvalidOperationException($"Unable to create enumeration {{Type={outputType.Name}}} with input {{Value={input}}} as the input is not a defined enumeration value.");
     }
 
     private static TEnum ParseStringToEnum<TEnum>(string input, TypeCoercionContext context)
@@ -318,6 +468,40 @@ internal partial class TypeCoercion : ITypeCoercion
     {
         var outputType = typeof(TEnum);
         ValidateEnum(outputType, output!);
+    }
+    #endregion
+
+    #region Nullable Invocation Generic Methods
+    private static TOutput CoerceInputToNullableOutput<TInput, TOutput>(TypeCoercion typeCoercion, TInput input, TypeCoercionContext context)
+    {
+        var output = CompiledLambdaCache<TInput, TOutput>.CoerceInputToNullableOutputLambda(typeCoercion, input, context);
+        return output;
+    }
+
+    private static TOutput CoerceNullableInputToOutput<TInput, TOutput>(TypeCoercion typeCoercion, TInput input, TypeCoercionContext context)
+    {
+        var output = CompiledLambdaCache<TInput, TOutput>.CoerceNullableInputToOutputLambda(typeCoercion, input, context);
+        return output;
+    }
+
+    private static TOutput CoerceNullableInputToNullableOutput<TInput, TOutput>(TypeCoercion typeCoercion, TInput input, TypeCoercionContext context)
+    {
+        var output = CompiledLambdaCache<TInput, TOutput>.CoerceNullableInputToNullableOutputLambda(typeCoercion, input, context);
+        return output;
+    }
+    #endregion
+
+    #region Nullable Invocation NonGeneric Methods
+    private static object CoerceInputToNullableOutput(TypeCoercion typeCoercion, object input, Type outputType, TypeCoercionContext context)
+    {
+        var outputUnderlyingType = Nullable.GetUnderlyingType(outputType) ?? throw new InvalidOperationException($"Unable to get the nullable output underlying type {{Name={outputType.Name}}}.");
+        return typeCoercion.Coerce(input, outputUnderlyingType, context)!;
+    }
+
+    private static object CoerceNullableInputToNullableOutput(TypeCoercion typeCoercion, object input, Type outputType, TypeCoercionContext context)
+    {
+        var outputUnderlyingType = Nullable.GetUnderlyingType(outputType) ?? throw new InvalidOperationException($"Unable to get the nullable output underlying type {{Name={outputType.Name}}}.");
+        return typeCoercion.Coerce(input, outputUnderlyingType, context)!;
     }
     #endregion
 }

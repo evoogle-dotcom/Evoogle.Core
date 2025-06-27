@@ -18,7 +18,7 @@ public class TypeCoercionContext : DeepCloneable
     /// <summary>
     ///     A default type coercion context when needed.
     /// </summary>
-    public static readonly TypeCoercionContext Default = new TypeCoercionContext();
+    public static readonly TypeCoercionContext Default = new();
     #endregion
 
     #region Properties

@@ -82,19 +82,37 @@ public class CoerceTests(ITestOutputHelper output) : XUnitTests(output)
     public static readonly Type TestType = typeof(CoerceTests);
     public static readonly string TestTypeString = TypeReflection.GetCompactQualifiedName(TestType)!;
 
-    public const int TestRedOrdinal = 0;
-    public const int TestGreenOrdinal = 1;
-    public const int TestBlueOrdinal = 2;
-    public const string TestBlueString = "Blue";
-    public const string TestBlueLowercaseString = "blue";
-    public const string IntegerEnumFormat = "D";
-    public const string TestBlueOrdinalAsString = "2";
+    public const int TestColorSet1RedOrdinal = 1;
+    public const int TestColorSet1GreenOrdinal = 2;
+    public const int TestColorSet1BlueOrdinal = 3;
+    public const int TestColorSet1PurpleOrdinal = 4;
 
-    public enum PrimaryColor
+    public const int TestColorSet2UnspecifiedOrdinal = 0;
+    public const int TestColorSet2RedOrdinal = 1;
+    public const int TestColorSet2GreenOrdinal = 2;
+    public const int TestColorSet2YellowOrdinal = 3;
+    public const int TestColorSet2PurpleOrdinal = 42;
+
+    public const string TestGreenString = "Blue";
+    public const string TestGreenLowercaseString = "blue";
+    public const string IntegerEnumFormat = "D";
+    public const string TestGreenOrdinalAsString = "2";
+
+    public enum ColorSet1
     {
-        Red = TestRedOrdinal,
-        Green = TestGreenOrdinal,
-        Blue = TestBlueOrdinal
+        Red = TestColorSet1RedOrdinal,
+        Green = TestColorSet1GreenOrdinal,
+        Blue = TestColorSet1BlueOrdinal,
+        Purple = TestColorSet1PurpleOrdinal
+    };
+
+    public enum ColorSet2
+    {
+        Unspecified = TestColorSet2UnspecifiedOrdinal,
+        Red = TestColorSet2RedOrdinal,
+        Green = TestColorSet2GreenOrdinal,
+        Yellow = TestColorSet2YellowOrdinal,
+        Purple = TestColorSet2PurpleOrdinal
     };
 
     public static readonly BaseClass TestBaseClass = new();

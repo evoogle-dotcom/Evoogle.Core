@@ -57,7 +57,7 @@ public class TypeJsonConverter : JsonConverter<Type>
     ///     Adds the assembly of a given type <typeparamref name="T"/> to the allowlist.
     /// </summary>
     public TypeJsonConverter AddAllowedAssemblyOf<T>() =>
-        AddAllowedAssembly(typeof(T).Assembly);
+        this.AddAllowedAssembly(typeof(T).Assembly);
 
     /// <summary>
     ///     Replaces the set of allowed assemblies with the given collection.
@@ -66,7 +66,7 @@ public class TypeJsonConverter : JsonConverter<Type>
     {
         _allowedAssemblies.Clear();
         foreach (var asm in assemblies)
-            AddAllowedAssembly(asm);
+            this.AddAllowedAssembly(asm);
         return this;
     }
 
@@ -111,7 +111,7 @@ public class TypeJsonConverter : JsonConverter<Type>
 
         var type = GetDeserializeType(typeName);
 
-        if (!IsAllowed(type))
+        if (!this.IsAllowed(type))
             throw new JsonException($"Type '{type.FullName}' is not allowed for deserialization.");
 
         return type;

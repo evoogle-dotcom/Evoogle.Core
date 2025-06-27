@@ -20,10 +20,7 @@ internal partial class TypeCoercion : ITypeCoercion
     #endregion
 
     #region Constructors
-    public TypeCoercion()
-    {
-        this.AddBuiltInDefinitions();
-    }
+    public TypeCoercion() => this.AddBuiltInDefinitions();
     #endregion
 
     #region ITypeCoercion Methods
@@ -188,21 +185,18 @@ internal partial class TypeCoercion : ITypeCoercion
 
         if (isInputTypeEnum && isOutputTypeEnum)
         {
-            throw new NotImplementedException();
-
-            // output = CallCoerceNullableInputToNullableOutputMethod<TInput, TOutput>(this, input, context);
-            // return true;
+            output = CoerceEnumInputToEnumOutput(input, inputType, outputType, context);
+            ValidateEnum(outputType, output);
+            return true;
         }
         else if (isInputTypeEnum)
         {
-            throw new NotImplementedException();
-
-            // output = CallCoerceNullableInputToOutputMethod<TInput, TOutput>(this, input, context);
-            // return true;
+            output = CoerceEnumInputToOutput(input, inputType, outputType, context);
+            return true;
         }
         else if (isOutputTypeEnum)
         {
-            output = CoerceInputToEnumOutput(this, input, inputType, outputType, context);
+            output = CoerceInputToEnumOutput(input, inputType, outputType, context);
             ValidateEnum(outputType, output);
             return true;
         }
@@ -218,17 +212,14 @@ internal partial class TypeCoercion : ITypeCoercion
 
         if (isInputTypeEnum && isOutputTypeEnum)
         {
-            throw new NotImplementedException();
-
-            // output = CallCoerceNullableInputToNullableOutputMethod<TInput, TOutput>(this, input, context);
-            // return true;
+            output = CoerceEnumInputToEnumOutput<TInput, TOutput>(this, input, context);
+            ValidateEnum(output);
+            return true;
         }
         else if (isInputTypeEnum)
         {
-            throw new NotImplementedException();
-
-            // output = CallCoerceNullableInputToOutputMethod<TInput, TOutput>(this, input, context);
-            // return true;
+            output = CoerceEnumInputToOutput<TInput, TOutput>(this, input, context);
+            return true;
         }
         else if (isOutputTypeEnum)
         {

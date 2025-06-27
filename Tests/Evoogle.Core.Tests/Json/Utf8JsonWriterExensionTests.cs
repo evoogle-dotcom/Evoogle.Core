@@ -67,12 +67,12 @@ public class Utf8JsonWriterExensionTests(ITestOutputHelper output) : XUnitTests(
     #endregion
 
     #region Theory Data
-    private const string DefaultDateTimeString = "0001-01-01T00:00:00";
-    private const string DefaultDateTimeOffsetString = "0001-01-01T00:00:00+00:00";
-    private const string DefaultEnumString = "None";
-    private const string DefaultTimeSpanString = "00:00:00";
-    private const string DefaultGuidString = "00000000-0000-0000-0000-000000000000";
-    private const string DefaultUlidString = "00000000000000000000000000";
+    private const string _defaultDateTimeString = @"0001-01-01T00:00:00.0000000";
+    private const string _defaultDateTimeOffsetString = @"0001-01-01T00:00:00.0000000\u002B00:00";
+    private const string _defaultEnumString = @"None";
+    private const string _defaultTimeSpanString = @"00:00:00";
+    private const string _defaultGuidString = @"00000000-0000-0000-0000-000000000000";
+    private const string _defaultUlidString = @"00000000000000000000000000";
 
     public static TheoryDataRow<IXUnitTest>[] WritePropertyTheoryData =>
     [
@@ -102,20 +102,20 @@ public class Utf8JsonWriterExensionTests(ITestOutputHelper output) : XUnitTests(
         new WritePropertyTest
         {
             Name = "Type=Enum With Converter, Value=default, Condition=WhenWritingNull",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyEnumWithConverter(a, DefaultEnumString, nameof(JsonIgnoreCondition.WhenWritingNull)),
-            ExpectedJson = $@"{{""value"":""{DefaultEnumString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyEnumWithConverter(a, _defaultEnumString, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = $@"{{""value"":""{_defaultEnumString}""}}",
         },
         new WritePropertyTest
         {
             Name = "Type=Enum With Converter, Value=default, Condition=WhenWritingDefault",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyEnumWithConverter(a, DefaultEnumString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyEnumWithConverter(a, _defaultEnumString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
             ExpectedJson = @"{}",
         },
         new WritePropertyTest
         {
             Name = "Type=Enum With Converter, Value=default, Condition=Never",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyEnumWithConverter(a, DefaultEnumString, nameof(JsonIgnoreCondition.Never)),
-            ExpectedJson = $@"{{""value"":""{DefaultEnumString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyEnumWithConverter(a, _defaultEnumString, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":""{_defaultEnumString}""}}",
         },
 
         // .. Type (null) With Converter
@@ -286,20 +286,20 @@ public class Utf8JsonWriterExensionTests(ITestOutputHelper output) : XUnitTests(
         new WritePropertyTest
         {
             Name = "Type=Guid With Serializer, Value=0, Condition=WhenWritingNull",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyGuidWithSerializer(a, DefaultGuidString, nameof(JsonIgnoreCondition.WhenWritingNull)),
-            ExpectedJson = $@"{{""value"":""{DefaultGuidString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyGuidWithSerializer(a, _defaultGuidString, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = $@"{{""value"":""{_defaultGuidString}""}}",
         },
         new WritePropertyTest
         {
             Name = "Type=Guid With Serializer, Value=0, Condition=WhenWritingDefault",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyGuidWithSerializer(a, DefaultGuidString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyGuidWithSerializer(a, _defaultGuidString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
             ExpectedJson = @"{}",
         },
         new WritePropertyTest
         {
             Name = "Type=Guid With Serializer, Value=0, Condition=Never",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyGuidWithSerializer(a, DefaultGuidString, nameof(JsonIgnoreCondition.Never)),
-            ExpectedJson = $@"{{""value"":""{DefaultGuidString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyGuidWithSerializer(a, _defaultGuidString, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":""{_defaultGuidString}""}}",
         },
 
         // .. String (empty)
@@ -348,80 +348,80 @@ public class Utf8JsonWriterExensionTests(ITestOutputHelper output) : XUnitTests(
         new WritePropertyTest
         {
             Name = "Type=DateTime, Value=default, Condition=WhenWritingNull",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyDateTime(a, DefaultDateTimeString, nameof(JsonIgnoreCondition.WhenWritingNull)),
-            ExpectedJson = $@"{{""value"":""{DefaultDateTimeString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyDateTime(a, _defaultDateTimeString, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = $@"{{""value"":""{_defaultDateTimeString}""}}",
         },
         new WritePropertyTest
         {
             Name = "Type=DateTime, Value=default, Condition=WhenWritingDefault",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyDateTime(a, DefaultDateTimeString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyDateTime(a, _defaultDateTimeString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
             ExpectedJson = @"{}",
         },
         new WritePropertyTest
         {
             Name = "Type=DateTime, Value=default, Condition=Never",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyDateTime(a, DefaultDateTimeString, nameof(JsonIgnoreCondition.Never)),
-            ExpectedJson = $@"{{""value"":""{DefaultDateTimeString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyDateTime(a, _defaultDateTimeString, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":""{_defaultDateTimeString}""}}",
         },
 
         // .. DateTimeOffset
         new WritePropertyTest
         {
             Name = "Type=DateTimeOffset, Value=default, Condition=WhenWritingNull",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyDateTimeOffset(a, DefaultDateTimeOffsetString, nameof(JsonIgnoreCondition.WhenWritingNull)),
-            ExpectedJson = $@"{{""value"":""{DefaultDateTimeOffsetString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyDateTimeOffset(a, _defaultDateTimeOffsetString, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = $@"{{""value"":""{_defaultDateTimeOffsetString}""}}",
         },
         new WritePropertyTest
         {
             Name = "Type=DateTimeOffset, Value=default, Condition=WhenWritingDefault",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyDateTimeOffset(a, DefaultDateTimeOffsetString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyDateTimeOffset(a, _defaultDateTimeOffsetString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
             ExpectedJson = @"{}",
         },
         new WritePropertyTest
         {
             Name = "Type=DateTimeOffset, Value=default, Condition=Never",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyDateTimeOffset(a, DefaultDateTimeOffsetString, nameof(JsonIgnoreCondition.Never)),
-            ExpectedJson = $@"{{""value"":""{DefaultDateTimeOffsetString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyDateTimeOffset(a, _defaultDateTimeOffsetString, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":""{_defaultDateTimeOffsetString}""}}",
         },
 
         // .. Enum
         new WritePropertyTest
         {
             Name = "Type=Enum, Value=default, Condition=WhenWritingNull",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyEnum(a, DefaultEnumString, nameof(JsonIgnoreCondition.WhenWritingNull)),
-            ExpectedJson = $@"{{""value"":""{DefaultEnumString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyEnum(a, _defaultEnumString, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = $@"{{""value"":""{_defaultEnumString}""}}",
         },
         new WritePropertyTest
         {
             Name = "Type=Enum, Value=default, Condition=WhenWritingDefault",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyEnum(a, DefaultEnumString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyEnum(a, _defaultEnumString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
             ExpectedJson = @"{}",
         },
         new WritePropertyTest
         {
             Name = "Type=Enum, Value=default, Condition=Never",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyEnum(a, DefaultEnumString, nameof(JsonIgnoreCondition.Never)),
-            ExpectedJson = $@"{{""value"":""{DefaultEnumString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyEnum(a, _defaultEnumString, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":""{_defaultEnumString}""}}",
         },
 
         // .. Guid
         new WritePropertyTest
         {
             Name = "Type=Guid, Value=default, Condition=WhenWritingNull",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyGuid(a, DefaultGuidString, nameof(JsonIgnoreCondition.WhenWritingNull)),
-            ExpectedJson = $@"{{""value"":""{DefaultGuidString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyGuid(a, _defaultGuidString, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = $@"{{""value"":""{_defaultGuidString}""}}",
         },
         new WritePropertyTest
         {
             Name = "Type=Guid, Value=default, Condition=WhenWritingDefault",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyGuid(a, DefaultGuidString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyGuid(a, _defaultGuidString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
             ExpectedJson = @"{}",
         },
         new WritePropertyTest
         {
             Name = "Type=Guid, Value=default, Condition=Never",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyGuid(a, DefaultGuidString, nameof(JsonIgnoreCondition.Never)),
-            ExpectedJson = $@"{{""value"":""{DefaultGuidString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyGuid(a, _defaultGuidString, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":""{_defaultGuidString}""}}",
         },
 
         // .. String (empty)
@@ -468,40 +468,40 @@ public class Utf8JsonWriterExensionTests(ITestOutputHelper output) : XUnitTests(
         new WritePropertyTest
         {
             Name = "Type=TimeSpan, Value=default, Condition=WhenWritingNull",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyTimeSpan(a, DefaultTimeSpanString, nameof(JsonIgnoreCondition.WhenWritingNull)),
-            ExpectedJson = $@"{{""value"":""{DefaultTimeSpanString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyTimeSpan(a, _defaultTimeSpanString, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = $@"{{""value"":""{_defaultTimeSpanString}""}}",
         },
         new WritePropertyTest
         {
             Name = "Type=TimeSpan, Value=default, Condition=WhenWritingDefault",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyTimeSpan(a, DefaultTimeSpanString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyTimeSpan(a, _defaultTimeSpanString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
             ExpectedJson = @"{}",
         },
         new WritePropertyTest
         {
             Name = "Type=TimeSpan, Value=default, Condition=Never",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyTimeSpan(a, DefaultTimeSpanString, nameof(JsonIgnoreCondition.Never)),
-            ExpectedJson = $@"{{""value"":""{DefaultTimeSpanString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyTimeSpan(a, _defaultTimeSpanString, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":""{_defaultTimeSpanString}""}}",
         },
 
         // .. Ulid
         new WritePropertyTest
         {
             Name = "Type=Ulid, Value=default, Condition=WhenWritingNull",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyUlid(a, DefaultUlidString, nameof(JsonIgnoreCondition.WhenWritingNull)),
-            ExpectedJson = $@"{{""value"":""{DefaultUlidString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyUlid(a, _defaultUlidString, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = $@"{{""value"":""{_defaultUlidString}""}}",
         },
         new WritePropertyTest
         {
             Name = "Type=Ulid, Value=default, Condition=WhenWritingDefault",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyUlid(a, DefaultUlidString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyUlid(a, _defaultUlidString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
             ExpectedJson = @"{}",
         },
         new WritePropertyTest
         {
             Name = "Type=Ulid, Value=default, Condition=Never",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyUlid(a, DefaultUlidString, nameof(JsonIgnoreCondition.Never)),
-            ExpectedJson = $@"{{""value"":""{DefaultUlidString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyUlid(a, _defaultUlidString, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":""{_defaultUlidString}""}}",
         },
 
         // Nullable Boolean Tests
@@ -572,20 +572,20 @@ public class Utf8JsonWriterExensionTests(ITestOutputHelper output) : XUnitTests(
         new WritePropertyTest
         {
             Name = "Type=Nullable Enum With Converter, Value=default, Condition=WhenWritingNull",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableEnum(a, DefaultEnumString, nameof(JsonIgnoreCondition.WhenWritingNull)),
-            ExpectedJson = $@"{{""value"":""{DefaultEnumString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableEnum(a, _defaultEnumString, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = $@"{{""value"":""{_defaultEnumString}""}}",
         },
         new WritePropertyTest
         {
             Name = "Type=Nullable Enum With Converter, Value=default, Condition=WhenWritingDefault",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableEnum(a, DefaultEnumString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableEnum(a, _defaultEnumString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
             ExpectedJson = @"{}",
         },
         new WritePropertyTest
         {
             Name = "Type=Nullable Enum With Converter, Value=default, Condition=Never",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableEnum(a, DefaultEnumString, nameof(JsonIgnoreCondition.Never)),
-            ExpectedJson = $@"{{""value"":""{DefaultEnumString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableEnum(a, _defaultEnumString, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":""{_defaultEnumString}""}}",
         },
 
         // Nullable Number Tests
@@ -896,20 +896,20 @@ public class Utf8JsonWriterExensionTests(ITestOutputHelper output) : XUnitTests(
         new WritePropertyTest
         {
             Name = "Type=Nullable Guid With Serializer, Value=default, Condition=WhenWritingNull",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableGuidWithSerializer(a, DefaultGuidString, nameof(JsonIgnoreCondition.WhenWritingNull)),
-            ExpectedJson = $@"{{""value"":""{DefaultGuidString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableGuidWithSerializer(a, _defaultGuidString, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = $@"{{""value"":""{_defaultGuidString}""}}",
         },
         new WritePropertyTest
         {
             Name = "Type=Nullable Guid With Serializer, Value=default, Condition=WhenWritingDefault",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableGuidWithSerializer(a, DefaultGuidString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableGuidWithSerializer(a, _defaultGuidString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
             ExpectedJson = @"{}",
         },
         new WritePropertyTest
         {
             Name = "Type=Nullable Guid With Serializer, Value=default, Condition=Never",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableGuidWithSerializer(a, DefaultGuidString, nameof(JsonIgnoreCondition.Never)),
-            ExpectedJson = $@"{{""value"":""{DefaultGuidString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableGuidWithSerializer(a, _defaultGuidString, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":""{_defaultGuidString}""}}",
         },
 
         // Nullable String Tests
@@ -1038,120 +1038,120 @@ public class Utf8JsonWriterExensionTests(ITestOutputHelper output) : XUnitTests(
         new WritePropertyTest
         {
             Name = "Type=Nullable DateTime, Value=default, Condition=WhenWritingNull",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableDateTime(a, DefaultDateTimeString, nameof(JsonIgnoreCondition.WhenWritingNull)),
-            ExpectedJson = $@"{{""value"":""{DefaultDateTimeString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableDateTime(a, _defaultDateTimeString, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = $@"{{""value"":""{_defaultDateTimeString}""}}",
         },
         new WritePropertyTest
         {
             Name = "Type=Nullable DateTime, Value=default, Condition=WhenWritingDefault",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableDateTime(a, DefaultDateTimeString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableDateTime(a, _defaultDateTimeString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
             ExpectedJson = @"{}",
         },
         new WritePropertyTest
         {
             Name = "Type=Nullable DateTime, Value=default, Condition=Never",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableDateTime(a, DefaultDateTimeString, nameof(JsonIgnoreCondition.Never)),
-            ExpectedJson = $@"{{""value"":""{DefaultDateTimeString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableDateTime(a, _defaultDateTimeString, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":""{_defaultDateTimeString}""}}",
         },
 
         // .. DateTimeOffset (default)
         new WritePropertyTest
         {
             Name = "Type=Nullable DateTimeOffset, Value=default, Condition=WhenWritingNull",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableDateTimeOffset(a, DefaultDateTimeOffsetString, nameof(JsonIgnoreCondition.WhenWritingNull)),
-            ExpectedJson = $@"{{""value"":""{DefaultDateTimeOffsetString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableDateTimeOffset(a, _defaultDateTimeOffsetString, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = $@"{{""value"":""{_defaultDateTimeOffsetString}""}}",
         },
         new WritePropertyTest
         {
             Name = "Type=Nullable DateTimeOffset, Value=default, Condition=WhenWritingDefault",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableDateTimeOffset(a, DefaultDateTimeOffsetString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableDateTimeOffset(a, _defaultDateTimeOffsetString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
             ExpectedJson = @"{}",
         },
         new WritePropertyTest
         {
             Name = "Type=Nullable DateTimeOffset, Value=default, Condition=Never",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableDateTimeOffset(a, DefaultDateTimeOffsetString, nameof(JsonIgnoreCondition.Never)),
-            ExpectedJson = $@"{{""value"":""{DefaultDateTimeOffsetString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableDateTimeOffset(a, _defaultDateTimeOffsetString, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":""{_defaultDateTimeOffsetString}""}}",
         },
 
         // .. Enum (default)
         new WritePropertyTest
         {
             Name = "Type=Nullable Enum, Value=default, Condition=WhenWritingNull",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableEnum(a, DefaultEnumString, nameof(JsonIgnoreCondition.WhenWritingNull)),
-            ExpectedJson = $@"{{""value"":""{DefaultEnumString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableEnum(a, _defaultEnumString, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = $@"{{""value"":""{_defaultEnumString}""}}",
         },
         new WritePropertyTest
         {
             Name = "Type=Nullable Enum, Value=default, Condition=WhenWritingDefault",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableEnum(a, DefaultEnumString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableEnum(a, _defaultEnumString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
             ExpectedJson = @"{}",
         },
         new WritePropertyTest
         {
             Name = "Type=Nullable Enum, Value=default, Condition=Never",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableEnum(a, DefaultEnumString, nameof(JsonIgnoreCondition.Never)),
-            ExpectedJson = $@"{{""value"":""{DefaultEnumString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableEnum(a, _defaultEnumString, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":""{_defaultEnumString}""}}",
         },
 
         // .. Guid (default)
         new WritePropertyTest
         {
             Name = "Type=Nullable Guid, Value=default, Condition=WhenWritingNull",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableGuid(a, DefaultGuidString, nameof(JsonIgnoreCondition.WhenWritingNull)),
-            ExpectedJson = $@"{{""value"":""{DefaultGuidString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableGuid(a, _defaultGuidString, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = $@"{{""value"":""{_defaultGuidString}""}}",
         },
         new WritePropertyTest
         {
             Name = "Type=Nullable Guid, Value=default, Condition=WhenWritingDefault",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableGuid(a, DefaultGuidString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableGuid(a, _defaultGuidString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
             ExpectedJson = @"{}",
         },
         new WritePropertyTest
         {
             Name = "Type=Nullable Guid, Value=default, Condition=Never",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableGuid(a, DefaultGuidString, nameof(JsonIgnoreCondition.Never)),
-            ExpectedJson = $@"{{""value"":""{DefaultGuidString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableGuid(a, _defaultGuidString, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":""{_defaultGuidString}""}}",
         },
 
         // .. TimeSpan (default)
         new WritePropertyTest
         {
             Name = "Type=Nullable TimeSpan, Value=default, Condition=WhenWritingNull",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableTimeSpan(a, DefaultTimeSpanString, nameof(JsonIgnoreCondition.WhenWritingNull)),
-            ExpectedJson = $@"{{""value"":""{DefaultTimeSpanString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableTimeSpan(a, _defaultTimeSpanString, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = $@"{{""value"":""{_defaultTimeSpanString}""}}",
         },
         new WritePropertyTest
         {
             Name = "Type=Nullable TimeSpan, Value=default, Condition=WhenWritingDefault",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableTimeSpan(a, DefaultTimeSpanString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableTimeSpan(a, _defaultTimeSpanString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
             ExpectedJson = @"{}",
         },
         new WritePropertyTest
         {
             Name = "Type=Nullable TimeSpan, Value=default, Condition=Never",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableTimeSpan(a, DefaultTimeSpanString, nameof(JsonIgnoreCondition.Never)),
-            ExpectedJson = $@"{{""value"":""{DefaultTimeSpanString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableTimeSpan(a, _defaultTimeSpanString, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":""{_defaultTimeSpanString}""}}",
         },
 
         // .. Ulid (default)
         new WritePropertyTest
         {
             Name = "Type=Nullable Ulid, Value=default, Condition=WhenWritingNull",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableUlid(a, DefaultUlidString, nameof(JsonIgnoreCondition.WhenWritingNull)),
-            ExpectedJson = $@"{{""value"":""{DefaultUlidString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableUlid(a, _defaultUlidString, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = $@"{{""value"":""{_defaultUlidString}""}}",
         },
         new WritePropertyTest
         {
             Name = "Type=Nullable Ulid, Value=default, Condition=WhenWritingDefault",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableUlid(a, DefaultUlidString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableUlid(a, _defaultUlidString, nameof(JsonIgnoreCondition.WhenWritingDefault)),
             ExpectedJson = @"{}",
         },
         new WritePropertyTest
         {
             Name = "Type=Nullable Ulid, Value=default, Condition=Never",
-            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableUlid(a, DefaultUlidString, nameof(JsonIgnoreCondition.Never)),
-            ExpectedJson = $@"{{""value"":""{DefaultUlidString}""}}",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyNullableUlid(a, _defaultUlidString, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":""{_defaultUlidString}""}}",
         },
     ];
     #endregion
