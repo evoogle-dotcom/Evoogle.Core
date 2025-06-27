@@ -5,7 +5,7 @@
 // See the LICENSE file in the project root for more information.
 using System.Collections;
 
-namespace Evoogle.NTree;
+namespace Evoogle.NTree.Internal;
 
 /// <summary>
 ///     This API supports the Evoogle.Core infrastructure and is not intended to be used directly from your code.
@@ -21,7 +21,7 @@ internal class BreadthFirstEnumerator<TNode>(TNode node) : IEnumerator<TNode>
     #endregion
 
     #region IEnumerator<TNode> Properties
-    public TNode Current => this.NullableCurrent ?? throw new NullReferenceException($"{nameof(this.Current)} is undefind.");
+    public TNode Current => this.NullableCurrent ?? throw new NullReferenceException($"{nameof(this.Current)} is undefined.");
 
     public TNode? NullableCurrent { get; set; }
     #endregion

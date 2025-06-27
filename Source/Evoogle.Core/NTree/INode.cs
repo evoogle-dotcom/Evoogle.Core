@@ -15,6 +15,9 @@ public interface INode<TNode>
     where TNode : INode<TNode>
 {
     #region Properties
+    /// <summary>Gets the name of this node.</summary>
+    string Name { get; }
+
     /// <summary>Gets the root node of the 1-N tree.</summary>
     TNode Root { get; }
 
