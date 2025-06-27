@@ -93,10 +93,7 @@ public static class ExtensibleExtensions
     /// <param name="extensible">The extensible object.</param>
     /// <param name="modifyExtensionAction">The action to modify the extension instance.</param>
     public static void ModifyExtension<TExtension>(this IExtensible extensible, Action<TExtension> modifyExtensionAction)
-        where TExtension : class, new()
-    {
-        modifyExtensionAction(extensible.GetOrAttachExtension<TExtension>());
-    }
+        where TExtension : class, new() => modifyExtensionAction(extensible.GetOrAttachExtension<TExtension>());
 
     /// <summary>
     ///     Tries to retrieve the attached extension object of the specified extension type.

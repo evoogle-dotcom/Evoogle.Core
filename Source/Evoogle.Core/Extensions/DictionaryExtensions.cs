@@ -21,7 +21,7 @@ public static class DictionaryExtensions
     /// <returns>The indexed value by key, throws a <see cref="KeyNotFoundException"/> if the value does not exist in the dictionary.</returns>
     public static TValue GetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
     {
-        if (dictionary.TryGetValue(key, out TValue? value))
+        if (dictionary.TryGetValue(key, out var value))
             return value;
 
         var message = $"Unable to get value for given key '{key}' from dictionary, key does not exist in dictionary.";

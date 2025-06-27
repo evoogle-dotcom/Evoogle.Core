@@ -24,9 +24,6 @@ public sealed class NullJsonNamingPolicy : JsonNamingPolicy
     /// </summary>
     /// <param name="name">The name to convert.</param>
     /// <returns>The original name, unchanged.</returns>
-    public override string ConvertName(string name)
-    {
-        return name;
-    }
+    public override string ConvertName(string name) => name;
     #endregion
 }

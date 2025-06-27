@@ -15,8 +15,8 @@ namespace Evoogle.Coercion.Internal;
 /// </summary>
 internal partial class TypeCoercion : ITypeCoercion
 {
-    #region Properties
-    private Dictionary<Tuple<Type, Type>, ITypeCoercionDefinition> Definitions { get; } = [];
+    #region Fields
+    private readonly Dictionary<Tuple<Type, Type>, ITypeCoercionDefinition> _definitions = [];
     #endregion
 
     #region Constructors
@@ -124,7 +124,7 @@ internal partial class TypeCoercion : ITypeCoercion
     private void AddDefinition(ITypeCoercionDefinition definition)
     {
         var key = CreateDefinitionKey(definition);
-        this.Definitions.Add(key, definition);
+        _definitions.Add(key, definition);
     }
 
     private static Tuple<Type, Type> CreateDefinitionKey(ITypeCoercionDefinition definition)
@@ -363,7 +363,7 @@ internal partial class TypeCoercion : ITypeCoercion
     private bool TryGetDefinition(Type inputType, Type outputType, [NotNullWhen(true)] out ITypeCoercionDefinition? definition)
     {
         var key = CreateDefinitionKey(inputType, outputType);
-        if (!this.Definitions.TryGetValue(key, out definition))
+        if (!_definitions.TryGetValue(key, out definition))
             return false;
 
         return true;
@@ -377,7 +377,7 @@ internal partial class TypeCoercion : ITypeCoercion
         var outputType = typeof(TOutput);
 
         var key = CreateDefinitionKey(inputType, outputType);
-        if (!this.Definitions.TryGetValue(key, out var value))
+        if (!_definitions.TryGetValue(key, out var value))
             return false;
 
         definition = (ITypeCoercionDefinition<TInput, TOutput>)value;

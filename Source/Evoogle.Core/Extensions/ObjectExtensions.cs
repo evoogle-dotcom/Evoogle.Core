@@ -15,19 +15,17 @@ namespace Evoogle.Extensions;
 public static class ObjectExtensions
 {
     #region Fields
-    private const string DefaultNullText = "<null>";
-    private const string DefaultEmptyText = "<empty>";
-    #endregion
+    private const string _defaultNullText = "<null>";
+    private const string _defaultEmptyText = "<empty>";
 
-    #region Properties
-    private static JsonSerializerOptions DefaultDeepCopyWithJsonOptions { get; } = new()
+    private static readonly JsonSerializerOptions _defaultDeepCopyWithJsonOptions = new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.Never,
         ReferenceHandler = ReferenceHandler.Preserve,
         WriteIndented = false
     };
 
-    private static JsonSerializerOptions DefaultToJsonOptions { get; } = new()
+    private static readonly JsonSerializerOptions _defaultToJsonOptions = new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.Never,
         WriteIndented = true,
@@ -57,10 +55,8 @@ public static class ObjectExtensions
         if (sourceObject == null)
             return null;
 
-        var sourceJson = JsonSerializer.Serialize(sourceObject, sourceType, options ?? DefaultDeepCopyWithJsonOptions);
-
-        var resultObject = JsonSerializer.Deserialize(sourceJson, sourceType, options ?? DefaultDeepCopyWithJsonOptions);
-
+        var sourceJson = JsonSerializer.Serialize(sourceObject, sourceType, options ?? _defaultDeepCopyWithJsonOptions);
+        var resultObject = JsonSerializer.Deserialize(sourceJson, sourceType, options ?? _defaultDeepCopyWithJsonOptions);
         return resultObject;
     }
 
@@ -88,10 +84,8 @@ public static class ObjectExtensions
         if (sourceObject == null)
             return null;
 
-        var sourceJson = JsonSerializer.Serialize(sourceObject, sourceType, options ?? DefaultDeepCopyWithJsonOptions);
-
-        var resultObject = JsonSerializer.Deserialize(sourceJson, resultType, options ?? DefaultDeepCopyWithJsonOptions);
-
+        var sourceJson = JsonSerializer.Serialize(sourceObject, sourceType, options ?? _defaultDeepCopyWithJsonOptions);
+        var resultObject = JsonSerializer.Deserialize(sourceJson, resultType, options ?? _defaultDeepCopyWithJsonOptions);
         return resultObject;
     }
 
@@ -212,7 +206,7 @@ public static class ObjectExtensions
     /// <returns>JSON string of the .NET object.</returns>
     public static string SafeToJson<T>(this T? obj, JsonSerializerOptions? options = null)
     {
-        var json = JsonSerializer.Serialize(obj, options ?? DefaultToJsonOptions);
+        var json = JsonSerializer.Serialize(obj, options ?? _defaultToJsonOptions);
         return json;
     }
 
@@ -235,15 +229,15 @@ public static class ObjectExtensions
     ///     If the reference type is null or the actual <c>ToString</c> representation is null, then the parameter nullText is returned.
     ///     If the reference type <c>ToString</c> representation is empty, then the parameter emptyText is returned.
     /// </returns>
-    public static string SafeToString<T>(this T? obj, string? nullText = DefaultNullText, string? emptyText = DefaultEmptyText)
+    public static string SafeToString<T>(this T? obj, string? nullText = _defaultNullText, string? emptyText = _defaultEmptyText)
     {
         var toStringResult = obj?.ToString();
 
         if (toStringResult == null)
-            return nullText ?? DefaultNullText;
+            return nullText ?? _defaultNullText;
 
         if (string.IsNullOrWhiteSpace(toStringResult))
-            return emptyText ?? DefaultEmptyText;
+            return emptyText ?? _defaultEmptyText;
 
         return toStringResult;
     }

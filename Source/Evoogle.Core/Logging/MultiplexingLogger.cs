@@ -28,7 +28,12 @@ namespace Evoogle.Logging;
 ///     Use <see cref="MultiplexingLoggerMode"/> to configure one or more targets.
 ///     This logger is especially useful in test utilities, converters, or diagnostics where structured logging may not be fully wired up.
 /// </remarks>
-public sealed class MultiplexingLogger<T> : ILogger<T>
+/// <remarks>
+///     Initializes a new instance of the <see cref="MultiplexingLogger{T}"/> class.
+/// </remarks>
+/// <param name="innerLogger">An optional <see cref="ILogger{T}"/> to forward log messages to.</param>
+/// <param name="mode">Specifies one or more log targets for output.</param>
+public sealed class MultiplexingLogger<T>(ILogger<T>? innerLogger, MultiplexingLoggerMode mode = MultiplexingLoggerMode.Logger) : ILogger<T>
 {
     #region Types
     /// <summary>Represents a no-op scope used when no logger is available.</summary>
@@ -40,30 +45,14 @@ public sealed class MultiplexingLogger<T> : ILogger<T>
     #endregion
 
     #region Fields
-    private readonly ILogger<T>? _innerLogger;
-    private readonly MultiplexingLoggerMode _mode;
-    #endregion
-
-    #region Constructors
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="MultiplexingLogger{T}"/> class.
-    /// </summary>
-    /// <param name="innerLogger">An optional <see cref="ILogger{T}"/> to forward log messages to.</param>
-    /// <param name="mode">Specifies one or more log targets for output.</param>
-    public MultiplexingLogger(ILogger<T>? innerLogger, MultiplexingLoggerMode mode = MultiplexingLoggerMode.Logger)
-    {
-        _innerLogger = innerLogger;
-        _mode = mode;
-    }
+    private readonly ILogger<T>? _innerLogger = innerLogger;
+    private readonly MultiplexingLoggerMode _mode = mode;
     #endregion
 
     #region ILogger<T> Methods
     /// <inheritdoc />
     public IDisposable? BeginScope<TState>(TState state)
-        where TState : notnull
-    {
-        return _innerLogger?.BeginScope(state) ?? NullScope.Instance;
-    }
+        where TState : notnull => _innerLogger?.BeginScope(state) ?? NullScope.Instance;
 
     /// <inheritdoc />
     public bool IsEnabled(LogLevel logLevel)

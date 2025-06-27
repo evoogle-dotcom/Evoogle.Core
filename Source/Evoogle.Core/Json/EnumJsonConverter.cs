@@ -16,16 +16,16 @@ namespace Evoogle.Json;
 public class EnumJsonConverter<TEnum> : JsonConverter<TEnum>
     where TEnum : struct, Enum
 {
-    #region Properties
+    #region Fields
     /// <summary>
     ///     Indicates whether the enum type is decorated with the [Flags] attribute, allowing it to represent a combination of values.
     /// </summary>
-    private static bool IsFlags { get; } = typeof(TEnum).GetCustomAttributes(typeof(FlagsAttribute), false).Length > 0;
+    private static readonly bool _hasFlags = typeof(TEnum).GetCustomAttributes(typeof(FlagsAttribute), false).Length > 0;
 
     /// <summary>
     ///     An array of all valid enum names for the specified enum type, used to validate input during deserialization.
     /// </summary>
-    private static string[] Names { get; } = Enum.GetNames<TEnum>();
+    private static readonly string[] _enumNames = Enum.GetNames<TEnum>();
     #endregion
 
     #region JsonConverter Methods
@@ -42,11 +42,11 @@ public class EnumJsonConverter<TEnum> : JsonConverter<TEnum>
         if (string.IsNullOrWhiteSpace(value))
             return default;
 
-        if (IsFlags)
+        if (_hasFlags)
         {
             // Splits the string into parts for [Flags] enums, trimming whitespace from each.
             var parts = value.Split(',').Select(p => p.Trim()).ToArray();
-            if (parts.All(part => Names.Any(name => string.Equals(name, part, StringComparison.OrdinalIgnoreCase))))
+            if (parts.All(part => _enumNames.Any(name => string.Equals(name, part, StringComparison.OrdinalIgnoreCase))))
             {
                 // If all parts match valid enum names, parses the combined string into an enum value.
                 return this.ParseString(value);
@@ -65,7 +65,7 @@ public class EnumJsonConverter<TEnum> : JsonConverter<TEnum>
                 throw new JsonException($"Comma is not allowed for non-[Flags] enum {{Type={this.Type.Name}}}");
             }
             // Validates that the input matches a valid enum name (case-insensitive).
-            if (Names.Any(name => string.Equals(name, value, StringComparison.OrdinalIgnoreCase)))
+            if (_enumNames.Any(name => string.Equals(name, value, StringComparison.OrdinalIgnoreCase)))
             {
                 // Parses the string into an enum value if it matches a valid name.
                 return this.ParseString(value);
@@ -84,11 +84,7 @@ public class EnumJsonConverter<TEnum> : JsonConverter<TEnum>
     /// <param name="writer">The UTF-8 JSON writer to output the string.</param>
     /// <param name="value">The enum value to serialize.</param>
     /// <param name="options">Options for the JSON serializer.</param>
-    public override void Write(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options)
-    {
-        // Writes the enum value as its string representation; for [Flags] enums, this includes comma-separated names.
-        writer.WriteStringValue(value.ToString());
-    }
+    public override void Write(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options) => writer.WriteStringValue(value.ToString());
     #endregion
 
     #region Implementation Methods

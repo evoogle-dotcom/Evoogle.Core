@@ -54,29 +54,20 @@ public class TypeCoercionContext : DeepCloneable
     /// </summary>
     /// <param name="type">The CLR type for which to retrieve the format string.</param>
     /// <returns>The format string if found, otherwise <c>null</c>.</returns>
-    public string? GetFormat(Type type)
-    {
-        return this.FormatMapping.TryGetValue(type, out var format) ? format : null;
-    }
+    public string? GetFormat(Type type) => this.FormatMapping.TryGetValue(type, out var format) ? format : null;
 
     /// <summary>
     ///     Retrieves the format provider associated with the specified type.
     /// </summary>
     /// <param name="type">The CLR type for which to retrieve the format provider.</param>
     /// <returns>The format provider if found, otherwise <c>null</c>.</returns>
-    public IFormatProvider? GetFormatProvider(Type type)
-    {
-        return this.FormatProviderMapping.TryGetValue(type, out var formatProvider) ? formatProvider : null;
-    }
+    public IFormatProvider? GetFormatProvider(Type type) => this.FormatProviderMapping.TryGetValue(type, out var formatProvider) ? formatProvider : null;
 
     /// <summary>
     ///     Retrieves the DateTime style associated with the specified type.
     /// </summary>
     /// <param name="type">The CLR type for which to retrieve the DateTime style.</param>
     /// <returns>The DateTime style if found, otherwise <see cref="DateTimeStyles.None"/>.</returns>
-    public DateTimeStyles GetDateTimeStyles(Type type)
-    {
-        return this.DateTimeStylesMapping.TryGetValue(type, out var dateTimeStyles) ? dateTimeStyles : DateTimeStyles.None;
-    }
+    public DateTimeStyles GetDateTimeStyles(Type type) => this.DateTimeStylesMapping.TryGetValue(type, out var dateTimeStyles) ? dateTimeStyles : DateTimeStyles.None;
     #endregion
 }

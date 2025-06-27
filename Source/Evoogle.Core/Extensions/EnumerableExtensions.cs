@@ -13,8 +13,8 @@ namespace Evoogle.Extensions;
 public static class EnumerableExtensions
 {
     #region Fields
-    private const string DefaultNullText = "<null>";
-    private const string DefaultEmptyText = "<empty>";
+    private const string _defaultNullText = "<null>";
+    private const string _defaultEmptyText = "<empty>";
     #endregion
 
     #region Extension Methods
@@ -65,7 +65,7 @@ public static class EnumerableExtensions
     /// <returns>An empty enumerable if the enumerable is null, otherwise the original enumerable.</returns>
     public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T>? enumerable)
     {
-        return enumerable ?? Enumerable.Empty<T>();
+        return enumerable ?? [];
     }
 
     /// <summary>
@@ -101,8 +101,8 @@ public static class EnumerableExtensions
     /// <returns>Underlying array if enumerable is an actual array, otherwise an array is created from the enumerable or an empty array if null.</returns>
     public static T[] SafeToArray<T>(this IEnumerable<T>? enumerable)
     {
-        enumerable ??= Enumerable.Empty<T>();
-        var array = enumerable as T[] ?? enumerable.ToArray();
+        enumerable ??= [];
+        var array = enumerable as T[] ?? [.. enumerable];
         return array;
     }
 
@@ -130,8 +130,8 @@ public static class EnumerableExtensions
     public static string SafeToDelimitedString<T>(
         this IEnumerable<T>? enumerable,
         char delimiter,
-        string? nullText = DefaultNullText,
-        string? emptyText = DefaultEmptyText,
+        string? nullText = _defaultNullText,
+        string? emptyText = _defaultEmptyText,
         Func<T?, string>? formatter = null)
     {
         return SafeToDelimitedStringCore
@@ -169,8 +169,8 @@ public static class EnumerableExtensions
     public static string SafeToDelimitedString<T>(
         this IEnumerable<T>? enumerable,
         string delimiter,
-        string? nullText = DefaultNullText,
-        string? emptyText = DefaultEmptyText,
+        string? nullText = _defaultNullText,
+        string? emptyText = _defaultEmptyText,
         Func<T?, string>? formatter = null)
     {
         return SafeToDelimitedStringCore
@@ -212,8 +212,8 @@ public static class EnumerableExtensions
     public static string SafeToDelimitedString<TKey, TValue>(
         this IEnumerable<KeyValuePair<TKey, TValue>>? enumerable,
         char delimiter,
-        string? nullText = DefaultNullText,
-        string? emptyText = DefaultEmptyText,
+        string? nullText = _defaultNullText,
+        string? emptyText = _defaultEmptyText,
         Func<TKey?, string?>? keyFormatter = null,
         Func<TValue?, string?>? valueFormatter = null)
     {
@@ -257,8 +257,8 @@ public static class EnumerableExtensions
     public static string SafeToDelimitedString<TKey, TValue>(
         this IEnumerable<KeyValuePair<TKey, TValue>>? enumerable,
         string delimiter,
-        string? nullText = DefaultNullText,
-        string? emptyText = DefaultEmptyText,
+        string? nullText = _defaultNullText,
+        string? emptyText = _defaultEmptyText,
         Func<TKey?, string?>? keyFormatter = null,
         Func<TValue?, string?>? valueFormatter = null)
     {
@@ -283,8 +283,8 @@ public static class EnumerableExtensions
     /// <returns>Underlying list if enumerable is an actual list, otherwise a list is created from the enumerable or an empty list if null.</returns>
     public static List<T> SafeToList<T>(this IEnumerable<T>? enumerable)
     {
-        enumerable ??= Enumerable.Empty<T>();
-        var list = enumerable as List<T> ?? enumerable.ToList();
+        enumerable ??= [];
+        var list = enumerable as List<T> ?? [.. enumerable];
         return list;
     }
 
@@ -297,7 +297,7 @@ public static class EnumerableExtensions
     /// <returns>Underlying read-only collection if enumerable is an actual read-only collection, otherwise a read-only collection is created from the enumerable or an empty read-only collection if null.</returns>
     public static IReadOnlyCollection<T> SafeToReadOnlyCollection<T>(this IEnumerable<T>? enumerable)
     {
-        enumerable ??= Enumerable.Empty<T>();
+        enumerable ??= [];
         var readOnlyCollection = enumerable as IReadOnlyCollection<T> ?? enumerable.ToList();
         return readOnlyCollection;
     }
@@ -311,24 +311,21 @@ public static class EnumerableExtensions
     /// <returns>Underlying read-only list if enumerable is an actual read-only list, otherwise a read-only list is created from the enumerable or an empty read-only list if null.</returns>
     public static IReadOnlyList<T> SafeToReadOnlyList<T>(this IEnumerable<T>? enumerable)
     {
-        enumerable ??= Enumerable.Empty<T>();
+        enumerable ??= [];
         var readOnlyList = enumerable as IReadOnlyList<T> ?? enumerable.ToList();
         return readOnlyList;
     }
     #endregion
 
     #region Implementation Methods
-    private static Func<T?, string?> GetSafeToDelimitedStringFormatter<T>()
-    {
-        return x => x?.ToString();
-    }
+    private static Func<T?, string?> GetSafeToDelimitedStringFormatter<T>() => x => x?.ToString();
 
     private static string GetSafeToDelimitedStringPart(string? part, string? nullText, string? emptyText)
     {
         if (!string.IsNullOrEmpty(part))
             return part;
 
-        return part == null ? nullText ?? DefaultNullText : emptyText ?? DefaultEmptyText;
+        return part == null ? nullText ?? _defaultNullText : emptyText ?? _defaultEmptyText;
     }
 
     private static string SafeToDelimitedStringCore<T, TDelimiter>
@@ -343,12 +340,12 @@ public static class EnumerableExtensions
     {
         if (enumerable == null)
         {
-            return nullText ?? DefaultNullText;
+            return nullText ?? _defaultNullText;
         }
 
         if (!enumerable.Any())
         {
-            return emptyText ?? DefaultEmptyText;
+            return emptyText ?? _defaultEmptyText;
         }
 
         formatter ??= GetSafeToDelimitedStringFormatter<T>();
@@ -372,10 +369,10 @@ public static class EnumerableExtensions
     )
     {
         if (enumerable == null)
-            return nullText ?? DefaultNullText;
+            return nullText ?? _defaultNullText;
 
         if (!enumerable.Any())
-            return emptyText ?? DefaultEmptyText;
+            return emptyText ?? _defaultEmptyText;
 
         keyFormatter ??= GetSafeToDelimitedStringFormatter<TKey>();
         valueFormatter ??= GetSafeToDelimitedStringFormatter<TValue>();

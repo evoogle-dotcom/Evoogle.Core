@@ -24,14 +24,9 @@ public class CoerceTests(ITestOutputHelper output) : XUnitTests(output)
         string Name { get; }
     }
 
-    public class BaseClass : IInterface
+    public class BaseClass(string? name = default) : IInterface
     {
-        public string Name { get; set; }
-
-        public BaseClass(string? name = default)
-        {
-            this.Name = name ?? nameof(BaseClass);
-        }
+        public string Name { get; set; } = name ?? nameof(BaseClass);
 
         public override string ToString() { return this.Name; }
     }
