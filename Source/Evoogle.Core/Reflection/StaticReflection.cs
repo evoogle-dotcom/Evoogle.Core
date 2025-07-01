@@ -13,59 +13,54 @@ namespace Evoogle.Reflection;
 public static class StaticReflection
 {
     #region Methods
-    public static string GetMemberName<T>(Expression<Func<T, object>> expression)
-    {
-        return GetMemberName(expression.Body);
-    }
+    public static string GetMemberName<T>(Expression<Func<T, object>> expression, bool throwOnUnsupported = true) => GetMemberName(expression.Body, throwOnUnsupported);
 
-    public static string GetMemberName<T, TResult>(Expression<Func<T, TResult>> expression)
-    {
-        return GetMemberName(expression.Body);
-    }
+    public static string GetMemberName<T, TResult>(Expression<Func<T, TResult>> expression, bool throwOnUnsupported = true) => GetMemberName(expression.Body, throwOnUnsupported);
 
-    public static string GetMemberName<T>(Expression<Action<T>> expression)
-    {
-        return GetMemberName(expression.Body);
-    }
+    public static string GetMemberName<T>(Expression<Action<T>> expression, bool throwOnUnsupported = true) => GetMemberName(expression.Body, throwOnUnsupported);
 
-    public static string GetMemberName<T>(this T _, Expression<Func<T, object>> expression)
-    {
-        return GetMemberName(expression.Body);
-    }
+    public static string GetMemberName<T>(this T _, Expression<Func<T, object>> expression, bool throwOnUnsupported = true) => GetMemberName(expression.Body, throwOnUnsupported);
 
-    public static string GetMemberName<T, TResult>(this T _, Expression<Func<T, TResult>> expression)
-    {
-        return GetMemberName(expression.Body);
-    }
+    public static string GetMemberName<T, TResult>(this T _, Expression<Func<T, TResult>> expression, bool throwOnUnsupported = true) => GetMemberName(expression.Body, throwOnUnsupported);
 
-    public static string GetMemberName<T>(this T _, Expression<Action<T>> expression)
-    {
-        return GetMemberName(expression.Body);
-    }
+    public static string GetMemberName<T>(this T _, Expression<Action<T>> expression, bool throwOnUnsupported = true) => GetMemberName(expression.Body, throwOnUnsupported);
+    #endregion
 
-    private static string GetMemberName(Expression expression)
+    #region Implementation Methods
+    internal static string GetMemberName(Expression expression, bool throwOnUnsupported)
     {
         switch (expression)
         {
             case MemberExpression memberExpression:
-                // Reference type property or field
                 return memberExpression.Member.Name;
-            case MethodCallExpression methodCallExpression:
-                // Reference type method
-                return methodCallExpression.Method.Name;
-            case UnaryExpression unaryExpression:
-                // Property, field of method returning value type
-                return GetMemberName(unaryExpression);
-            default:
-                throw new ArgumentException($"Invalid expression, must be either a {nameof(MemberExpression)}, {nameof(MethodCallExpression)}, or {nameof(UnaryExpression)}.");
-        }
-    }
 
-    private static string GetMemberName(UnaryExpression unaryExpression)
-    {
-        return unaryExpression.Operand is MethodCallExpression operand
-            ? operand.Method.Name
-            : ((MemberExpression)unaryExpression.Operand).Member.Name;
+            case MethodCallExpression methodCallExpression:
+                return methodCallExpression.Method.Name;
+
+            case UnaryExpression unaryExpression:
+                return GetMemberName(unaryExpression.Operand, throwOnUnsupported);
+
+            case BinaryExpression binaryExpression:
+                if (binaryExpression.Left is MemberExpression leftMember)
+                    return leftMember.Member.Name;
+
+                if (!throwOnUnsupported)
+                    return $"Unsupported_{expression.GetType().Name}";
+
+                throw new ArgumentException("Unsupported binary expression without a left member access.");
+
+            case ConstantExpression constantExpression:
+                return $"Constant_{constantExpression.Value?.ToString() ?? "null"}";
+
+            case ParameterExpression parameterExpression:
+                return parameterExpression.Name ?? "parameter";
+
+            default:
+                if (!throwOnUnsupported)
+                    return $"Unsupported_{expression.GetType().Name}";
+
+                throw new ArgumentException($"Unsupported expression type: {expression.GetType().Name}.");
+        }
     }
     #endregion
 }

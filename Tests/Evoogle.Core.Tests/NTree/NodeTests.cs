@@ -75,10 +75,7 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
             this.WriteLine($"Actual After Traversal:    {actualAfterTraversalString}");
         }
 
-        protected override void Assert()
-        {
-            this.ActualAfterTraversal.Should().BeEquivalentTo(this.ExpectedAfterTraversal);
-        }
+        protected override void Assert() => this.ActualAfterTraversal.Should().BeEquivalentTo(this.ExpectedAfterTraversal);
         #endregion
     }
 
@@ -148,10 +145,7 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
             this.WriteLine($"Actual After Traversal:    {actualAfterTraversalString}");
         }
 
-        protected override void Assert()
-        {
-            this.ActualAfterTraversal.Should().BeEquivalentTo(this.ExpectedAfterTraversal);
-        }
+        protected override void Assert() => this.ActualAfterTraversal.Should().BeEquivalentTo(this.ExpectedAfterTraversal);
         #endregion
     }
 
@@ -206,10 +200,7 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
             this.WriteLine($"Actual Traversal:   {actualTraversalString}");
         }
 
-        protected override void Assert()
-        {
-            this.ActualTraversal.Should().BeEquivalentTo(this.ExpectedTraversal);
-        }
+        protected override void Assert() => this.ActualTraversal.Should().BeEquivalentTo(this.ExpectedTraversal);
         #endregion
     }
     #endregion
@@ -966,23 +957,14 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
     #region Test Methods
     [Theory]
     [MemberData(nameof(ReplaceChildTheoryData))]
-    public void ReplaceChild(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void ReplaceChild(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(RemoveChildTheoryData))]
-    public void RemoveChild(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void RemoveChild(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(TraversalTheoryData))]
-    public void Traversal(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void Traversal(IXUnitTest test) => test.Execute(this);
     #endregion
 }

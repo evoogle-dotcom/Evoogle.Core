@@ -43,10 +43,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             this.WriteLine($"Actual Base Type   = {this.ActualBaseTypeName}");
         }
 
-        protected override void Assert()
-        {
-            this.ActualBaseTypeName.Should().Be(this.ExpectedBaseTypeName);
-        }
+        protected override void Assert() => this.ActualBaseTypeName.Should().Be(this.ExpectedBaseTypeName);
         #endregion
     }
 
@@ -78,11 +75,40 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             this.WriteLine($"Actual Base Types   = {this.ActualBaseTypeNames}");
         }
 
+        protected override void Assert() => this.ActualBaseTypeNames.Should().Be(this.ExpectedBaseTypeNames);
+        #endregion
+    }
+
+    public class GetCompactQualifiedNameTest : XUnitTest
+    {
+        public Type Type { get; set; } = null!;
+        public string ActualCompactQualifiedName { get; private set; } = null!;
+        public Type? ReconstructedType { get; private set; }
+
+        protected override void Arrange()
+        {
+            this.WriteLine($"Type = {this.Type.FullName}");
+        }
+
+        protected override void Act()
+        {
+            this.ActualCompactQualifiedName = TypeReflection.GetCompactQualifiedName(this.Type);
+            this.WriteLine($"Compact Qualified Name = {this.ActualCompactQualifiedName}");
+
+            this.ReconstructedType = Type.GetType(this.ActualCompactQualifiedName);
+            this.WriteLine($"Reconstructed Type = {this.ReconstructedType?.FullName ?? "null"}");
+        }
+
         protected override void Assert()
         {
-            this.ActualBaseTypeNames.Should().Be(this.ExpectedBaseTypeNames);
+            // Not all types will reconstruct without loading assemblies explicitly,
+            // so this asserts only for types in the current assembly
+            if (this.Type.Assembly == typeof(GetCompactQualifiedNameTest).Assembly)
+            {
+                this.ReconstructedType.Should().NotBeNull();
+                this.ReconstructedType.Should().Be(this.Type);
+            }
         }
-        #endregion
     }
 
     public class GetConstructorTest : XUnitTest
@@ -114,10 +140,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             this.WriteLine($"Actual Constructor Found   = {this.ActualConstructorFound}");
         }
 
-        protected override void Assert()
-        {
-            this.ActualConstructorFound.Should().Be(this.ExpectedConstructorFound);
-        }
+        protected override void Assert() => this.ActualConstructorFound.Should().Be(this.ExpectedConstructorFound);
         #endregion
     }
 
@@ -146,10 +169,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             this.WriteLine($"Actual Constructor Count   = {this.ActualConstructorCount}");
         }
 
-        protected override void Assert()
-        {
-            this.ActualConstructorCount.Should().Be(this.ExpectedConstructorCount);
-        }
+        protected override void Assert() => this.ActualConstructorCount.Should().Be(this.ExpectedConstructorCount);
         #endregion
     }
 
@@ -216,10 +236,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             this.WriteLine($"Actual Field Names   = {this.ActualFieldNames.Order().SafeToDelimitedString(',')}");
         }
 
-        protected override void Assert()
-        {
-            this.ActualFieldNames.Order().Should().BeEquivalentTo(this.ExpectedFieldNames.Order());
-        }
+        protected override void Assert() => this.ActualFieldNames.Order().Should().BeEquivalentTo(this.ExpectedFieldNames.Order());
         #endregion
     }
 
@@ -290,12 +307,10 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             this.WriteLine($"Actual Method Names   = {this.ActualMethodNames.Order().SafeToDelimitedString(',')}");
         }
 
-        protected override void Assert()
-        {
+        protected override void Assert() =>
             // Ignore the inherited methods from Object.
             // So assert actual at least contains all of expected but may have more.
             this.ActualMethodNames.Order().Should().Contain(this.ExpectedMethodNames.Order());
-        }
         #endregion
     }
 
@@ -362,10 +377,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             this.WriteLine($"Actual Property Names   = {this.ActualPropertyNames.Order().SafeToDelimitedString(',')}");
         }
 
-        protected override void Assert()
-        {
-            this.ActualPropertyNames.Order().Should().BeEquivalentTo(this.ExpectedPropertyNames.Order());
-        }
+        protected override void Assert() => this.ActualPropertyNames.Order().Should().BeEquivalentTo(this.ExpectedPropertyNames.Order());
         #endregion
     }
 
@@ -391,10 +403,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             this.WriteLine($"Actual   = {this.Actual}");
         }
 
-        protected override void Assert()
-        {
-            this.Actual.Should().Be(this.Expected);
-        }
+        protected override void Assert() => this.Actual.Should().Be(this.Expected);
         #endregion
     }
 
@@ -420,10 +429,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             this.WriteLine($"Actual   = {this.Actual}");
         }
 
-        protected override void Assert()
-        {
-            this.Actual.Should().Be(this.Expected);
-        }
+        protected override void Assert() => this.Actual.Should().Be(this.Expected);
         #endregion
     }
 
@@ -451,10 +457,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             this.WriteLine($"Actual   = {this.Actual}");
         }
 
-        protected override void Assert()
-        {
-            this.Actual.Should().Be(this.Expected);
-        }
+        protected override void Assert() => this.Actual.Should().Be(this.Expected);
         #endregion
     }
 
@@ -480,10 +483,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             this.WriteLine($"Actual   = {this.Actual}");
         }
 
-        protected override void Assert()
-        {
-            this.Actual.Should().Be(this.Expected);
-        }
+        protected override void Assert() => this.Actual.Should().Be(this.Expected);
         #endregion
     }
 
@@ -511,10 +511,7 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             this.WriteLine($"Actual   = {this.Actual}");
         }
 
-        protected override void Assert()
-        {
-            this.Actual.Should().Be(this.Expected);
-        }
+        protected override void Assert() => this.Actual.Should().Be(this.Expected);
         #endregion
     }
     #endregion
@@ -599,65 +596,29 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 #pragma warning disable CA1822, CS0169, CS0649, IDE0044, IDE0051, IDE0060, RCS1163, RCS1169, RCS1170, RCS1213
     private class ClassWithMethodsBase
     {
-        public string PublicMethodBase()
-        {
-            return string.Empty;
-        }
+        public string PublicMethodBase() => string.Empty;
 
-        public string PublicMethodBase(int x)
-        {
-            return string.Empty;
-        }
+        public string PublicMethodBase(int x) => string.Empty;
 
-        public string PublicMethodBase(int x, string y)
-        {
-            return string.Empty;
-        }
+        public string PublicMethodBase(int x, string y) => string.Empty;
 
-        public static string PublicStaticMethodBase()
-        {
-            return string.Empty;
-        }
+        public static string PublicStaticMethodBase() => string.Empty;
 
-        public static string PublicStaticMethodBase(int x)
-        {
-            return string.Empty;
-        }
+        public static string PublicStaticMethodBase(int x) => string.Empty;
 
-        public static string PublicStaticMethodBase(int x, string y)
-        {
-            return string.Empty;
-        }
+        public static string PublicStaticMethodBase(int x, string y) => string.Empty;
 
-        protected string ProtectedMethodBase()
-        {
-            return string.Empty;
-        }
+        protected string ProtectedMethodBase() => string.Empty;
 
-        protected string ProtectedMethodBase(int x)
-        {
-            return string.Empty;
-        }
+        protected string ProtectedMethodBase(int x) => string.Empty;
 
-        protected string ProtectedMethodBase(int x, string y)
-        {
-            return string.Empty;
-        }
+        protected string ProtectedMethodBase(int x, string y) => string.Empty;
 
-        protected static string ProtectedStaticMethodBase()
-        {
-            return string.Empty;
-        }
+        protected static string ProtectedStaticMethodBase() => string.Empty;
 
-        protected static string ProtectedStaticMethodBase(int x)
-        {
-            return string.Empty;
-        }
+        protected static string ProtectedStaticMethodBase(int x) => string.Empty;
 
-        protected static string ProtectedStaticMethodBase(int x, string y)
-        {
-            return string.Empty;
-        }
+        protected static string ProtectedStaticMethodBase(int x, string y) => string.Empty;
     }
 
     private class ClassWithConstructors
@@ -681,65 +642,29 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     private class ClassWithMethods : ClassWithMethodsBase
     {
-        public string PublicMethod()
-        {
-            return string.Empty;
-        }
+        public string PublicMethod() => string.Empty;
 
-        public string PublicMethod(int x)
-        {
-            return string.Empty;
-        }
+        public string PublicMethod(int x) => string.Empty;
 
-        public string PublicMethod(int x, string y)
-        {
-            return string.Empty;
-        }
+        public string PublicMethod(int x, string y) => string.Empty;
 
-        public static string PublicStaticMethod()
-        {
-            return string.Empty;
-        }
+        public static string PublicStaticMethod() => string.Empty;
 
-        public static string PublicStaticMethod(int x)
-        {
-            return string.Empty;
-        }
+        public static string PublicStaticMethod(int x) => string.Empty;
 
-        public static string PublicStaticMethod(int x, string y)
-        {
-            return string.Empty;
-        }
+        public static string PublicStaticMethod(int x, string y) => string.Empty;
 
-        private string PrivateMethod()
-        {
-            return string.Empty;
-        }
+        private string PrivateMethod() => string.Empty;
 
-        private string PrivateMethod(int x)
-        {
-            return string.Empty;
-        }
+        private string PrivateMethod(int x) => string.Empty;
 
-        private string PrivateMethod(int x, string y)
-        {
-            return string.Empty;
-        }
+        private string PrivateMethod(int x, string y) => string.Empty;
 
-        private static string PrivateStaticMethod()
-        {
-            return string.Empty;
-        }
+        private static string PrivateStaticMethod() => string.Empty;
 
-        private static string PrivateStaticMethod(int x)
-        {
-            return string.Empty;
-        }
+        private static string PrivateStaticMethod(int x) => string.Empty;
 
-        private static string PrivateStaticMethod(int x, string y)
-        {
-            return string.Empty;
-        }
+        private static string PrivateStaticMethod(int x, string y) => string.Empty;
     }
 
     private class ClassWithPropertiesBase
@@ -842,6 +767,15 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         new GetBaseTypesTest { Name = "With Generic Type", Type = typeof(AbstractCollection<>), ExpectedBaseTypes = [typeof(object)] },
         new GetBaseTypesTest { Name = "With Generic Type And Generic Base Type", Type = typeof(Collection<>), ExpectedBaseTypes = [typeof(AbstractCollection<>), typeof(object)] },
         new GetBaseTypesTest { Name = "With Generic Type And Generic Base Type And Generic Base Type", Type = typeof(DecoratedCollection<>), ExpectedBaseTypes = [typeof(Collection<>), typeof(AbstractCollection<>), typeof(object)] },
+    ];
+
+    public static TheoryDataRow<IXUnitTest>[] GetCompactQualifiedNameTheoryData =>
+    [
+        new GetCompactQualifiedNameTest { Name = "Simple Built-in Type", Type = typeof(string) },
+        new GetCompactQualifiedNameTest { Name = "Generic Type", Type = typeof(Dictionary<string, int>) },
+        new GetCompactQualifiedNameTest { Name = "Array Type", Type = typeof(List<string>[]) },
+        new GetCompactQualifiedNameTest { Name = "Open Generic Type", Type = typeof(List<>) },
+        new GetCompactQualifiedNameTest { Name = "Custom Project Type", Type = typeof(GetCompactQualifiedNameTest) } // Ensures current assembly
     ];
 
     public static TheoryDataRow<IXUnitTest>[] GetConstructorTheoryData =>
@@ -1130,107 +1064,66 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
     #region Test Methods
     [Theory]
     [MemberData(nameof(GetBaseTypeTheoryData))]
-    public void TestGetBaseType(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestGetBaseType(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(GetBaseTypesTheoryData))]
-    public void TestGetBaseTypes(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestGetBaseTypes(IXUnitTest test) => test.Execute(this);
+
+    [Theory]
+    [MemberData(nameof(GetCompactQualifiedNameTheoryData))]
+    public void TestGetCompactQualifiedName(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(GetConstructorTheoryData))]
-    public void TestGetConstructor(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestGetConstructor(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(GetConstructorsTheoryData))]
-    public void TestGetConstructors(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestGetConstructors(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(GetFieldTheoryData))]
-    public void TestGetField(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestGetField(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(GetFieldsTheoryData))]
-    public void TestGetFields(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestGetFields(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(GetMethodTheoryData))]
-    public void TestGetMethod(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestGetMethod(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(GetMethodsTheoryData))]
-    public void TestGetMethods(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestGetMethods(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(GetPropertyTheoryData))]
-    public void TestGetProperty(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestGetProperty(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(GetPropertiesTheoryData))]
-    public void TestGetProperties(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestGetProperties(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(IsComplexTheoryData))]
-    public void TestIsComplex(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestIsComplex(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(IsEnumerableOfTTheoryData))]
-    public void TestIsEnumerableOfT(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestIsEnumerableOfT(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(IsImplementationOfTheoryData))]
-    public void TestIsImplementationOf(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestIsImplementationOf(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(IsSimpleTheoryData))]
-    public void TestIsSimple(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestIsSimple(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(IsSubclassOrImplementationOfTheoryData))]
-    public void TestIsSubclassOrImplementationOf(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestIsSubclassOrImplementationOf(IXUnitTest test) => test.Execute(this);
     #endregion
 }

@@ -37,10 +37,7 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
             this.WriteLine($"Actual   = {this.Actual}");
         }
 
-        protected override void Assert()
-        {
-            this.Actual.Should().Be(this.Expected);
-        }
+        protected override void Assert() => this.Actual.Should().Be(this.Expected);
         #endregion
     }
     #endregion
@@ -76,9 +73,6 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
     #region Test Methods
     [Theory]
     [MemberData(nameof(IsStaticTheoryData))]
-    public void IsStatic(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void IsStatic(IXUnitTest test) => test.Execute(this);
     #endregion
 }

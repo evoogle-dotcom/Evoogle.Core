@@ -56,10 +56,7 @@ public static class DeepCloneableExtensions
     /// <param name="source">Source object to create a deep copy of.</param>
     /// <returns>Null if the source object is null or the created deep clone is null, otherwise a deep copy of the source object.</returns>
     public static T? SafeDeepCopy<T>(this T? source)
-        where T : IDeepCloneable
-    {
-        return source is null ? default : (T?)source.DeepClone();
-    }
+        where T : IDeepCloneable => source is null ? default : (T?)source.DeepClone();
 
     /// <summary>
     ///     Create a collection of deep copy objects from a source collection of deep cloneable objects.

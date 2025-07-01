@@ -323,16 +323,10 @@ public class EnumJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
     #region Test Methods
     [Theory]
     [MemberData(nameof(DeserializeTheoryData))]
-    public void Deserialize(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void Deserialize(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(SerializeTheoryData))]
-    public void Serialize(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void Serialize(IXUnitTest test) => test.Execute(this);
     #endregion
 }

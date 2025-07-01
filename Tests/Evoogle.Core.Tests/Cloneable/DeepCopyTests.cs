@@ -292,9 +292,6 @@ public class DeepCopyTests(ITestOutputHelper output) : XUnitTests(output)
     #region Test Methods
     [Theory]
     [MemberData(nameof(SafeDeepCopyTheoryData))]
-    public void SafeDeepCopy(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void SafeDeepCopy(IXUnitTest test) => test.Execute(this);
     #endregion
 }

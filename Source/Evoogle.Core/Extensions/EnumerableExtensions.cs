@@ -63,10 +63,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T">Type of objects contained in the enumerable.</typeparam>
     /// <param name="enumerable">Enumerable object to call extension method on.</param>
     /// <returns>An empty enumerable if the enumerable is null, otherwise the original enumerable.</returns>
-    public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T>? enumerable)
-    {
-        return enumerable ?? [];
-    }
+    public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T>? enumerable) => enumerable ?? [];
 
     /// <summary>
     ///     Predicate if the enumerable is null or empty.
@@ -74,10 +71,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T">Type of objects contained in the enumerable object.</typeparam>
     /// <param name="enumerable">Enumerable object to call extension method on.</param>
     /// <returns><see langword="true"/> if the enumerable object is null or empty; <see langword="false"/> otherwise.</returns>
-    public static bool IsNullOrEmpty<T>(this IEnumerable<T>? enumerable)
-    {
-        return enumerable?.Any() != true;
-    }
+    public static bool IsNullOrEmpty<T>(this IEnumerable<T>? enumerable) => enumerable?.Any() != true;
 
     /// <summary>
     ///     Casts the elements of an enumerable to the specified type even if the enumerable is null.

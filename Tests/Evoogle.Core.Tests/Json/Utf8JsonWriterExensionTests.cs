@@ -33,10 +33,7 @@ public class Utf8JsonWriterExensionTests(ITestOutputHelper output) : XUnitTests(
         #endregion
 
         #region XUnitTest Methods
-        protected override void Arrange()
-        {
-            this.WriteLine($"Expected JSON: {this.ExpectedJson.SafeToString()}");
-        }
+        protected override void Arrange() => this.WriteLine($"Expected JSON: {this.ExpectedJson.SafeToString()}");
 
         protected override void Act()
         {
@@ -1159,9 +1156,6 @@ public class Utf8JsonWriterExensionTests(ITestOutputHelper output) : XUnitTests(
     #region Test Methods
     [Theory]
     [MemberData(nameof(WritePropertyTheoryData))]
-    public void WriteProperty(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void WriteProperty(IXUnitTest test) => test.Execute(this);
     #endregion
 }

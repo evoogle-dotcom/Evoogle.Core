@@ -20,15 +20,9 @@ public class DotNetObjectExtensionTests(ITestOutputHelper output) : XUnitTests(o
         public string? EmtpyText { get; set; }
         private string? Actual { get; set; }
 
-        protected override void Act()
-        {
-            this.Actual = this.Source!.SafeToString(this.NullText!, this.EmtpyText!);
-        }
+        protected override void Act() => this.Actual = this.Source!.SafeToString(this.NullText!, this.EmtpyText!);
 
-        protected override void Assert()
-        {
-            this.Actual.Should().Be(this.Expected);
-        }
+        protected override void Assert() => this.Actual.Should().Be(this.Expected);
     }
     #endregion
 
@@ -46,9 +40,6 @@ public class DotNetObjectExtensionTests(ITestOutputHelper output) : XUnitTests(o
     #region Test Methods
     [Theory]
     [MemberData(nameof(SafeToStringTheoryData))]
-    public void SafeToString(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void SafeToString(IXUnitTest test) => test.Execute(this);
     #endregion
 }

@@ -378,51 +378,30 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
     #region Test Methods
     [Theory]
     [MemberData(nameof(EmptyIfNullTheoryData))]
-    public void TestEnumerableEmptyIfNull(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestEnumerableEmptyIfNull(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(IsNullOrEmptyTheoryData))]
-    public void TestEnumerableIsNullOrEmpty(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestEnumerableIsNullOrEmpty(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(SafeCastTheoryData))]
-    public void TestEnumerableSafeCast(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestEnumerableSafeCast(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(SafeToArrayTheoryData))]
-    public void TestEnumerableSafeToArray(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestEnumerableSafeToArray(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(SafeToListTheoryData))]
-    public void TestEnumerableSafeToList(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestEnumerableSafeToList(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(SafeToReadOnlyCollectionTheoryData))]
-    public void TestEnumerableSafeToReadOnlyCollection(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestEnumerableSafeToReadOnlyCollection(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(SafeToReadOnlyListTheoryData))]
-    public void TestEnumerableSafeToReadOnlyList(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestEnumerableSafeToReadOnlyList(IXUnitTest test) => test.Execute(this);
     #endregion
 }

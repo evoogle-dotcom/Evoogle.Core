@@ -21,17 +21,13 @@ public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
     [DynamicLinqType]
     public class TestExtensible : ExtensibleBase
     {
-        public static TestExtensible Create()
-        {
-            return new TestExtensible();
-        }
+        public static TestExtensible Create() => new TestExtensible();
 
-        public static void AttachExtension(TestExtensible testExtensible, string? name)
-        {
+        public static void AttachExtension(TestExtensible testExtensible, string? name) =>
 #pragma warning disable CS8634 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'class' constraint.
             testExtensible.AttachExtension(name != null ? new TestExtension(name) : null);
 #pragma warning restore CS8634 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'class' constraint.
-        }
+
 
         public static void AttachAndDetachExtension(TestExtensible testExtensible, string? name)
         {
@@ -171,9 +167,6 @@ public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
     #region Test Methods
     [Theory]
     [MemberData(nameof(TryGetExtensionTheoryData))]
-    public void TryGetExtension(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TryGetExtension(IXUnitTest test) => test.Execute(this);
     #endregion
 }

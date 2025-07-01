@@ -76,9 +76,6 @@ public class DotNetDictionaryExtensionTests(ITestOutputHelper output) : XUnitTes
     #region Test Methods
     [Theory]
     [MemberData(nameof(GetValueTheoryData))]
-    public void TestGetValue(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void TestGetValue(IXUnitTest test) => test.Execute(this);
     #endregion
 }

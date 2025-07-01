@@ -324,10 +324,7 @@ internal partial class TypeCoercion : ITypeCoercion
         return input.ToString(format, formatProvider);
     }
 
-    private static string ConvertTypeToString(Type input, TypeCoercionContext context)
-    {
-        return TypeReflection.GetCompactQualifiedName(input);
-    }
+    private static string ConvertTypeToString(Type input, TypeCoercionContext context) => TypeReflection.GetCompactQualifiedName(input);
 
     private static string ConvertUlidToString(Ulid input, TypeCoercionContext context)
     {

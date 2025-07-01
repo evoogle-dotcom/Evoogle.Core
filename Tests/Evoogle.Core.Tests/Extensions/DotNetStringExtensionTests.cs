@@ -40,10 +40,7 @@ public class DotNetStringExtensionTests(ITestOutputHelper output) : XUnitTests(o
             this.WriteLine($"Actual:   {this.Actual.SafeToString()}");
         }
 
-        protected override void Assert()
-        {
-            this.Actual.Should().Be(this.Expected);
-        }
+        protected override void Assert() => this.Actual.Should().Be(this.Expected);
     }
 
     public class RemoveWhitespaceTest : XUnitTest
@@ -52,15 +49,9 @@ public class DotNetStringExtensionTests(ITestOutputHelper output) : XUnitTests(o
         public string? Expected { get; set; }
         private string? Actual { get; set; }
 
-        protected override void Act()
-        {
-            this.Actual = this.Source!.RemoveWhitespace();
-        }
+        protected override void Act() => this.Actual = this.Source!.RemoveWhitespace();
 
-        protected override void Assert()
-        {
-            this.Actual.Should().Be(this.Expected);
-        }
+        protected override void Assert() => this.Actual.Should().Be(this.Expected);
     }
     #endregion
 
@@ -117,16 +108,10 @@ public class DotNetStringExtensionTests(ITestOutputHelper output) : XUnitTests(o
     #region Test Methods
     [Theory]
     [MemberData(nameof(MaskTheoryData))]
-    public void Mask(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void Mask(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(RemoveWhitespaceTheoryData))]
-    public void RemoveWhitespace(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void RemoveWhitespace(IXUnitTest test) => test.Execute(this);
     #endregion
 }

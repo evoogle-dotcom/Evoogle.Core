@@ -32,11 +32,9 @@ public static class ExtensibleExtensions
     /// <param name="extensible">The extensible object.</param>
     /// <returns>True if the extension is attached; otherwise, false.</returns>
     public static bool ContainsExtension<TExtension>(this IExtensible extensible)
-        where TExtension : class
-    {
+        where TExtension : class =>
         // Return true if extension is already attached, false otherwise.
-        return extensible.TryGetExtension<TExtension>(out var _);
-    }
+        extensible.TryGetExtension<TExtension>(out var _);
 
     /// <summary>
     ///     Creates a default instance of the extension if it is not already attached to the extensible object.

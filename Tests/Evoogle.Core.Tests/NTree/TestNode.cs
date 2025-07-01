@@ -28,15 +28,9 @@ public class TestNode : Node<TestNode>
     #endregion
 
     #region Test Methods
-    public static IEnumerator<TestNode> CreateBreadFirstEnumerator(TestNode testNode)
-    {
-        return testNode.CreateBreadFirstEnumerator();
-    }
+    public static IEnumerator<TestNode> CreateBreadFirstEnumerator(TestNode testNode) => testNode.CreateBreadFirstEnumerator();
 
-    public static IEnumerator<TestNode> CreateDepthFirstEnumerator(TestNode testNode)
-    {
-        return testNode.CreateDepthFirstEnumerator();
-    }
+    public static IEnumerator<TestNode> CreateDepthFirstEnumerator(TestNode testNode) => testNode.CreateDepthFirstEnumerator();
 
     public static TestNode CreateNode(string name)
     {
@@ -160,9 +154,6 @@ public class TestNode : Node<TestNode>
     #endregion
 
     #region Object Methods
-    public override string ToString()
-    {
-        return this.Name;
-    }
+    public override string ToString() => this.Name;
     #endregion
 }

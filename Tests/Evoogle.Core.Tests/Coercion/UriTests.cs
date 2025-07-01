@@ -102,16 +102,10 @@ public class UriTests(ITestOutputHelper output) : CoerceTests(output)
     #region Test Methods
     [Theory]
     [MemberData(nameof(GenericCoerceTheoryData))]
-    public void GenericCoerce(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void GenericCoerce(IXUnitTest test) => test.Execute(this);
 
     [Theory]
     [MemberData(nameof(NonGenericCoerceTheoryData))]
-    public void NonGenericCoerce(IXUnitTest test)
-    {
-        test.Execute(this);
-    }
+    public void NonGenericCoerce(IXUnitTest test) => test.Execute(this);
     #endregion
 }

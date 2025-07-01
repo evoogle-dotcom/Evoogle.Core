@@ -20,7 +20,7 @@ public static class PropertyReflection
     /// <returns>True if the represented property metadata is a static property, false otherwise.</returns>
     public static bool IsStatic(PropertyInfo propertyInfo)
     {
-        var isStatic = (propertyInfo.CanRead && propertyInfo.GetMethod!.IsStatic == true) || (propertyInfo.CanWrite && propertyInfo.SetMethod!.IsStatic == true);
+        var isStatic = (propertyInfo.CanRead && propertyInfo.GetMethod?.IsStatic == true) || (propertyInfo.CanWrite && propertyInfo.SetMethod?.IsStatic == true);
         return isStatic;
     }
     #endregion

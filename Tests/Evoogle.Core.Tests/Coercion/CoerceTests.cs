@@ -28,7 +28,7 @@ public class CoerceTests(ITestOutputHelper output) : XUnitTests(output)
     {
         public string Name { get; set; } = name ?? nameof(BaseClass);
 
-        public override string ToString() { return this.Name; }
+        public override string ToString() => this.Name;
     }
 
     public class DerivedClass : BaseClass
