@@ -14,7 +14,7 @@ namespace Evoogle.Coercion.Internal;
 internal partial class TypeCoercion : ITypeCoercion
 {
     #region Fields
-    private static readonly ITypeCoercionDefinition[] BuiltInDefinitions =
+    private static readonly ITypeCoercionDefinition[] _builtInDefinitions =
     {
             // Simple Types /////////////////////////////////////////////
 

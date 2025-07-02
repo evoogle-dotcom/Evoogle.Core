@@ -115,7 +115,7 @@ internal partial class TypeCoercion : ITypeCoercion
     #region Implementation Methods
     private void AddBuiltInDefinitions()
     {
-        foreach (var definition in BuiltInDefinitions)
+        foreach (var definition in _builtInDefinitions)
         {
             this.AddDefinition(definition);
         }

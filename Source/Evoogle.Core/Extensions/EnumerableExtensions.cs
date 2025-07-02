@@ -5,6 +5,8 @@
 // See the LICENSE file in the project root for more information.
 using System.Collections;
 
+using Evoogle.Extensions.Internal;
+
 namespace Evoogle.Extensions;
 
 /// <summary>
@@ -12,11 +14,6 @@ namespace Evoogle.Extensions;
 /// </summary>
 public static class EnumerableExtensions
 {
-    #region Fields
-    private const string _defaultNullText = "<null>";
-    private const string _defaultEmptyText = "<empty>";
-    #endregion
-
     #region Extension Methods
     /// <summary>
     ///     Check if enumerable has the same value throughout and if so return the value.
@@ -124,8 +121,8 @@ public static class EnumerableExtensions
     public static string SafeToDelimitedString<T>(
         this IEnumerable<T>? enumerable,
         char delimiter,
-        string? nullText = _defaultNullText,
-        string? emptyText = _defaultEmptyText,
+        string? nullText = ExtensionsDefaults.DefaultNullText,
+        string? emptyText = ExtensionsDefaults.DefaultEmptyText,
         Func<T?, string>? formatter = null)
     {
         return SafeToDelimitedStringCore
@@ -163,8 +160,8 @@ public static class EnumerableExtensions
     public static string SafeToDelimitedString<T>(
         this IEnumerable<T>? enumerable,
         string delimiter,
-        string? nullText = _defaultNullText,
-        string? emptyText = _defaultEmptyText,
+        string? nullText = ExtensionsDefaults.DefaultNullText,
+        string? emptyText = ExtensionsDefaults.DefaultEmptyText,
         Func<T?, string>? formatter = null)
     {
         return SafeToDelimitedStringCore
@@ -206,8 +203,8 @@ public static class EnumerableExtensions
     public static string SafeToDelimitedString<TKey, TValue>(
         this IEnumerable<KeyValuePair<TKey, TValue>>? enumerable,
         char delimiter,
-        string? nullText = _defaultNullText,
-        string? emptyText = _defaultEmptyText,
+        string? nullText = ExtensionsDefaults.DefaultNullText,
+        string? emptyText = ExtensionsDefaults.DefaultEmptyText,
         Func<TKey?, string?>? keyFormatter = null,
         Func<TValue?, string?>? valueFormatter = null)
     {
@@ -251,8 +248,8 @@ public static class EnumerableExtensions
     public static string SafeToDelimitedString<TKey, TValue>(
         this IEnumerable<KeyValuePair<TKey, TValue>>? enumerable,
         string delimiter,
-        string? nullText = _defaultNullText,
-        string? emptyText = _defaultEmptyText,
+        string? nullText = ExtensionsDefaults.DefaultNullText,
+        string? emptyText = ExtensionsDefaults.DefaultEmptyText,
         Func<TKey?, string?>? keyFormatter = null,
         Func<TValue?, string?>? valueFormatter = null)
     {
@@ -319,7 +316,7 @@ public static class EnumerableExtensions
         if (!string.IsNullOrEmpty(part))
             return part;
 
-        return part == null ? nullText ?? _defaultNullText : emptyText ?? _defaultEmptyText;
+        return part == null ? nullText ?? ExtensionsDefaults.DefaultNullText : emptyText ?? ExtensionsDefaults.DefaultEmptyText;
     }
 
     private static string SafeToDelimitedStringCore<T, TDelimiter>
@@ -334,12 +331,12 @@ public static class EnumerableExtensions
     {
         if (enumerable == null)
         {
-            return nullText ?? _defaultNullText;
+            return nullText ?? ExtensionsDefaults.DefaultNullText;
         }
 
         if (!enumerable.Any())
         {
-            return emptyText ?? _defaultEmptyText;
+            return emptyText ?? ExtensionsDefaults.DefaultEmptyText;
         }
 
         formatter ??= GetSafeToDelimitedStringFormatter<T>();
@@ -363,10 +360,10 @@ public static class EnumerableExtensions
     )
     {
         if (enumerable == null)
-            return nullText ?? _defaultNullText;
+            return nullText ?? ExtensionsDefaults.DefaultNullText;
 
         if (!enumerable.Any())
-            return emptyText ?? _defaultEmptyText;
+            return emptyText ?? ExtensionsDefaults.DefaultEmptyText;
 
         keyFormatter ??= GetSafeToDelimitedStringFormatter<TKey>();
         valueFormatter ??= GetSafeToDelimitedStringFormatter<TValue>();

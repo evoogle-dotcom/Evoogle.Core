@@ -7,6 +7,8 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+using Evoogle.Extensions.Internal;
+
 namespace Evoogle.Extensions;
 
 /// <summary>
@@ -15,9 +17,6 @@ namespace Evoogle.Extensions;
 public static class ObjectExtensions
 {
     #region Fields
-    private const string _defaultNullText = "<null>";
-    private const string _defaultEmptyText = "<empty>";
-
     private static readonly JsonSerializerOptions _defaultDeepCopyWithJsonOptions = new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.Never,
@@ -229,15 +228,15 @@ public static class ObjectExtensions
     ///     If the reference type is null or the actual <c>ToString</c> representation is null, then the parameter nullText is returned.
     ///     If the reference type <c>ToString</c> representation is empty, then the parameter emptyText is returned.
     /// </returns>
-    public static string SafeToString<T>(this T? obj, string? nullText = _defaultNullText, string? emptyText = _defaultEmptyText)
+    public static string SafeToString<T>(this T? obj, string? nullText = ExtensionsDefaults.DefaultNullText, string? emptyText = ExtensionsDefaults.DefaultEmptyText)
     {
         var toStringResult = obj?.ToString();
 
         if (toStringResult == null)
-            return nullText ?? _defaultNullText;
+            return nullText ?? ExtensionsDefaults.DefaultNullText;
 
         if (string.IsNullOrWhiteSpace(toStringResult))
-            return emptyText ?? _defaultEmptyText;
+            return emptyText ?? ExtensionsDefaults.DefaultEmptyText;
 
         return toStringResult;
     }
