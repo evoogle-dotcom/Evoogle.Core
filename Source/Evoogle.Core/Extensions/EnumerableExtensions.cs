@@ -289,7 +289,7 @@ public static class EnumerableExtensions
     public static IReadOnlyCollection<T> SafeToReadOnlyCollection<T>(this IEnumerable<T>? enumerable)
     {
         enumerable ??= [];
-        var readOnlyCollection = enumerable as IReadOnlyCollection<T> ?? enumerable.ToList();
+        var readOnlyCollection = enumerable as IReadOnlyCollection<T> ?? [.. enumerable];
         return readOnlyCollection;
     }
 
@@ -303,7 +303,7 @@ public static class EnumerableExtensions
     public static IReadOnlyList<T> SafeToReadOnlyList<T>(this IEnumerable<T>? enumerable)
     {
         enumerable ??= [];
-        var readOnlyList = enumerable as IReadOnlyList<T> ?? enumerable.ToList();
+        var readOnlyList = enumerable as IReadOnlyList<T> ?? [.. enumerable];
         return readOnlyList;
     }
     #endregion

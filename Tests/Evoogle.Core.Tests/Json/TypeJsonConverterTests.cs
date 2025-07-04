@@ -37,7 +37,7 @@ public class TypeJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
 
             if (this.ExpectedType != null)
             {
-                this.WriteLine($"Expected      Type: {this.ExpectedType.SafeToName()}");
+                this.WriteLine($"Expected Type: {this.ExpectedType.SafeToName()}");
             }
 
             if (this.ExpectedException != null)
@@ -51,7 +51,7 @@ public class TypeJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
             try
             {
                 this.ActualType = JsonSerializer.Deserialize<Type?>(this.SourceJson!, Options);
-                this.WriteLine($"Actual        Type: {this.ActualType.SafeToName()}");
+                this.WriteLine($"Actual   Type: {this.ActualType.SafeToName()}");
             }
             catch (Exception exception)
             {

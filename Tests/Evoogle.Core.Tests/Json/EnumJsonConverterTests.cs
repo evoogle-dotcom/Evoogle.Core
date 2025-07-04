@@ -4,6 +4,7 @@
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
 using System.Text.Json;
+
 using Evoogle.Extensions;
 using Evoogle.XUnit;
 
@@ -33,11 +34,12 @@ public class EnumJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
         #region XUnitTest Methods
         protected override void Arrange()
         {
-            this.WriteLine($"Source        JSON: {this.SourceJson.SafeToString()}");
+            this.WriteLine($"Source JSON: {this.SourceJson.SafeToString()}");
+            this.WriteLine();
 
             if (this.ExpectedEnum != null)
             {
-                this.WriteLine($"Expected      Enum: {this.ExpectedEnum.SafeToString()}");
+                this.WriteLine($"Expected Enum: {this.ExpectedEnum.SafeToString()}");
             }
 
             if (this.ExpectedException != null)
@@ -51,7 +53,7 @@ public class EnumJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
             try
             {
                 this.ActualEnum = JsonSerializer.Deserialize<TEnum?>(this.SourceJson!, Options);
-                this.WriteLine($"Actual        Enum: {this.ActualEnum.SafeToString()}");
+                this.WriteLine($"Actual   Enum: {this.ActualEnum.SafeToString()}");
             }
             catch (Exception exception)
             {
@@ -98,14 +100,16 @@ public class EnumJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
         #region XUnitTest Methods
         protected override void Arrange()
         {
-            this.WriteLine($"Source    Enum: {this.SourceEnum.SafeToString()}");
-            this.WriteLine($"Expected  JSON: {this.ExpectedJson.SafeToString()}");
+            this.WriteLine($"Source Enum: {this.SourceEnum.SafeToString()}");
+            this.WriteLine();
+
+            this.WriteLine($"Expected JSON: {this.ExpectedJson.SafeToString()}");
         }
 
         protected override void Act()
         {
             this.ActualJson = JsonSerializer.Serialize(this.SourceEnum, Options);
-            this.WriteLine($"Actual    JSON: {this.ActualJson.SafeToString()}");
+            this.WriteLine($"Actual   JSON: {this.ActualJson.SafeToString()}");
         }
 
         protected override void Assert()
