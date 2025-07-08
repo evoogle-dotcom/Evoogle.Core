@@ -17,9 +17,9 @@ public class TypeJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
     public class JsonDeserializeTest : XUnitTest
     {
         #region User Supplied Properties
-        public string? SourceJson { get; set; }
-        public Type? ExpectedType { get; set; }
-        public string? ExpectedException { get; set; }
+        public string? SourceJson { get; init; }
+        public Type? ExpectedType { get; init; }
+        public string? ExpectedException { get; init; }
         #endregion
 
         #region Calculated Properties
@@ -85,8 +85,8 @@ public class TypeJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
     public class JsonSerializeTest : XUnitTest
     {
         #region User Supplied Properties
-        public Type? SourceType { get; set; }
-        public string? ExpectedJson { get; set; }
+        public Type? SourceType { get; init; }
+        public string? ExpectedJson { get; init; }
         #endregion
 
         #region Calculated Properties

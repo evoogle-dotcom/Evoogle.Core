@@ -19,9 +19,9 @@ public class EnumJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
         where TEnum : struct, Enum
     {
         #region User Supplied Properties
-        public string? SourceJson { get; set; }
-        public TEnum? ExpectedEnum { get; set; }
-        public string? ExpectedException { get; set; }
+        public string? SourceJson { get; init; }
+        public TEnum? ExpectedEnum { get; init; }
+        public string? ExpectedException { get; init; }
         #endregion
 
         #region Calculated Properties
@@ -88,8 +88,8 @@ public class EnumJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
         where TEnum : struct, Enum
     {
         #region User Supplied Properties
-        public TEnum? SourceEnum { get; set; }
-        public string? ExpectedJson { get; set; }
+        public TEnum? SourceEnum { get; init; }
+        public string? ExpectedJson { get; init; }
         #endregion
 
         #region Calculated Properties

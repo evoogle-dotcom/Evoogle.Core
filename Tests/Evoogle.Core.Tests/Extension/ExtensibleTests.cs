@@ -47,15 +47,15 @@ public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
     {
         #region User Supplied Properties
         [JsonConverter(typeof(ExpressionFuncJsonConverter<TestExtensible>))]
-        public Expression<Func<TestExtensible>> ExtensibleFactoryExpression { get; set; } = null!;
+        public Expression<Func<TestExtensible>> ExtensibleFactoryExpression { get; init; } = null!;
 
         [JsonConverter(typeof(ExpressionActionJsonConverter<TestExtensible>))]
-        public Expression<Action<TestExtensible>>? ExtensibleMutateExpression { get; set; }
+        public Expression<Action<TestExtensible>>? ExtensibleMutateExpression { get; init; }
 
-        public bool ExpectedResult { get; set; }
-        public bool ExpectedArgumentNullExceptionThrown { get; set; }
+        public bool ExpectedResult { get; init; }
+        public bool ExpectedArgumentNullExceptionThrown { get; init; }
 
-        public TestExtension? ExpectedExtension { get; set; }
+        public TestExtension? ExpectedExtension { get; init; }
         #endregion
 
         #region Calculated Properties

@@ -15,12 +15,12 @@ public class DotNetStringExtensionTests(ITestOutputHelper output) : XUnitTests(o
     public class MaskTest : XUnitTest
     {
         #region User Supplied Properties
-        public string? Source { get; set; }
-        public string? Expected { get; set; }
-        public char MaskChar { get; set; } = '*';
-        public int UnmaskedLeftCount { get; set; } = 1;
-        public int? UnmaskedRightCount { get; set; } = null;
-        public int MinMaskedCount { get; set; } = 8;
+        public string? Source { get; init; }
+        public string? Expected { get; init; }
+        public char MaskChar { get; init; } = '*';
+        public int UnmaskedLeftCount { get; init; } = 1;
+        public int? UnmaskedRightCount { get; init; } = null;
+        public int MinMaskedCount { get; init; } = 8;
         #endregion
 
         #region Calculated Properties
@@ -45,8 +45,8 @@ public class DotNetStringExtensionTests(ITestOutputHelper output) : XUnitTests(o
 
     public class RemoveWhitespaceTest : XUnitTest
     {
-        public string? Source { get; set; }
-        public string? Expected { get; set; }
+        public string? Source { get; init; }
+        public string? Expected { get; init; }
         private string? Actual { get; set; }
 
         protected override void Act() => this.Actual = this.Source!.RemoveWhitespace();
