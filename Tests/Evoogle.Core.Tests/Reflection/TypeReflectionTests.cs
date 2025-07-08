@@ -17,13 +17,17 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
     #region Test Classes
     public class GetBaseTypeTest : XUnitTest
     {
+        #region User Supplied Properties
         public Type Type { get; init; } = null!;
         public Type? ExpectedBaseType { get; init; }
+        #endregion
 
-        public string ExpectedBaseTypeName { get; init; } = null!;
+        #region Calculated Properties
+        private string ExpectedBaseTypeName { get; set; } = null!;
 
-        public Type? ActualBaseType { get; init; }
-        public string ActualBaseTypeName { get; init; } = null!;
+        private Type? ActualBaseType { get; set; }
+        private string ActualBaseTypeName { get; set; } = null!;
+        #endregion
 
         #region XUnitTest Methods
         protected override void Arrange()
@@ -49,13 +53,17 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class GetBaseTypesTest : XUnitTest
     {
+        #region User Supplied Properties
         public Type Type { get; init; } = null!;
         public IEnumerable<Type> ExpectedBaseTypes { get; init; } = null!;
+        #endregion
 
-        public string ExpectedBaseTypeNames { get; init; } = null!;
+        #region Calculated Properties
+        private string ExpectedBaseTypeNames { get; set; } = null!;
 
-        public IEnumerable<Type> ActualBaseTypes { get; init; } = null!;
-        public string ActualBaseTypeNames { get; init; } = null!;
+        private IEnumerable<Type> ActualBaseTypes { get; set; } = null!;
+        private string ActualBaseTypeNames { get; set; } = null!;
+        #endregion
 
         #region XUnitTest Methods
         protected override void Arrange()
@@ -81,9 +89,14 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class GetCompactQualifiedNameTest : XUnitTest
     {
+        #region User Supplied Properties
         public Type Type { get; init; } = null!;
-        public string ActualCompactQualifiedName { get; private set; } = null!;
-        public Type? ReconstructedType { get; private set; }
+        #endregion
+
+        #region Calculated Properties
+        private string ActualCompactQualifiedName { get; set; } = null!;
+        private Type? ReconstructedType { get; set; }
+        #endregion
 
         protected override void Arrange()
         {
@@ -113,12 +126,16 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class GetConstructorTest : XUnitTest
     {
+        #region User Supplied Properties
         public Type Type { get; init; } = null!;
         public BindingFlags BindingFlags { get; init; }
         public IEnumerable<Type> ParameterTypes { get; init; } = null!;
         public bool ExpectedConstructorFound { get; init; }
+        #endregion
 
-        public bool ActualConstructorFound { get; init; }
+        #region Calculated Properties
+        private bool ActualConstructorFound { get; set; }
+        #endregion
 
         #region XUnitTest Methods
         protected override void Arrange()
@@ -146,11 +163,15 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class GetConstructorsTest : XUnitTest
     {
+        #region User Supplied Properties
         public Type Type { get; init; } = null!;
         public BindingFlags BindingFlags { get; init; }
         public long ExpectedConstructorCount { get; init; }
+        #endregion
 
-        public long ActualConstructorCount { get; init; }
+        #region Calculated Properties
+        private long ActualConstructorCount { get; set; }
+        #endregion
 
         #region XUnitTest Methods
         protected override void Arrange()
@@ -175,12 +196,16 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class GetFieldTest : XUnitTest
     {
+        #region User Supplied Properties
         public Type Type { get; init; } = null!;
         public BindingFlags BindingFlags { get; init; }
         public string FieldName { get; init; } = null!;
         public string? ExpectedFieldName { get; init; }
+        #endregion
 
-        public string? ActualFieldName { get; init; }
+        #region Calculated Properties
+        private string? ActualFieldName { get; set; }
+        #endregion
 
         #region XUnitTest Methods
         protected override void Arrange()
@@ -215,11 +240,15 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class GetFieldsTest : XUnitTest
     {
+        #region User Supplied Properties
         public Type Type { get; init; } = null!;
         public BindingFlags BindingFlags { get; init; }
         public IEnumerable<string> ExpectedFieldNames { get; init; } = null!;
+        #endregion
 
-        public IEnumerable<string> ActualFieldNames { get; init; } = null!;
+        #region Calculated Properties
+        private IEnumerable<string> ActualFieldNames { get; set; } = null!;
+        #endregion
 
         #region XUnitTest Methods
         protected override void Arrange()
@@ -242,13 +271,17 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class GetMethodTest : XUnitTest
     {
+        #region User Supplied Properties
         public Type Type { get; init; } = null!;
         public BindingFlags BindingFlags { get; init; }
         public IEnumerable<Type> ParameterTypes { get; init; } = null!;
         public string MethodName { get; init; } = null!;
         public string? ExpectedMethodName { get; init; }
+        #endregion
 
-        public string? ActualMethodName { get; init; }
+        #region Calculated Properties
+        private string? ActualMethodName { get; set; }
+        #endregion
 
         #region XUnitTest Methods
         protected override void Arrange()
@@ -286,11 +319,15 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class GetMethodsTest : XUnitTest
     {
+        #region User Supplied Properties
         public Type Type { get; init; } = null!;
         public BindingFlags BindingFlags { get; init; }
         public IEnumerable<string> ExpectedMethodNames { get; init; } = null!;
+        #endregion
 
-        public IEnumerable<string> ActualMethodNames { get; init; } = null!;
+        #region Calculated Properties
+        private IEnumerable<string> ActualMethodNames { get; set; } = null!;
+        #endregion
 
         #region XUnitTest Methods
         protected override void Arrange()
@@ -316,12 +353,16 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class GetPropertyTest : XUnitTest
     {
+        #region User Supplied Properties
         public Type Type { get; init; } = null!;
         public BindingFlags BindingFlags { get; init; }
         public string PropertyName { get; init; } = null!;
         public string? ExpectedPropertyName { get; init; }
+        #endregion
 
-        public string? ActualPropertyName { get; init; }
+        #region Calculated Properties
+        private string? ActualPropertyName { get; set; }
+        #endregion
 
         #region XUnitTest Methods
         protected override void Arrange()
@@ -356,11 +397,15 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class GetPropertiesTest : XUnitTest
     {
+        #region User Supplied Properties
         public Type Type { get; init; } = null!;
         public BindingFlags BindingFlags { get; init; }
         public IEnumerable<string> ExpectedPropertyNames { get; init; } = null!;
+        #endregion
 
-        public IEnumerable<string> ActualPropertyNames { get; init; } = null!;
+        #region Calculated Properties
+        private IEnumerable<string> ActualPropertyNames { get; set; } = null!;
+        #endregion
 
         #region XUnitTest Methods
         protected override void Arrange()
@@ -383,10 +428,14 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class IsComplexTest : XUnitTest
     {
+        #region User Supplied Properties
         public Type Type { get; init; } = null!;
         public bool Expected { get; init; }
+        #endregion
 
-        public bool Actual { get; init; }
+        #region Calculated Properties
+        private bool Actual { get; set; }
+        #endregion
 
         #region XUnitTest Methods
         protected override void Arrange()
@@ -409,10 +458,14 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class IsEnumerableOfTTest : XUnitTest
     {
+        #region User Supplied Properties
         public Type Type { get; init; } = null!;
         public bool Expected { get; init; }
+        #endregion
 
-        public bool Actual { get; init; }
+        #region Calculated Properties
+        private bool Actual { get; set; }
+        #endregion
 
         #region XUnitTest Methods
         protected override void Arrange()
@@ -435,11 +488,15 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class IsImplementationOfTest : XUnitTest
     {
+        #region User Supplied Properties
         public Type DerivedType { get; init; } = null!;
         public Type BaseType { get; init; } = null!;
         public bool Expected { get; init; }
+        #endregion
 
-        public bool Actual { get; init; }
+        #region Calculated Properties
+        private bool Actual { get; set; }
+        #endregion
 
         #region XUnitTest Methods
         protected override void Arrange()
@@ -463,10 +520,14 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class IsSimpleTest : XUnitTest
     {
+        #region User Supplied Properties
         public Type Type { get; init; } = null!;
         public bool Expected { get; init; }
+        #endregion
 
-        public bool Actual { get; init; }
+        #region Calculated Properties
+        private bool Actual { get; set; }
+        #endregion
 
         #region XUnitTest Methods
         protected override void Arrange()
@@ -489,11 +550,15 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class IsSubclassOrImplementationOfTest : XUnitTest
     {
+        #region User Supplied Properties
         public Type DerivedType { get; init; } = null!;
         public Type BaseType { get; init; } = null!;
         public bool Expected { get; init; }
+        #endregion
 
-        public bool Actual { get; init; }
+        #region Calculated Properties
+        private bool Actual { get; set; }
+        #endregion
 
         #region XUnitTest Methods
         protected override void Arrange()
