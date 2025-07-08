@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
+    <IsTestProject>false</IsTestProject>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
