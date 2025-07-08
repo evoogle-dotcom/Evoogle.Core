@@ -23,9 +23,9 @@ public class Utf8JsonWriterExensionTests(ITestOutputHelper output) : XUnitTests(
     {
         #region User Supplied Properties
         [JsonConverter(typeof(ExpressionActionJsonConverter<Utf8JsonWriter>))]
-        public Expression<Action<Utf8JsonWriter>> WritePropertyExpression { get; set; } = null!;
+        public Expression<Action<Utf8JsonWriter>> WritePropertyExpression { get; init; } = null!;
 
-        public string ExpectedJson { get; set; } = null!;
+        public string ExpectedJson { get; init; } = null!;
         #endregion
 
         #region Calculated Properties

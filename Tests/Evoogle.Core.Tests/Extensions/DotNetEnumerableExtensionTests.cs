@@ -15,8 +15,8 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
     private class EmptyIfNullUnitTest<T> : XUnitTest
     {
         #region User Supplied Properties
-        public IEnumerable<T>? Original { get; set; }
-        public IEnumerable<T> Expected { get; set; } = null!;
+        public IEnumerable<T>? Original { get; init; }
+        public IEnumerable<T> Expected { get; init; } = null!;
         #endregion
 
         #region Calculated Properties
@@ -60,8 +60,8 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
     private class IsNullOrEmptyUnitTest<T> : XUnitTest
     {
         #region User Supplied Properties
-        public IEnumerable<T>? Original { get; set; }
-        public bool Expected { get; set; }
+        public IEnumerable<T>? Original { get; init; }
+        public bool Expected { get; init; }
         #endregion
 
         #region Calculated Properties
@@ -101,8 +101,8 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
     private class SafeCastUnitTest<TFrom, TTo> : XUnitTest
     {
         #region User Supplied Properties
-        public IEnumerable<TFrom>? Original { get; set; }
-        public IEnumerable<TTo> Expected { get; set; } = null!;
+        public IEnumerable<TFrom>? Original { get; init; }
+        public IEnumerable<TTo> Expected { get; init; } = null!;
         #endregion
 
         #region Calculated Properties
@@ -146,8 +146,8 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
     private class SafeToArrayUnitTest<T> : XUnitTest
     {
         #region User Supplied Properties
-        public IEnumerable<T>? Original { get; set; }
-        public T[] Expected { get; set; } = null!;
+        public IEnumerable<T>? Original { get; init; }
+        public T[] Expected { get; init; } = null!;
         #endregion
 
         #region Calculated Properties
@@ -191,8 +191,8 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
     private class SafeToListUnitTest<T> : XUnitTest
     {
         #region User Supplied Properties
-        public IEnumerable<T>? Original { get; set; }
-        public IList<T> Expected { get; set; } = null!;
+        public IEnumerable<T>? Original { get; init; }
+        public IList<T> Expected { get; init; } = null!;
         #endregion
 
         #region Calculated Properties
@@ -236,8 +236,8 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
     private class SafeToReadOnlyCollectionUnitTest<T> : XUnitTest
     {
         #region User Supplied Properties
-        public IEnumerable<T>? Original { get; set; }
-        public IReadOnlyCollection<T> Expected { get; set; } = null!;
+        public IEnumerable<T>? Original { get; init; }
+        public IReadOnlyCollection<T> Expected { get; init; } = null!;
         #endregion
 
         #region Calculated Properties
@@ -281,8 +281,8 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
     private class SafeToReadOnlyListUnitTest<T> : XUnitTest
     {
         #region User Supplied Properties
-        public IEnumerable<T>? Original { get; set; }
-        public IReadOnlyList<T> Expected { get; set; } = null!;
+        public IEnumerable<T>? Original { get; init; }
+        public IReadOnlyList<T> Expected { get; init; } = null!;
         #endregion
 
         #region Calculated Properties

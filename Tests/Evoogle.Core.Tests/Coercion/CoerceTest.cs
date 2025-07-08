@@ -50,14 +50,14 @@ public class CoerceTest : XUnitTest
 public abstract class CoerceTest<TInput, TOutput> : CoerceTest
 {
     #region User Supplied Properties
-    public TInput? Input { get; set; }
+    public TInput? Input { get; init; }
 
     [JsonConverter(typeof(ExpressionFuncJsonConverter<TypeCoercionContext>))]
-    public Expression<Func<TypeCoercionContext>>? ContextFactoryExpression { get; set; }
+    public Expression<Func<TypeCoercionContext>>? ContextFactoryExpression { get; init; }
 
-    public bool ExpectedResult { get; set; }
+    public bool ExpectedResult { get; init; }
 
-    public TOutput? ExpectedOutput { get; set; }
+    public TOutput? ExpectedOutput { get; init; }
     #endregion
 
     #region Calculated Properties

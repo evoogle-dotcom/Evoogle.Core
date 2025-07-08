@@ -14,9 +14,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
     #region Test Classes
     public class IsStaticTest : XUnitTest
     {
-        public Type Type { get; set; } = null!;
-        public string PropertyName { get; set; } = null!;
-        public bool Expected { get; set; }
+        public Type Type { get; init; } = null!;
+        public string PropertyName { get; init; } = null!;
+        public bool Expected { get; init; }
 
         private bool Actual { get; set; }
 

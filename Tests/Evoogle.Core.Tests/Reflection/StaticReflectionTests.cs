@@ -17,8 +17,8 @@ public class StaticReflectionTests(ITestOutputHelper output) : XUnitTests(output
     public class GetMemberNameTest : XUnitTest
     {
         #region User Supplied Properties
-        public string Expected { get; set; } = null!;
-        public string Actual { get; set; } = null!;
+        public string Expected { get; init; } = null!;
+        public string Actual { get; init; } = null!;
 
         public static Widget Instance { get; } = new Widget();
         #endregion
@@ -36,8 +36,8 @@ public class StaticReflectionTests(ITestOutputHelper output) : XUnitTests(output
 
     public class GetMemberNameEdgeCaseTest : XUnitTest
     {
-        public string CaseName { get; set; } = null!;
-        public string Expected { get; set; } = null!;
+        public string CaseName { get; init; } = null!;
+        public string Expected { get; init; } = null!;
         public string Actual { get; private set; } = null!;
 
         protected override void Arrange()

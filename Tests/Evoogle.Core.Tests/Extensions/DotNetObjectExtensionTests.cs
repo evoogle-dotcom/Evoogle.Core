@@ -14,10 +14,10 @@ public class DotNetObjectExtensionTests(ITestOutputHelper output) : XUnitTests(o
     #region Test Classes
     public class SafeToStringTest : XUnitTest
     {
-        public object? Source { get; set; }
-        public string? Expected { get; set; }
-        public string? NullText { get; set; }
-        public string? EmtpyText { get; set; }
+        public object? Source { get; init; }
+        public string? Expected { get; init; }
+        public string? NullText { get; init; }
+        public string? EmtpyText { get; init; }
         private string? Actual { get; set; }
 
         protected override void Act() => this.Actual = this.Source!.SafeToString(this.NullText!, this.EmtpyText!);

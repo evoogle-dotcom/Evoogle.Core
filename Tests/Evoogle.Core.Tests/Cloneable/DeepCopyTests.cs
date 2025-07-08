@@ -22,7 +22,7 @@ public class DeepCopyTests(ITestOutputHelper output) : XUnitTests(output)
     {
         #region User Supplied Properties
         [JsonConverter(typeof(LambdaExpressionJsonConverter))]
-        public LambdaExpression? ExpectedSafeDeepCopyAccessorExpression { get; set; }
+        public LambdaExpression? ExpectedSafeDeepCopyAccessorExpression { get; init; }
         #endregion
 
         #region Constructors

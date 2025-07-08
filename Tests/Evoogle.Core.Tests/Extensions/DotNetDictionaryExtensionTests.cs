@@ -15,10 +15,10 @@ public class DotNetDictionaryExtensionTests(ITestOutputHelper output) : XUnitTes
     public class GetValueUnitTest<TKey, TValue> : XUnitTest
     {
         #region User Supplied Properties
-        public IDictionary<TKey, TValue> Dictionary { get; set; } = null!;
-        public TKey Key { get; set; } = default!;
-        public TValue? ExpectedValue { get; set; }
-        public bool ExpectedExceptionThrown { get; set; }
+        public IDictionary<TKey, TValue> Dictionary { get; init; } = null!;
+        public TKey Key { get; init; } = default!;
+        public TValue? ExpectedValue { get; init; }
+        public bool ExpectedExceptionThrown { get; init; }
         #endregion
 
         #region Calculated Properties
