@@ -4,6 +4,7 @@
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text;
 
@@ -200,7 +201,7 @@ public static class TypeReflection
 
     public static bool IsEnumerableOfT(Type type) => IsEnumerableOfT(type, out _);
 
-    public static bool IsEnumerableOfT(Type type, out Type? elementType)
+    public static bool IsEnumerableOfT(Type type, [NotNullWhen(true)] out Type? elementType)
     {
         var (IsEnumerable, ElementType) = _isEnumerableOfTCache.GetOrAdd(type, static t =>
         {
