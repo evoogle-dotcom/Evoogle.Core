@@ -355,9 +355,9 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
 
     public static TheoryDataRow<IXUnitTest>[] SafeToListTheoryData =>
     [
-        new SafeToListUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = new List<string>() },
-        new SafeToListUnitTest<string> { Name = "With Empty Collection",     Original = [],           Expected = new List<string>() },
-        new SafeToListUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = new List<string> { "String 1", "String 2", "String 3" } },
+        new SafeToListUnitTest<string> { Name = "With Null Collection",      Original = default,                              Expected = [] },
+        new SafeToListUnitTest<string> { Name = "With Empty Collection",     Original = [],           Expected = [] },
+        new SafeToListUnitTest<string> { Name = "With Non Empty Collection", Original = ["String 1", "String 2", "String 3"], Expected = ["String 1", "String 2", "String 3"] },
     ];
 
     public static TheoryDataRow<IXUnitTest>[] SafeToReadOnlyCollectionTheoryData =>
