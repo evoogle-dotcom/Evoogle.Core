@@ -13,36 +13,47 @@ namespace Evoogle.Reflection;
 public static class PropertyReflection
 {
     #region Methods
-    public static PropertyNullableInfo GetNullabilityInfo(PropertyInfo property)
+    /// <summary>
+    ///     Gets a detailed breakdown of a property’s nullability including:
+    ///     whether the property itself is nullable, whether it is a collection (excluding <see cref="string"/>),
+    ///     and the nullability of nested collection types and their elements (if any).
+    /// </summary>
+    /// <param name="propertyInfo">The <see cref="PropertyInfo"/> to analyze.</param>
+    /// <returns>
+    ///     A <see cref="PropertyNullableInfo"/> object containing nullability metadata of the property,
+    ///     including recursive collection nullability if applicable.
+    /// </returns>    
+    public static PropertyNullableInfo GetNullabilityInfo(PropertyInfo propertyInfo)
     {
-        ArgumentNullException.ThrowIfNull(property);
+        ArgumentNullException.ThrowIfNull(propertyInfo, nameof(propertyInfo));
 
         var context = new NullabilityInfoContext();
-        var nullabilityInfo = context.Create(property);
+        var nullabilityInfo = context.Create(propertyInfo);
 
-        var collectionChain = new List<PropertyNullableInfo.CollectionLayerInfo>();
+        var propertyType = propertyInfo.PropertyType;
+        var collectionChain = new List<PropertyNullableInfo.CollectionInfo>();
 
-        var currentType = property.PropertyType;
+        var currentType = propertyType;
         var currentNullability = nullabilityInfo;
 
-        bool isPropertyNullable = currentNullability.ReadState == NullabilityState.Nullable;
+        var isPropertyNullable = currentNullability.ReadState == NullabilityState.Nullable;
 
-        while (IsCollectionType(currentType, out var collectionType, out var elementType))
+        // Handle collections and possible collections within collections (IEnumerable<T>, arrays, etc.)
+        while (TypeReflection.IsEnumerableOfT(currentType, out var elementType))
         {
-            bool collectionNullable = currentNullability.ReadState == NullabilityState.Nullable;
+            var collectionNullable = currentNullability.ReadState == NullabilityState.Nullable;
 
-            NullabilityInfo? elementNullability = currentType.IsArray
+            var elementNullability = currentType.IsArray
                 ? currentNullability.ElementType
                 : currentNullability.GenericTypeArguments.FirstOrDefault();
 
-            bool elementNullable = elementType.IsValueType
+            var elementNullable = elementType.IsValueType
                 ? Nullable.GetUnderlyingType(elementType) != null
                 : elementNullability?.ReadState == NullabilityState.Nullable;
 
-            collectionChain.Add(new PropertyNullableInfo.CollectionLayerInfo
+            collectionChain.Add(new PropertyNullableInfo.CollectionInfo
             {
-                CollectionType = collectionType,
-                IsCollection = true,
+                CollectionType = currentType,
                 IsCollectionNullable = collectionNullable,
                 ElementType = elementType,
                 IsElementNullable = elementNullable
@@ -59,6 +70,7 @@ public static class PropertyReflection
 
         return new PropertyNullableInfo
         {
+            PropertyType = propertyType,
             IsNullable = isPropertyNullable,
             CollectionChain = collectionChain
         };
@@ -74,34 +86,6 @@ public static class PropertyReflection
 
         var isStatic = (propertyInfo.CanRead && propertyInfo.GetMethod?.IsStatic == true) || (propertyInfo.CanWrite && propertyInfo.SetMethod?.IsStatic == true);
         return isStatic;
-    }
-    #endregion
-
-    #region Implementation Methods
-    private static bool IsCollectionType(Type type, out Type collectionType, out Type elementType)
-    {
-        if (type.IsArray)
-        {
-            collectionType = type;
-            elementType = type.GetElementType()!;
-            return true;
-        }
-
-        if (type.IsGenericType)
-        {
-            var def = type.GetGenericTypeDefinition();
-            if (def == typeof(IEnumerable<>) || def == typeof(ICollection<>) || def == typeof(IList<>) ||
-                def == typeof(List<>) || def == typeof(IReadOnlyCollection<>) || def == typeof(IReadOnlyList<>))
-            {
-                collectionType = type;
-                elementType = type.GetGenericArguments()[0];
-                return true;
-            }
-        }
-
-        collectionType = null!;
-        elementType = null!;
-        return false;
     }
     #endregion
 }

@@ -83,6 +83,12 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     public class Sample
     {
+        public string? NullableReference { get; set; }
+        public string NonNullableReference { get; set; }
+
+        public int? NullableValue { get; set; }
+        public int NonNullableValue { get; set; }
+
         public List<string?>? NullableCollectionWithNullableReferenceElements { get; set; }
         public List<string>? NullableCollectionWithNonNullableReferenceElements { get; set; }
         public List<string?> NonNullableCollectionWithNullableReferenceElements { get; set; }
@@ -98,12 +104,6 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         public List<List<int?>?>? NullableCollectionWithNullableCollectionWithNullableValueElements { get; set; }
         public List<List<List<int?>?>?>? NullableCollectionWithNullableCollectionWithNullableCollectionWithNullableValueElements { get; set; }
-
-        public string? NullableReference { get; set; }
-        public string NonNullableReference { get; set; }
-
-        public int? NullableValue { get; set; }
-        public int NonNullableValue { get; set; }
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -119,19 +119,71 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
     [
         new GetNullabilityInfoTest
         {
+            Name = "With Nullable Reference",
+            Type = typeof(Sample),
+            PropertyName = nameof(Sample.NullableReference),
+            Expected = new PropertyNullableInfo
+            {
+                PropertyType = typeof(string),
+                IsNullable = true,
+                CollectionChain = []
+            }
+        },
+
+        new GetNullabilityInfoTest
+        {
+            Name = "With Non Nullable Reference",
+            Type = typeof(Sample),
+            PropertyName = nameof(Sample.NonNullableReference),
+            Expected = new PropertyNullableInfo
+            {
+                PropertyType = typeof(string),
+                IsNullable = false,
+                CollectionChain = []
+            }
+        },
+
+        new GetNullabilityInfoTest
+        {
+            Name = "With Nullable Value",
+            Type = typeof(Sample),
+            PropertyName = nameof(Sample.NullableValue),
+            Expected = new PropertyNullableInfo
+            {
+                PropertyType = typeof(int?),
+                IsNullable = true,
+                CollectionChain = []
+            }
+        },
+
+        new GetNullabilityInfoTest
+        {
+            Name = "With Non Nullable Value",
+            Type = typeof(Sample),
+            PropertyName = nameof(Sample.NonNullableValue),
+            Expected = new PropertyNullableInfo
+            {
+                PropertyType = typeof(int),
+                IsNullable = false,
+                CollectionChain = []
+            }
+        },
+
+        new GetNullabilityInfoTest
+        {
             Name = "With Nullable Collection With Nullable Reference Elements",
             Type = typeof(Sample),
             PropertyName = nameof(Sample.NullableCollectionWithNullableReferenceElements),
             Expected = new PropertyNullableInfo
             {
+                PropertyType = typeof(List<string?>),
                 IsNullable = true,
                 CollectionChain = [
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
-                        CollectionType = typeof(List<string>),
-                        IsCollection = true,
-                        IsCollectionNullable = true,
+                        CollectionType = typeof(List<string?>),
                         ElementType = typeof(string),
+                        IsCollectionNullable = true,
                         IsElementNullable = true
                     }
                 ]
@@ -145,14 +197,14 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
             PropertyName = nameof(Sample.NullableCollectionWithNonNullableReferenceElements),
             Expected = new PropertyNullableInfo
             {
+                PropertyType = typeof(List<string>),
                 IsNullable = true,
                 CollectionChain = [
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<string>),
-                        IsCollection = true,
-                        IsCollectionNullable = true,
                         ElementType = typeof(string),
+                        IsCollectionNullable = true,
                         IsElementNullable = false
                     }
                 ]
@@ -166,14 +218,14 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
             PropertyName = nameof(Sample.NonNullableCollectionWithNullableReferenceElements),
             Expected = new PropertyNullableInfo
             {
+                PropertyType = typeof(List<string?>),
                 IsNullable = false,
                 CollectionChain = [
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
-                        CollectionType = typeof(List<string>),
-                        IsCollection = true,
-                        IsCollectionNullable = false,
+                        CollectionType = typeof(List<string?>),
                         ElementType = typeof(string),
+                        IsCollectionNullable = false,
                         IsElementNullable = true
                     }
                 ]
@@ -187,14 +239,14 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
             PropertyName = nameof(Sample.NonNullableCollectionWithNonNullableReferenceElements),
             Expected = new PropertyNullableInfo
             {
+                PropertyType = typeof(List<string>),
                 IsNullable = false,
                 CollectionChain = [
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<string>),
-                        IsCollection = true,
-                        IsCollectionNullable = false,
                         ElementType = typeof(string),
+                        IsCollectionNullable = false,
                         IsElementNullable = false
                     }
                 ]
@@ -208,14 +260,14 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
             PropertyName = nameof(Sample.NullableCollectionWithNullableValueElements),
             Expected = new PropertyNullableInfo
             {
+                PropertyType = typeof(List<int?>),
                 IsNullable = true,
                 CollectionChain = [
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<int?>),
-                        IsCollection = true,
-                        IsCollectionNullable = true,
                         ElementType = typeof(int?),
+                        IsCollectionNullable = true,
                         IsElementNullable = true
                     }
                 ]
@@ -229,14 +281,14 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
             PropertyName = nameof(Sample.NullableCollectionWithNonNullableValueElements),
             Expected = new PropertyNullableInfo
             {
+                PropertyType = typeof(List<int>),
                 IsNullable = true,
                 CollectionChain = [
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<int>),
-                        IsCollection = true,
-                        IsCollectionNullable = true,
                         ElementType = typeof(int),
+                        IsCollectionNullable = true,
                         IsElementNullable = false
                     }
                 ]
@@ -250,14 +302,14 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
             PropertyName = nameof(Sample.NonNullableCollectionWithNullableValueElements),
             Expected = new PropertyNullableInfo
             {
+                PropertyType = typeof(List<int?>),
                 IsNullable = false,
                 CollectionChain = [
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<int?>),
-                        IsCollection = true,
-                        IsCollectionNullable = false,
                         ElementType = typeof(int?),
+                        IsCollectionNullable = false,
                         IsElementNullable = true
                     }
                 ]
@@ -271,14 +323,14 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
             PropertyName = nameof(Sample.NonNullableCollectionWithNonNullableValueElements),
             Expected = new PropertyNullableInfo
             {
+                PropertyType = typeof(List<int>),
                 IsNullable = false,
                 CollectionChain = [
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<int>),
-                        IsCollection = true,
-                        IsCollectionNullable = false,
                         ElementType = typeof(int),
+                        IsCollectionNullable = false,
                         IsElementNullable = false
                     }
                 ]
@@ -292,22 +344,21 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
             PropertyName = nameof(Sample.NullableCollectionWithNullableCollectionWithNullableReferenceElements),
             Expected = new PropertyNullableInfo
             {
+                PropertyType = typeof(List<List<string?>?>),
                 IsNullable = true,
                 CollectionChain = [
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<List<string?>?>),
-                        IsCollection = true,
-                        IsCollectionNullable = true,
                         ElementType = typeof(List<string?>),
+                        IsCollectionNullable = true,
                         IsElementNullable = true
                     },
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<string?>),
-                        IsCollection = true,
-                        IsCollectionNullable = true,
                         ElementType = typeof(string),
+                        IsCollectionNullable = true,
                         IsElementNullable = true
                     }
                 ]
@@ -321,30 +372,28 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
             PropertyName = nameof(Sample.NullableCollectionWithNullableCollectionWithNullableCollectionWithNullableReferenceElements),
             Expected = new PropertyNullableInfo
             {
+                PropertyType = typeof(List<List<List<string?>?>?>),
                 IsNullable = true,
                 CollectionChain = [
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<List<List<string?>?>?>),
-                        IsCollection = true,
-                        IsCollectionNullable = true,
                         ElementType = typeof(List<List<string?>?>),
+                        IsCollectionNullable = true,
                         IsElementNullable = true
                     },
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<List<string?>?>),
-                        IsCollection = true,
-                        IsCollectionNullable = true,
                         ElementType = typeof(List<string?>),
+                        IsCollectionNullable = true,
                         IsElementNullable = true
                     },
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<string?>),
-                        IsCollection = true,
-                        IsCollectionNullable = true,
                         ElementType = typeof(string),
+                        IsCollectionNullable = true,
                         IsElementNullable = true
                     }
                 ]
@@ -358,22 +407,21 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
             PropertyName = nameof(Sample.NullableCollectionWithNullableCollectionWithNullableValueElements),
             Expected = new PropertyNullableInfo
             {
+                PropertyType = typeof(List<List<int?>?>),
                 IsNullable = true,
                 CollectionChain = [
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<List<int?>?>),
-                        IsCollection = true,
-                        IsCollectionNullable = true,
                         ElementType = typeof(List<int?>),
+                        IsCollectionNullable = true,
                         IsElementNullable = true
                     },
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<int?>),
-                        IsCollection = true,
-                        IsCollectionNullable = true,
                         ElementType = typeof(int?),
+                        IsCollectionNullable = true,
                         IsElementNullable = true
                     }
                 ]
@@ -387,77 +435,31 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
             PropertyName = nameof(Sample.NullableCollectionWithNullableCollectionWithNullableCollectionWithNullableValueElements),
             Expected = new PropertyNullableInfo
             {
+                PropertyType = typeof(List<List<List<int?>?>?>),
                 IsNullable = true,
                 CollectionChain = [
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<List<List<int?>?>?>),
-                        IsCollection = true,
-                        IsCollectionNullable = true,
                         ElementType = typeof(List<List<int?>?>),
+                        IsCollectionNullable = true,
                         IsElementNullable = true
                     },
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<List<int?>?>),
-                        IsCollection = true,
-                        IsCollectionNullable = true,
                         ElementType = typeof(List<int?>),
+                        IsCollectionNullable = true,
                         IsElementNullable = true
                     },
-                    new PropertyNullableInfo.CollectionLayerInfo
+                    new PropertyNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<int?>),
-                        IsCollection = true,
-                        IsCollectionNullable = true,
                         ElementType = typeof(int?),
+                        IsCollectionNullable = true,
                         IsElementNullable = true
                     }
                 ]
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = "With Nullable Reference",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableReference),
-            Expected = new PropertyNullableInfo
-            {
-                IsNullable = true
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = "With Non Nullable Reference",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.NonNullableReference),
-            Expected = new PropertyNullableInfo
-            {
-                IsNullable = false
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = "With Nullable Value",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableValue),
-            Expected = new PropertyNullableInfo
-            {
-                IsNullable = true
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = "With Non Nullable Value",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.NonNullableValue),
-            Expected = new PropertyNullableInfo
-            {
-                IsNullable = false
             }
         },
     ];
