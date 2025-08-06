@@ -3,7 +3,6 @@
 //
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
-using System.Collections.ObjectModel;
 using System.Reflection;
 
 namespace Evoogle.Reflection;
@@ -16,27 +15,29 @@ public static class PropertyReflection
     #region Methods
     public static PropertyNullableInfo GetNullabilityInfo(PropertyInfo property)
     {
-        var propertyType = property.PropertyType;
-        var (nullableFlags, index) = ReadNullableFlags(property);
+        ArgumentNullException.ThrowIfNull(property);
 
-        bool isPropertyNullable = DetermineNullability(propertyType, nullableFlags, ref index);
+        var context = new NullabilityInfoContext();
+        var nullabilityInfo = context.Create(property);
+
         var collectionChain = new List<PropertyNullableInfo.CollectionLayerInfo>();
 
-        Type currentType = propertyType;
+        var currentType = property.PropertyType;
+        var currentNullability = nullabilityInfo;
+
+        bool isPropertyNullable = currentNullability.ReadState == NullabilityState.Nullable;
 
         while (IsCollectionType(currentType, out var collectionType, out var elementType))
         {
-            var collectionNullable = DetermineNullability(currentType, nullableFlags, ref index);
-            bool elementNullable;
+            bool collectionNullable = currentNullability.ReadState == NullabilityState.Nullable;
 
-            if (elementType.IsValueType)
-            {
-                elementNullable = Nullable.GetUnderlyingType(elementType) != null;
-            }
-            else
-            {
-                elementNullable = DetermineNullability(elementType, nullableFlags, ref index);
-            }
+            NullabilityInfo? elementNullability = currentType.IsArray
+                ? currentNullability.ElementType
+                : currentNullability.GenericTypeArguments.FirstOrDefault();
+
+            bool elementNullable = elementType.IsValueType
+                ? Nullable.GetUnderlyingType(elementType) != null
+                : elementNullability?.ReadState == NullabilityState.Nullable;
 
             collectionChain.Add(new PropertyNullableInfo.CollectionLayerInfo
             {
@@ -47,7 +48,13 @@ public static class PropertyReflection
                 IsElementNullable = elementNullable
             });
 
+            if (elementNullability is null)
+            {
+                break;
+            }
+
             currentType = elementType;
+            currentNullability = elementNullability;
         }
 
         return new PropertyNullableInfo
@@ -71,42 +78,6 @@ public static class PropertyReflection
     #endregion
 
     #region Implementation Methods
-    private static (byte[] flags, int index) ReadNullableFlags(PropertyInfo property)
-    {
-        var attr = property.CustomAttributes
-            .FirstOrDefault(a => a.AttributeType.FullName == "System.Runtime.CompilerServices.NullableAttribute");
-
-        if (attr != null && attr.ConstructorArguments.Count > 0)
-        {
-            var arg = attr.ConstructorArguments[0];
-            if (arg.ArgumentType == typeof(byte[]))
-            {
-                var flags = ((ReadOnlyCollection<CustomAttributeTypedArgument>)arg.Value!)
-                    .Select(x => (byte)x.Value!).ToArray();
-                return (flags, 0);
-            }
-
-            if (arg.ArgumentType == typeof(byte))
-            {
-                return (new[] { (byte)arg.Value! }, 0);
-            }
-        }
-
-        return (Array.Empty<byte>(), 0);
-    }
-
-    private static bool DetermineNullability(Type type, byte[] flags, ref int index)
-    {
-        if (type.IsValueType)
-            return Nullable.GetUnderlyingType(type) != null;
-
-        if (flags.Length == 0 || index >= flags.Length)
-            return false;
-
-        var flag = flags[index++];
-        return flag == 2;
-    }
-
     private static bool IsCollectionType(Type type, out Type collectionType, out Type elementType)
     {
         if (type.IsArray)
