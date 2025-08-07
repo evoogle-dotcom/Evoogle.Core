@@ -33,7 +33,7 @@ namespace Evoogle.Logging;
 /// </remarks>
 /// <param name="innerLogger">An optional <see cref="ILogger{T}"/> to forward log messages to.</param>
 /// <param name="mode">Specifies one or more log targets for output.</param>
-public sealed class MultiplexingLogger<T>(ILogger<T>? innerLogger, MultiplexingLoggerMode mode = MultiplexingLoggerMode.Logger) : ILogger<T>
+public sealed class MultiplexingLogger<T>(ILogger<T>? innerLogger = null, MultiplexingLoggerMode mode = MultiplexingLoggerMode.Logger) : ILogger<T>
 {
     #region Types
     /// <summary>Represents a no-op scope used when no logger is available.</summary>
