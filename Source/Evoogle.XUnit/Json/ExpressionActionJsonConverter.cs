@@ -30,11 +30,12 @@ public sealed class ExpressionActionJsonConverter<T> : JsonConverter<Expression<
             return null;
 
         var lambda = DynamicExpressionParser.ParseLambda(
+            typeof(Action<T>),
             ParsingConfig.Default,
             false,
-            typeof(Action<T>),
-            body,
-            ParameterExpressions);
+            ParameterExpressions,
+            null,
+            body);
 
         return (Expression<Action<T>>)lambda;
     }
@@ -66,11 +67,12 @@ public sealed class ExpressionActionJsonConverter<T1, T2> : JsonConverter<Expres
             return null;
 
         var lambda = DynamicExpressionParser.ParseLambda(
+            typeof(Action<T1, T2>),
             ParsingConfig.Default,
             false,
-            typeof(Action<T1, T2>),
-            body,
-            ParameterExpressions);
+            ParameterExpressions,
+            null,
+            body);
 
         return (Expression<Action<T1, T2>>)lambda;
     }
