@@ -8,100 +8,76 @@ using System.Linq.Expressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-using Evoogle.Json.Internal;
+using Evoogle.XUnit.Json.Internal;
 
-namespace Evoogle.Json;
+namespace Evoogle.XUnit.Json;
 
 /// <summary>
-///     JSON converter for the <see cref="Expression{Action{T}}"/>> .NET class.
-///     As a convention, the lambda expression argument must have the 'a' name, i.e. a => Foo(a);
+///     JSON converter for the <see cref="Expression{Action{T}}"/> .NET class.
 /// </summary>
-/// <typeparam name="T">Type of the lambda argument.</typeparam>
-public class ExpressionActionJsonConverter<T> : JsonConverter<Expression<Action<T>>>
+/// <typeparam name="T">Type of the single parameter.</typeparam>
+public sealed class ExpressionActionJsonConverter<T> : JsonConverter<Expression<Action<T>>>
 {
-    #region Properties
-    private static ParameterExpression[] ParameterExpressions { get; } = [Expression.Parameter(typeof(T), "a")];
-    #endregion
+    private static readonly ParameterExpression[] ParameterExpressions =
+    [
+        Expression.Parameter(typeof(T), "a")
+    ];
 
-    #region JsonConverter Methods
-    /// <summary>
-    ///     Override of <see cref="JsonConverter{T}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/> method.
-    /// </summary>
     public override Expression<Action<T>>? Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
     {
-        var serializedExpression = reader.GetString();
-        if (serializedExpression == null)
+        var body = reader.GetString();
+        if (string.IsNullOrEmpty(body))
             return null;
 
-        var deserializedExpression = JsonSerializer.Deserialize<string>(serializedExpression);
-        if (deserializedExpression == null)
-            return null;
+        var lambda = DynamicExpressionParser.ParseLambda(
+            ParsingConfig.Default,
+            false,
+            typeof(Action<T>),
+            body,
+            ParameterExpressions);
 
-        var reconstructedExpressionUntyped = DynamicExpressionParser.ParseLambda(typeof(Action<T>), ParsingConfig.Default, false, ParameterExpressions, null, deserializedExpression) ?? throw new InvalidOperationException($"Could not parse string {{Text={deserializedExpression}}} into {nameof(Action<T>)}.");
-        if (reconstructedExpressionUntyped == null)
-            return null;
-
-        var reconstructedExpressionTyped = (Expression<Action<T>>)reconstructedExpressionUntyped;
-        return reconstructedExpressionTyped;
+        return (Expression<Action<T>>)lambda;
     }
 
-    /// <summary>
-    ///     Override of <see cref="JsonConverter{T}.Write(Utf8JsonWriter, T, JsonSerializerOptions)"/> method.
-    /// </summary>
     public override void Write(Utf8JsonWriter writer, Expression<Action<T>> expression, JsonSerializerOptions options)
     {
-        var expressionBody = expression.Body;
-        var expressionBodyString = ExpressionUtils.GetExpressionBodyString(expressionBody);
-
-        var serializedExpression = JsonSerializer.Serialize(expressionBodyString);
-        writer.WriteStringValue(serializedExpression);
+        var expressionBodyString = ExpressionUtils.GetExpressionBodyString(expression.Body);
+        writer.WriteStringValue(expressionBodyString);
     }
-    #endregion
 }
 
 /// <summary>
-///     JSON converter for the <see cref="Expression{Action{T1,T2}}"/>> .NET class.
-///     As a convention, the lambda expression argument must have the 'a' and 'b' names, i.e. (a,b) => Foo(a,b);
+///     JSON converter for the <see cref="Expression{Action{T1,T2}}"/> .NET class.
 /// </summary>
-/// <typeparam name="T">Type of the lambda argument.</typeparam>
-public class ExpressionActionJsonConverter<T1, T2> : JsonConverter<Expression<Action<T1, T2>>>
+/// <typeparam name="T1">Type of the first parameter.</typeparam>
+/// <typeparam name="T2">Type of the second parameter.</typeparam>
+public sealed class ExpressionActionJsonConverter<T1, T2> : JsonConverter<Expression<Action<T1, T2>>>
 {
-    #region Properties
-    private static ParameterExpression[] ParameterExpressions { get; } = [Expression.Parameter(typeof(T1), "a"), Expression.Parameter(typeof(T2), "b")];
-    #endregion
+    private static readonly ParameterExpression[] ParameterExpressions =
+    [
+        Expression.Parameter(typeof(T1), "a"),
+        Expression.Parameter(typeof(T2), "b")
+    ];
 
-    #region JsonConverter Methods
-    /// <summary>
-    ///     Override of <see cref="JsonConverter{T}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/> method.
-    /// </summary>
     public override Expression<Action<T1, T2>>? Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
     {
-        var serializedExpression = reader.GetString();
-        if (serializedExpression == null)
+        var body = reader.GetString();
+        if (string.IsNullOrEmpty(body))
             return null;
 
-        var deserializedExpression = JsonSerializer.Deserialize<string>(serializedExpression);
-        if (deserializedExpression == null)
-            return null;
+        var lambda = DynamicExpressionParser.ParseLambda(
+            ParsingConfig.Default,
+            false,
+            typeof(Action<T1, T2>),
+            body,
+            ParameterExpressions);
 
-        var reconstructedExpressionUntyped = DynamicExpressionParser.ParseLambda(typeof(Action<T1, T2>), ParsingConfig.Default, false, ParameterExpressions, null, deserializedExpression) ?? throw new InvalidOperationException($"Could not parse string {{Text={deserializedExpression}}} into {nameof(Action<T1, T2>)}.");
-        if (reconstructedExpressionUntyped == null)
-            return null;
-
-        var reconstructedExpressionTyped = (Expression<Action<T1, T2>>)reconstructedExpressionUntyped;
-        return reconstructedExpressionTyped;
+        return (Expression<Action<T1, T2>>)lambda;
     }
 
-    /// <summary>
-    ///     Override of <see cref="JsonConverter{T}.Write(Utf8JsonWriter, T, JsonSerializerOptions)"/> method.
-    /// </summary>
     public override void Write(Utf8JsonWriter writer, Expression<Action<T1, T2>> expression, JsonSerializerOptions options)
     {
-        var expressionBody = expression.Body;
-        var expressionBodyString = ExpressionUtils.GetExpressionBodyString(expressionBody);
-
-        var serializedExpression = JsonSerializer.Serialize(expressionBodyString);
-        writer.WriteStringValue(serializedExpression);
+        var expressionBodyString = ExpressionUtils.GetExpressionBodyString(expression.Body);
+        writer.WriteStringValue(expressionBodyString);
     }
-    #endregion
 }

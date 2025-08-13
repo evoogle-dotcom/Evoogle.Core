@@ -6,19 +6,23 @@
 namespace Evoogle.XUnit;
 
 /// <summary>
-///     Captures boilerplate code for an individual named xUnit test to break the unit test into explicit arrange, act, asert steps
-///     that are executed in the context of an xUnit tests container.
+///     Captures boilerplate code for an individual named xUnit test to break the unit test into
+///     explicit Arrange, Act, Assert steps that are executed in the context of an xUnit tests container.
 /// </summary>
 public abstract class XUnitTest : XUnitTestBase, IXUnitTest
 {
-    #region IXUnitTest Implementation
+    #region Constructors
+    protected XUnitTest(string? name = null) : base(name) { }
+    #endregion
+
+    #region IXUnitTest Methods
     /// <summary>
-    ///     Executes the unit test by writing the name of the unit test followed by calling the arrange, act, and assert steps of the unit test.
+    ///     Executes the unit test by writing the test header and calling the Arrange, Act, and Assert steps.
     /// </summary>
-    /// <param name="parent">Parent unit tests container object.</param>
-    public virtual void Execute(XUnitTests parent)
+    /// <param name="parent">The parent tests container.</param>
+    public void Execute(XUnitTests parent)
     {
-        this.Parent = parent;
+        this.SetParent(parent);
 
         this.WriteDashedLine();
         this.WriteLine($"Test Name: {this.Name}");
@@ -32,20 +36,14 @@ public abstract class XUnitTest : XUnitTestBase, IXUnitTest
     }
     #endregion
 
-    #region XUnitTest Methods
-    /// <summary>Noop implementation of the arrange step.</summary>
-    protected virtual void Arrange()
-    {
-    }
+    #region Arrange/Act/Assert
+    /// <summary>No-op implementation of the arrange step.</summary>
+    protected virtual void Arrange() { }
 
-    /// <summary>Noop implementation of the act step.</summary>
-    protected virtual void Act()
-    {
-    }
+    /// <summary>No-op implementation of the act step.</summary>
+    protected virtual void Act() { }
 
-    /// <summary>Noop implementation of the assert step.</summary>
-    protected virtual void Assert()
-    {
-    }
+    /// <summary>No-op implementation of the assert step.</summary>
+    protected virtual void Assert() { }
     #endregion
 }

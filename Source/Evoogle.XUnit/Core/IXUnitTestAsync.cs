@@ -16,7 +16,7 @@ public interface IXUnitTestAsync
     #endregion
 
     #region Methods
-    /// <summary>Exectute asynchronously the named individual xUnit test.</summary>
+    /// <summary>Execute the named individual xUnit test asynchronously.</summary>
     /// <param name="parent">Parent xUnit tests container to execute this xUnit unit test within.</param>
     Task ExecuteAsync(XUnitTests parent);
     #endregion

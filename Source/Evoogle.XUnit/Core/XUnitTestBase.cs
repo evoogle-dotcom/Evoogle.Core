@@ -6,58 +6,37 @@
 namespace Evoogle.XUnit;
 
 /// <summary>
-///     Common baseclass for <see cref="XUnitTest" /> and <see cref="XUnitTestAsync" /> respectively.
+///     Common base class for <see cref="XUnitTest" /> and <see cref="XUnitTestAsync" /> respectively.
 /// </summary>
 public abstract class XUnitTestBase
 {
+    #region Constructors
+    protected XUnitTestBase(string? name = null)
+    {
+        this.Name = name ?? this.GetType().Name;
+    }
+    #endregion
+
     #region Properties
+    /// <summary>Gets the display name for the test.</summary>
     public string Name { get; set; }
 
-    protected XUnitTests? Parent { get; set; }
+    /// <summary>Gets the parent test container instance while the test is running.</summary>
+    protected XUnitTests? Parent { get; private set; }
     #endregion
 
-    #region Constructors
-    protected XUnitTestBase()
-    {
-        this.Name = this.GetType().Name;
-    }
+    #region Lifecycle
+    internal void SetParent(XUnitTests parent) => this.Parent = parent;
     #endregion
 
-    #region Object Methods
-    /// <summary>Returns the name of the unit test.</summary>
-    /// <returns>Name of the unit test.</returns>
-    public override string ToString()
-    {
-        return this.Name;
-    }
-    #endregion
-
-    #region Write Methods
-    /// <summary>Writes an empty line to the test text output.</summary>
-    protected void WriteLine()
-    {
-        this.Parent?.WriteLine();
-    }
-
-    /// <summary>
-    ///     Writes a message line to the test text output.
-    /// </summary>
-    /// <param name="message">Message to be output to the test text output.</param>
-    protected void WriteLine(string message)
-    {
-        this.Parent?.WriteLine(message);
-    }
+    #region Output helpers (delegate to parent)
+    /// <summary>Writes a message to the test text output.</summary>
+    protected void WriteLine(string? message = null) => this.Parent?.WriteLine(message ?? string.Empty);
 
     /// <summary>Writes a dashed line to the test text output.</summary>
-    protected void WriteDashedLine()
-    {
-        this.Parent?.WriteDashedLine();
-    }
+    protected void WriteDashedLine() => this.Parent?.WriteDashedLine();
 
     /// <summary>Writes a double dashed line to the test text output.</summary>
-    public void WriteDoubleDashedLine()
-    {
-        this.Parent?.WriteDoubleDashedLine();
-    }
+    protected void WriteDoubleDashedLine() => this.Parent?.WriteDoubleDashedLine();
     #endregion
 }

@@ -6,49 +6,44 @@
 namespace Evoogle.XUnit;
 
 /// <summary>
-///     Captures boilerplate code for an individual named xUnit test to break the unit test into explicit arrange, act, asert steps
-///     that are executed asynchronously in the context of an xUnit tests container.
+///     Captures boilerplate code for an individual named xUnit test (async) using
+///     explicit Arrange, Act, Assert steps executed in an xUnit tests container.
 /// </summary>
 public abstract class XUnitTestAsync : XUnitTestBase, IXUnitTestAsync
 {
+    #region Constructors
+    protected XUnitTestAsync(string? name = null) : base(name) { }
+    #endregion
+
     #region IXUnitTestAsync Implementation
     /// <summary>
-    ///     Executes the unit test asynchronously by writing the name of the unit test followed by calling the arrange, act, and assert steps of the unit test.
+    ///     Executes the unit test asynchronously by writing the test header and calling the Arrange/Act/Assert steps.
     /// </summary>
-    /// <param name="parent">Parent unit tests container object.</param>
-    public virtual async Task ExecuteAsync(XUnitTests parent)
+    /// <param name="parent">The parent tests container.</param>
+    public async Task ExecuteAsync(XUnitTests parent)
     {
-        this.Parent = parent;
+        this.SetParent(parent);
 
         this.WriteDashedLine();
         this.WriteLine($"Test Name: {this.Name}");
         this.WriteLine();
 
-        await this.ArrangeAsync();
-        await this.ActAsync();
-        await this.AssertAsync();
+        await this.ArrangeAsync().ConfigureAwait(false);
+        await this.ActAsync().ConfigureAwait(false);
+        await this.AssertAsync().ConfigureAwait(false);
 
         this.WriteLine();
     }
     #endregion
 
-    #region XUnitTestAsync Methods
-    /// <summary>Noop implementation of the arrange step.</summary>
-    protected virtual Task ArrangeAsync()
-    {
-        return Task.CompletedTask;
-    }
+    #region Arrange/Act/Assert (async)
+    /// <summary>No-op implementation of the arrange step.</summary>
+    protected virtual Task ArrangeAsync() => Task.CompletedTask;
 
-    /// <summary>Noop implementation of the act step.</summary>
-    protected virtual Task ActAsync()
-    {
-        return Task.CompletedTask;
-    }
+    /// <summary>No-op implementation of the act step.</summary>
+    protected virtual Task ActAsync() => Task.CompletedTask;
 
-    /// <summary>Noop implementation of the assert step.</summary>
-    protected virtual Task AssertAsync()
-    {
-        return Task.CompletedTask;
-    }
+    /// <summary>No-op implementation of the assert step.</summary>
+    protected virtual Task AssertAsync() => Task.CompletedTask;
     #endregion
 }

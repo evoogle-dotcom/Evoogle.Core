@@ -16,7 +16,7 @@ public interface IXUnitTest
     #endregion
 
     #region Methods
-    /// <summary>Exectute the named individual xUnit test.</summary>
+    /// <summary>Execute the named individual xUnit test.</summary>
     /// <param name="parent">Parent xUnit tests container to execute this xUnit unit test within.</param>
     void Execute(XUnitTests parent);
     #endregion

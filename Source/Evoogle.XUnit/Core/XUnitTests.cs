@@ -12,71 +12,55 @@ namespace Evoogle.XUnit;
 /// </summary>
 /// <param name="output">xUnit helper object to provide text output with.</param>
 /// <remarks>
-///     Derived classes should annotate methods with either xUnit theory or facts as needed.
+///     Derived classes should annotate methods with either xUnit Theories or Facts as needed.
 /// </remarks>
 public abstract class XUnitTests(ITestOutputHelper output)
 {
     #region Fields
-    private const string DoubleDashedLine =
-        "=============================================================================";
+    private const string _singleDashedLine = "----------------------------------------";
+    private const string _doubleDashedLine = "========================================";
 
-    private const string SingleDashedLine =
-        "-----------------------------------------------------------------------------";
-
-    private static readonly bool _suppressOutput = Environment.GetEnvironmentVariable("XUNIT_SUPPRESS_OUTPUT") == "1";
+    // Support both "1" and "true" to make CI configuration easier.
+    private static readonly bool _suppressOutput =
+        string.Equals(Environment.GetEnvironmentVariable("XUNIT_SUPPRESS_OUTPUT"), "1", StringComparison.Ordinal) ||
+        (bool.TryParse(Environment.GetEnvironmentVariable("XUNIT_SUPPRESS_OUTPUT"), out var b) && b);
     #endregion
 
     #region Properties
-    private ITestOutputHelper Output { get; } = output;
+    protected ITestOutputHelper Output { get; } = output;
     #endregion
 
-    #region Write Methods
-    internal void WriteLine()
-    {
-        // If the output is suppressed, do not write anything.
-        // This is useful for CI environments where output can be noisy.
-        if (_suppressOutput)
-        {
-            return;
-        }
-
-        this.Output.WriteLine(string.Empty);
-    }
-
+    #region Helper API used by test instances
     internal void WriteLine(string message)
     {
-        // If the output is suppressed, do not write anything.
-        // This is useful for CI environments where output can be noisy.
-        if (_suppressOutput)
-        {
-            return;
-        }
-
+        if (_suppressOutput) return;
         this.Output.WriteLine(message);
     }
 
     internal void WriteDashedLine()
     {
-        // If the output is suppressed, do not write anything.
-        // This is useful for CI environments where output can be noisy.
-        if (_suppressOutput)
-        {
-            return;
-        }
-
-        this.Output.WriteLine(SingleDashedLine);
+        if (_suppressOutput) return;
+        this.Output.WriteLine(_singleDashedLine);
     }
 
     internal void WriteDoubleDashedLine()
     {
-        // If the output is suppressed, do not write anything.
-        // This is useful for CI environments where output can be noisy.
-        if (_suppressOutput)
-        {
-            return;
-        }
+        if (_suppressOutput) return;
+        this.Output.WriteLine(_doubleDashedLine);
+    }
+    #endregion
 
-        this.Output.WriteLine(DoubleDashedLine);
+    #region Convenience runners (optional)
+    protected void Run(IXUnitTest test)
+    {
+        ArgumentNullException.ThrowIfNull(test);
+        test.Execute(this);
+    }
+
+    protected Task RunAsync(IXUnitTestAsync test)
+    {
+        ArgumentNullException.ThrowIfNull(test);
+        return test.ExecuteAsync(this);
     }
     #endregion
 }

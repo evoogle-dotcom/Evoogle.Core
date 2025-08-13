@@ -5,7 +5,7 @@
 // See the LICENSE file in the project root for more information.
 using System.Linq.Expressions;
 
-namespace Evoogle.Json.Internal;
+namespace Evoogle.XUnit.Json.Internal;
 
 /// <summary>
 ///     This API supports the Evoogle.Core infrastructure and is not intended to be used directly from your code.
