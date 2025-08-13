@@ -27,7 +27,7 @@ public sealed class ExpressionFuncJsonConverter<TResult> : JsonConverter<Express
         var lambda = DynamicExpressionParser.ParseLambda(
             ParsingConfig.Default,
             false,
-            typeof(Func<TResult>),
+            typeof(TResult),
             body);
 
         return (Expression<Func<TResult>>)lambda;
@@ -61,9 +61,9 @@ public sealed class ExpressionFuncJsonConverter<T, TResult> : JsonConverter<Expr
         var lambda = DynamicExpressionParser.ParseLambda(
             ParsingConfig.Default,
             false,
-            typeof(Func<T, TResult>),
-            body,
-            ParameterExpressions);
+            ParameterExpressions,
+            typeof(TResult),
+            body);
 
         return (Expression<Func<T, TResult>>)lambda;
     }
