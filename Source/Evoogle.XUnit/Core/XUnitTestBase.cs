@@ -29,7 +29,16 @@ public abstract class XUnitTestBase
     internal void SetParent(XUnitTests parent) => this.Parent = parent;
     #endregion
 
-    #region Output helpers (delegate to parent)
+    #region Object Methods
+    /// <summary>Returns the name of the unit test.</summary>
+    /// <returns>Name of the unit test.</returns>
+    public override string ToString()
+    {
+        return this.Name;
+    }
+    #endregion
+
+    #region Output Helpers (delegates to parent)
     /// <summary>Writes a message to the test text output.</summary>
     protected void WriteLine(string? message = null) => this.Parent?.WriteLine(message ?? string.Empty);
 
