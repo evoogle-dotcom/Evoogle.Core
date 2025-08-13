@@ -14,56 +14,41 @@ using Evoogle.XUnit.Json.Internal;
 namespace Evoogle.XUnit.Json;
 
 /// <summary>
-///     JSON converter for the <see cref="LambdaExpression"/> .NET class.
-///     Stores a structured payload: result type, parameter types, and the string body.
-///     NOTE: Intended for trusted inputs only (Dynamic LINQ parsing).
+///     JSON converter for the <see cref="LambdaExpression"/>> .NET class.
 /// </summary>
 public sealed class LambdaExpressionJsonConverter : JsonConverter<LambdaExpression>
 {
     #region DTO
     private sealed class LambdaExpressionInfo
     {
+        #region Fields
+        private static readonly JsonConverter<Type> _typeJsonConverter = new TypeJsonConverter();
+        #endregion
+
+        #region Properties
         public Type? ResultType { get; set; }
         public Type[]? ParameterTypes { get; set; }
         public string? Body { get; set; }
+        #endregion
 
-        private static readonly JsonConverter<Type> TypeJsonConverter = new TypeJsonConverter();
+        #region Methods
+        public string GetBody() => this.Body ?? throw new JsonException($"{nameof(this.Body)} property is null.");
 
-        public string GetBody() => Body ?? throw new NullReferenceException($"{nameof(Body)} property is null.");
+        public static string GetBodyJsonPropertyName() => "Body";
 
         public Type[] GetParameterTypes()
         {
-            if (ParameterTypes is null)
-                throw new NullReferenceException($"{nameof(ParameterTypes)} property is null.");
-            return ParameterTypes;
-        }
+            if (this.ParameterTypes is null)
+                throw new JsonException($"{nameof(this.ParameterTypes)} property is null.");
 
-        public Type GetResultType()
-            => ResultType ?? throw new NullReferenceException($"{nameof(ResultType)} property is null.");
+            return this.ParameterTypes;
+        }
 
         public static string GetParameterTypesJsonPropertyName() => "ParameterTypes";
+
+        public Type GetResultType() => this.ResultType ?? throw new JsonException($"{nameof(this.ResultType)} property is null.");
+
         public static string GetResultTypeJsonPropertyName() => "ResultType";
-        public static string GetBodyJsonPropertyName() => "Body";
-
-        public static void WriteTo(Utf8JsonWriter writer, LambdaExpression value, JsonSerializerOptions options)
-        {
-            writer.WriteStartObject();
-
-            writer.WritePropertyName(GetResultTypeJsonPropertyName());
-            TypeJsonConverter.Write(writer, value.ReturnType, options);
-
-            writer.WritePropertyName(GetParameterTypesJsonPropertyName());
-            writer.WriteStartArray();
-            foreach (var p in value.Parameters)
-                TypeJsonConverter.Write(writer, p.Type, options);
-            writer.WriteEndArray();
-
-            writer.WritePropertyName(GetBodyJsonPropertyName());
-            var expressionBodyString = ExpressionUtils.GetExpressionBodyString(value.Body);
-            writer.WriteStringValue(expressionBodyString);
-
-            writer.WriteEndObject();
-        }
 
         public static LambdaExpression? ReadFrom(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
@@ -80,27 +65,26 @@ public sealed class LambdaExpressionJsonConverter : JsonConverter<LambdaExpressi
                 if (reader.TokenType != JsonTokenType.PropertyName)
                     throw new JsonException("Expected property name.");
 
-                var propName = reader.GetString();
+                var propertyName = reader.GetString();
                 reader.Read();
 
-                if (string.Equals(propName, GetResultTypeJsonPropertyName(), StringComparison.Ordinal))
+                if (string.Equals(propertyName, GetResultTypeJsonPropertyName(), StringComparison.Ordinal))
                 {
-                    resultType = TypeJsonConverter.Read(ref reader, typeof(Type), options);
+                    resultType = _typeJsonConverter.Read(ref reader, typeof(Type), options);
                 }
-                else if (string.Equals(propName, GetParameterTypesJsonPropertyName(), StringComparison.Ordinal))
+                else if (string.Equals(propertyName, GetParameterTypesJsonPropertyName(), StringComparison.Ordinal))
                 {
                     if (reader.TokenType != JsonTokenType.StartArray)
                         throw new JsonException("Expected start of array for ParameterTypes.");
 
-                    parameterTypes = new List<Type>();
+                    parameterTypes = [];
                     while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
                     {
-                        var t = TypeJsonConverter.Read(ref reader, typeof(Type), options)
-                                ?? throw new JsonException("Unable to deserialize parameter type.");
-                        parameterTypes.Add(t);
+                        var type = _typeJsonConverter.Read(ref reader, typeof(Type), options) ?? throw new JsonException("Unable to deserialize parameter type.");
+                        parameterTypes.Add(type);
                     }
                 }
-                else if (string.Equals(propName, GetBodyJsonPropertyName(), StringComparison.Ordinal))
+                else if (string.Equals(propertyName, GetBodyJsonPropertyName(), StringComparison.Ordinal))
                 {
                     body = reader.GetString();
                 }
@@ -118,23 +102,44 @@ public sealed class LambdaExpressionJsonConverter : JsonConverter<LambdaExpressi
             var parameterExpressions = parameterTypes
                 .Select(t =>
                 {
-                    var name = (parameterNameChar++).ToString();
+                    var name = parameterNameChar++.ToString();
                     return Expression.Parameter(t, name);
                 })
                 .ToArray();
 
             // Use the Dynamic LINQ overload that accepts (parameters, resultType, body).
-            var reconstructed = DynamicExpressionParser.ParseLambda(
-                                     ParsingConfig.Default,
-                                     false,
-                                     parameterExpressions,
-                                     resultType,
-                                     body)
-                                 ?? throw new InvalidOperationException(
-                                     $"Could not parse lambda body string {{Text={body}}} into {nameof(LambdaExpression)}.");
+            var reconstructed = DynamicExpressionParser.ParseLambda
+            (
+                ParsingConfig.Default,
+                false,
+                parameterExpressions,
+                resultType,
+                body
+            ) ?? throw new JsonException($"Could not parse lambda body string {{Text={body}}} into {nameof(LambdaExpression)}.");
 
-            return (LambdaExpression)reconstructed;
+            return reconstructed;
         }
+
+        public static void WriteTo(Utf8JsonWriter writer, LambdaExpression value, JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+
+            writer.WritePropertyName(GetResultTypeJsonPropertyName());
+            _typeJsonConverter.Write(writer, value.ReturnType, options);
+
+            writer.WritePropertyName(GetParameterTypesJsonPropertyName());
+            writer.WriteStartArray();
+            foreach (var p in value.Parameters)
+                _typeJsonConverter.Write(writer, p.Type, options);
+            writer.WriteEndArray();
+
+            writer.WritePropertyName(GetBodyJsonPropertyName());
+            var expressionBodyString = ExpressionUtils.GetExpressionBodyString(value.Body);
+            writer.WriteStringValue(expressionBodyString);
+
+            writer.WriteEndObject();
+        }
+        #endregion
     }
     #endregion
 

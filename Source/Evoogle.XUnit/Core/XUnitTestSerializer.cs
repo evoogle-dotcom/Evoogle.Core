@@ -3,83 +3,77 @@
 //
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+
+using Evoogle.Json;
+
+using Xunit.Sdk;
 
 namespace Evoogle.XUnit;
 
 /// <summary>
-///     Serialization helpers for saving and restoring test classes.
+///     xUnit serializer implementation to serialize/deserialize <see cref="XUnitTest"/> or <see cref="XUnitTestAsync"/> derived unit tests.
+///     The implementation relies on derived unit tests being able to be serialized/deserialized in/from JSON in a roundtrip paradigm.
 /// </summary>
-public static class XUnitTestSerializer
+public class XUnitTestSerializer : IXunitSerializer
 {
     #region Properties
-    /// <summary>
-    ///     Global JSON options used by this serializer. Callers may register additional converters.
-    /// </summary>
-    public static JsonSerializerOptions Options { get; } = BuildDefault();
+    private static JsonSerializerOptions DefaultJsonSerializerOptions { get; } = new()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+        WriteIndented = false,
+    };
     #endregion
 
-    #region Methods
-    /// <summary>Serialize a test instance to JSON.</summary>
-    public static string Serialize(object instance)
+    #region Constructors
+    static XUnitTestSerializer() => DefaultJsonSerializerOptions.Converters.Add(new TypeJsonConverter());
+    #endregion
+
+    #region IXunitSerializer Implementation
+    /// <summary>
+    ///     Deserializes the JSON serialized value back into a concrete XUnit or XUnitTestAsync object.
+    /// </summary>
+    /// <param name="type">CLR type of the concrete unit test.</param>
+    /// <param name="serializedValue">JSON to be deserialized into a concrete XUnit or XUnitTestAsync object.</param>
+    /// <returns>Newly created concrete XUnit or XUnitTestAsync object.</returns>
+    /// <exception cref="InvalidOperationException">Thrown is the JSON deserialization returns null.</exception>
+    public object Deserialize(Type type, string serializedValue)
     {
-        ArgumentNullException.ThrowIfNull(instance);
-
-        var t = instance.GetType();
-        if (!IsSerializable(t))
-        {
-            throw new InvalidOperationException(
-                $"Type '{t.FullName}' cannot be serialized by {nameof(XUnitTestSerializer)} " +
-                "because it is not a subclass of XUnitTest or XUnitTestAsync.");
-        }
-
-        return JsonSerializer.Serialize(instance, Options);
-    }
-
-    /// <summary>Deserialize JSON into a test instance.</summary>
-    public static T Deserialize<T>(string json)
-        where T : class
-    {
-        ArgumentException.ThrowIfNullOrEmpty(json);
-
-        var value = JsonSerializer.Deserialize<T>(json, Options);
-        if (value is null)
-            throw new InvalidOperationException($"Deserialization produced null for target type '{typeof(T).FullName}'.");
-
-        var t = value.GetType();
-        if (!IsSerializable(t))
-        {
-            throw new InvalidOperationException(
-                $"Type '{t.FullName}' cannot be deserialized by {nameof(XUnitTestSerializer)} " +
-                "because it is not a subclass of XUnitTest or XUnitTestAsync.");
-        }
-
+        var value = JsonSerializer.Deserialize(serializedValue, type, DefaultJsonSerializerOptions) ?? throw new JsonException("JSON serializer deserialilzed JSON {{SerializedValue={serializedValue}}} to null.");
         return value;
     }
 
     /// <summary>
-    ///     Returns true if the type derives from <see cref="XUnitTest"/> or <see cref="XUnitTestAsync"/>.
+    ///     Predicate if the given CLR type is serializable or not. The given CLR type must be a subclass of XUnit or XUnitTestAsync.
     /// </summary>
-    public static bool IsSerializable(Type type)
+    /// <param name="type">CLR type to be tested if it is serializable.</param>
+    /// <param name="value">CLR object to be tested if it is serializable.</param>
+    /// <param name="failureReason">If the CLR object is not serializable, the reason why it is not serializable.</param>
+    /// <returns>True if given CLR type and object are serializable, false otherwise.</returns>
+    public bool IsSerializable(Type type, object? value, [NotNullWhen(false)] out string? failureReason)
     {
-        ArgumentNullException.ThrowIfNull(type);
-        return typeof(XUnitTest).IsAssignableFrom(type) || typeof(XUnitTestAsync).IsAssignableFrom(type);
+        if (type.IsSubclassOf(typeof(XUnitTest)) || type.IsSubclassOf(typeof(XUnitTestAsync)))
+        {
+            failureReason = null;
+            return true;
+        }
+
+        failureReason = $"Type {{Name={type.Name}}} cannot be serialized by {nameof(XUnitTestSerializer)} because it is not a subclass of {nameof(XUnitTest)} or {nameof(XUnitTestAsync)}.";
+        return false;
     }
 
-    private static JsonSerializerOptions BuildDefault()
+    /// <summary>
+    ///     Serializes the CLR object into JSON.
+    /// </summary>
+    /// <param name="value">CLR object to be serialized.</param>
+    /// <returns>JSON representation of the CLR object.</returns>
+    public string Serialize(object value)
     {
-        var o = new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-            WriteIndented = false
-        };
-
-        // If you have custom converters, register them here or from callers:
-        // o.Converters.Add(new TypeJsonConverter());
-        // o.Converters.Add(new LambdaExpressionJsonConverter());
-
-        return o;
+        var type = value.GetType();
+        var serializedValue = JsonSerializer.Serialize(value, type, DefaultJsonSerializerOptions);
+        return serializedValue;
     }
     #endregion
 }

@@ -28,15 +28,15 @@ internal static class ExpressionUtils
         }
     }
 
-    public static Type[]? GetParameterTypes(LambdaExpression lambdaExpression)
-    {
-        var parameters = lambdaExpression.Parameters;
-        if (parameters == null || parameters.Any() == false)
-            return null;
+    // public static Type[]? GetParameterTypes(LambdaExpression lambdaExpression)
+    // {
+    //     var parameters = lambdaExpression.Parameters;
+    //     if (parameters == null || parameters.Any() == false)
+    //         return null;
 
-        var parameterTypes = parameters.Select(x => x.Type).ToArray();
-        return parameterTypes;
-    }
+    //     var parameterTypes = parameters.Select(x => x.Type).ToArray();
+    //     return parameterTypes;
+    // }
 
     private static string GetCallExpressionBodyString(Expression expressionBody)
     {

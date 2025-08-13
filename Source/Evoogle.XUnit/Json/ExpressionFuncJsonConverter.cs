@@ -13,11 +13,15 @@ using Evoogle.XUnit.Json.Internal;
 namespace Evoogle.XUnit.Json;
 
 /// <summary>
-///     JSON converter for the <see cref="Expression{Func{TResult}}"/> .NET class.
+///     JSON converter for the <see cref="Expression{Func{TResult}}"/>> .NET class.
 /// </summary>
 /// <typeparam name="TResult">Type of the lambda result.</typeparam>
-public sealed class ExpressionFuncJsonConverter<TResult> : JsonConverter<Expression<Func<TResult>>>
+public class ExpressionFuncJsonConverter<TResult> : JsonConverter<Expression<Func<TResult>>>
 {
+    #region JsonConverter Methods
+    /// <summary>
+    ///     Override of <see cref="JsonConverter{T}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/> method.
+    /// </summary>
     public override Expression<Func<TResult>>? Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
     {
         var body = reader.GetString();
@@ -33,25 +37,33 @@ public sealed class ExpressionFuncJsonConverter<TResult> : JsonConverter<Express
         return (Expression<Func<TResult>>)lambda;
     }
 
+    /// <summary>
+    ///     Override of <see cref="JsonConverter{T}.Write(Utf8JsonWriter, T, JsonSerializerOptions)"/> method.
+    /// </summary>
     public override void Write(Utf8JsonWriter writer, Expression<Func<TResult>> expression, JsonSerializerOptions options)
     {
         var expressionBodyString = ExpressionUtils.GetExpressionBodyString(expression.Body);
         writer.WriteStringValue(expressionBodyString);
     }
+    #endregion
 }
 
 /// <summary>
-///     JSON converter for the <see cref="Expression{Func{T,TResult}}"/> .NET class.
+///     JSON converter for the <see cref="Expression{Func{T, TResult}}"/>> .NET class.
+///     As a convention, the lambda expression argument must have the 'a' name, i.e. a => a.Foo();
 /// </summary>
-/// <typeparam name="T">Type of the single input parameter.</typeparam>
+/// <typeparam name="T">Type of the lambda argument.</typeparam>
 /// <typeparam name="TResult">Type of the lambda result.</typeparam>
-public sealed class ExpressionFuncJsonConverter<T, TResult> : JsonConverter<Expression<Func<T, TResult>>>
+public class ExpressionFuncJsonConverter<T, TResult> : JsonConverter<Expression<Func<T, TResult>>>
 {
-    private static readonly ParameterExpression[] ParameterExpressions =
-    [
-        Expression.Parameter(typeof(T), "a")
-    ];
+    #region Properties
+    private static ParameterExpression[] ParameterExpressions { get; } = [Expression.Parameter(typeof(T), "a")];
+    #endregion
 
+    #region JsonConverter Methods
+    /// <summary>
+    ///     Override of <see cref="JsonConverter{T}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/> method.
+    /// </summary>
     public override Expression<Func<T, TResult>>? Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
     {
         var body = reader.GetString();
@@ -68,9 +80,13 @@ public sealed class ExpressionFuncJsonConverter<T, TResult> : JsonConverter<Expr
         return (Expression<Func<T, TResult>>)lambda;
     }
 
+    /// <summary>
+    ///     Override of <see cref="JsonConverter{T}.Write(Utf8JsonWriter, T, JsonSerializerOptions)"/> method.
+    /// </summary>
     public override void Write(Utf8JsonWriter writer, Expression<Func<T, TResult>> expression, JsonSerializerOptions options)
     {
         var expressionBodyString = ExpressionUtils.GetExpressionBodyString(expression.Body);
         writer.WriteStringValue(expressionBodyString);
     }
+    #endregion
 }

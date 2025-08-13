@@ -13,16 +13,20 @@ using Evoogle.XUnit.Json.Internal;
 namespace Evoogle.XUnit.Json;
 
 /// <summary>
-///     JSON converter for the <see cref="Expression{Action{T}}"/> .NET class.
+///     JSON converter for the <see cref="Expression{Action{T}}"/>> .NET class.
+///     As a convention, the lambda expression argument must have the 'a' name, i.e. a => Foo(a);
 /// </summary>
-/// <typeparam name="T">Type of the single parameter.</typeparam>
+/// <typeparam name="T">Type of the lambda argument.</typeparam>
 public sealed class ExpressionActionJsonConverter<T> : JsonConverter<Expression<Action<T>>>
 {
-    private static readonly ParameterExpression[] ParameterExpressions =
-    [
-        Expression.Parameter(typeof(T), "a")
-    ];
+    #region Properties
+    private static ParameterExpression[] ParameterExpressions { get; } = [Expression.Parameter(typeof(T), "a")];
+    #endregion
 
+    #region JsonConverter Methods
+    /// <summary>
+    ///     Override of <see cref="JsonConverter{T}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/> method.
+    /// </summary>
     public override Expression<Action<T>>? Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
     {
         var body = reader.GetString();
@@ -40,26 +44,32 @@ public sealed class ExpressionActionJsonConverter<T> : JsonConverter<Expression<
         return (Expression<Action<T>>)lambda;
     }
 
+    /// <summary>
+    ///     Override of <see cref="JsonConverter{T}.Write(Utf8JsonWriter, T, JsonSerializerOptions)"/> method.
+    /// </summary>
     public override void Write(Utf8JsonWriter writer, Expression<Action<T>> expression, JsonSerializerOptions options)
     {
         var expressionBodyString = ExpressionUtils.GetExpressionBodyString(expression.Body);
         writer.WriteStringValue(expressionBodyString);
     }
+    #endregion
 }
 
 /// <summary>
-///     JSON converter for the <see cref="Expression{Action{T1,T2}}"/> .NET class.
+///     JSON converter for the <see cref="Expression{Action{T1,T2}}"/>> .NET class.
+///     As a convention, the lambda expression argument must have the 'a' and 'b' names, i.e. (a,b) => Foo(a,b);
 /// </summary>
-/// <typeparam name="T1">Type of the first parameter.</typeparam>
-/// <typeparam name="T2">Type of the second parameter.</typeparam>
+/// <typeparam name="T">Type of the lambda argument.</typeparam>
 public sealed class ExpressionActionJsonConverter<T1, T2> : JsonConverter<Expression<Action<T1, T2>>>
 {
-    private static readonly ParameterExpression[] ParameterExpressions =
-    [
-        Expression.Parameter(typeof(T1), "a"),
-        Expression.Parameter(typeof(T2), "b")
-    ];
+    #region Properties
+    private static ParameterExpression[] ParameterExpressions { get; } = [Expression.Parameter(typeof(T1), "a"), Expression.Parameter(typeof(T2), "b")];
+    #endregion
 
+    #region JsonConverter Methods
+    /// <summary>
+    ///     Override of <see cref="JsonConverter{T}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/> method.
+    /// </summary>
     public override Expression<Action<T1, T2>>? Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
     {
         var body = reader.GetString();
@@ -77,9 +87,13 @@ public sealed class ExpressionActionJsonConverter<T1, T2> : JsonConverter<Expres
         return (Expression<Action<T1, T2>>)lambda;
     }
 
+    /// <summary>
+    ///     Override of <see cref="JsonConverter{T}.Write(Utf8JsonWriter, T, JsonSerializerOptions)"/> method.
+    /// </summary>
     public override void Write(Utf8JsonWriter writer, Expression<Action<T1, T2>> expression, JsonSerializerOptions options)
     {
         var expressionBodyString = ExpressionUtils.GetExpressionBodyString(expression.Body);
         writer.WriteStringValue(expressionBodyString);
     }
+    #endregion
 }
