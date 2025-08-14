@@ -142,7 +142,9 @@ public abstract class CoerceTest<TInput, TOutput> : CoerceTest
     {
         this.ActualResult.Should().Be(this.ExpectedResult);
         if (this.ActualResult == false)
+        {
             return;
+        }
 
         this.AssertOutputForSuccessResult();
     }

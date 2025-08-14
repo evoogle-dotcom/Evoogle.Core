@@ -69,10 +69,14 @@ public static class DeepCloneableExtensions
         where T : IDeepCloneable
     {
         if (sourceCollection == null)
+        {
             yield break;
+        }
 
         foreach (var source in sourceCollection)
+        {
             yield return source.SafeDeepCopy();
+        }
     }
     #endregion
 }

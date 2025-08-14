@@ -99,11 +99,15 @@ public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
         {
             this.ActualArgumentNullExceptionThrown.Should().Be(this.ExpectedArgumentNullExceptionThrown);
             if (this.ActualArgumentNullExceptionThrown == true)
+            {
                 return;
+            }
 
             this.ActualResult.Should().Be(this.ExpectedResult);
             if (this.ActualResult == false)
+            {
                 return;
+            }
 
             this.AssertOutputForSuccessResult();
         }

@@ -53,7 +53,9 @@ public abstract class DeepCloneable<T> : IDeepCloneable<T>
     public virtual T DeepClone()
     {
         if (this is not T)
+        {
             throw new InvalidOperationException($"Type mismatch: {this.GetType().Name} is not assignable to {typeof(T).Name}");
+        }
 
         return (T)this.DeepCopyWithJson(typeof(T))!;
     }

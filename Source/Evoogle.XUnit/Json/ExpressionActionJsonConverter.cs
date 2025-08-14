@@ -31,7 +31,9 @@ public sealed class ExpressionActionJsonConverter<T> : JsonConverter<Expression<
     {
         var body = reader.GetString();
         if (string.IsNullOrEmpty(body))
+        {
             return null;
+        }
 
         var lambda = DynamicExpressionParser.ParseLambda(
             typeof(Action<T>),
@@ -74,7 +76,9 @@ public sealed class ExpressionActionJsonConverter<T1, T2> : JsonConverter<Expres
     {
         var body = reader.GetString();
         if (string.IsNullOrEmpty(body))
+        {
             return null;
+        }
 
         var lambda = DynamicExpressionParser.ParseLambda(
             typeof(Action<T1, T2>),

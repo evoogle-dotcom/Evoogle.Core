@@ -18,14 +18,11 @@ internal static class ExpressionUtils
     {
         var expressionBodyNodeType = expressionBody.NodeType;
 
-        switch (expressionBodyNodeType)
+        return expressionBodyNodeType switch
         {
-            case ExpressionType.Call:
-                return GetCallExpressionBodyString(expressionBody);
-
-            default:
-                return expressionBody.ToString();
-        }
+            ExpressionType.Call => GetCallExpressionBodyString(expressionBody),
+            _ => expressionBody.ToString(),
+        };
     }
 
     // public static Type[]? GetParameterTypes(LambdaExpression lambdaExpression)

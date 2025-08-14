@@ -314,7 +314,9 @@ public static class EnumerableExtensions
     private static string GetSafeToDelimitedStringPart(string? part, string? nullText, string? emptyText)
     {
         if (!string.IsNullOrEmpty(part))
+        {
             return part;
+        }
 
         return part == null ? nullText ?? ExtensionsDefaults.DefaultNullText : emptyText ?? ExtensionsDefaults.DefaultEmptyText;
     }
@@ -360,10 +362,14 @@ public static class EnumerableExtensions
     )
     {
         if (enumerable == null)
+        {
             return nullText ?? ExtensionsDefaults.DefaultNullText;
+        }
 
         if (!enumerable.Any())
+        {
             return emptyText ?? ExtensionsDefaults.DefaultEmptyText;
+        }
 
         keyFormatter ??= GetSafeToDelimitedStringFormatter<TKey>();
         valueFormatter ??= GetSafeToDelimitedStringFormatter<TValue>();

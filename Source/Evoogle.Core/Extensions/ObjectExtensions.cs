@@ -52,7 +52,9 @@ public static class ObjectExtensions
     public static object? DeepCopyWithJson(this object? sourceObject, Type sourceType, JsonSerializerOptions? options = null)
     {
         if (sourceObject == null)
+        {
             return null;
+        }
 
         var sourceJson = JsonSerializer.Serialize(sourceObject, sourceType, options ?? _defaultDeepCopyWithJsonOptions);
         var resultObject = JsonSerializer.Deserialize(sourceJson, sourceType, options ?? _defaultDeepCopyWithJsonOptions);
@@ -81,7 +83,9 @@ public static class ObjectExtensions
     public static object? DeepCopyWithJson(this object? sourceObject, Type sourceType, Type resultType, JsonSerializerOptions? options = null)
     {
         if (sourceObject == null)
+        {
             return null;
+        }
 
         var sourceJson = JsonSerializer.Serialize(sourceObject, sourceType, options ?? _defaultDeepCopyWithJsonOptions);
         var resultObject = JsonSerializer.Deserialize(sourceJson, resultType, options ?? _defaultDeepCopyWithJsonOptions);
@@ -233,10 +237,14 @@ public static class ObjectExtensions
         var toStringResult = obj?.ToString();
 
         if (toStringResult == null)
+        {
             return nullText ?? ExtensionsDefaults.DefaultNullText;
+        }
 
         if (string.IsNullOrWhiteSpace(toStringResult))
+        {
             return emptyText ?? ExtensionsDefaults.DefaultEmptyText;
+        }
 
         return toStringResult;
     }

@@ -12,7 +12,8 @@ namespace Evoogle.XUnit;
 public abstract class XUnitTestAsync : XUnitTestBase, IXUnitTestAsync
 {
     #region Constructors
-    protected XUnitTestAsync(string? name = null) : base(name) { }
+    protected XUnitTestAsync(string? name = null) : base(name)
+    { }
     #endregion
 
     #region IXUnitTestAsync Implementation

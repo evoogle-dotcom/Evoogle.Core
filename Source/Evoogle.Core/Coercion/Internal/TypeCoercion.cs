@@ -156,7 +156,7 @@ internal partial class TypeCoercion : ITypeCoercion
 
     private bool TryCoerceByDefinition(object input, Type inputType, Type outputType, TypeCoercionContext context, out object? output)
     {
-        if (!this.TryGetDefinition(inputType, outputType, out ITypeCoercionDefinition? definition))
+        if (!this.TryGetDefinition(inputType, outputType, out var definition))
         {
             output = default;
             return false;
@@ -364,7 +364,9 @@ internal partial class TypeCoercion : ITypeCoercion
     {
         var key = CreateDefinitionKey(inputType, outputType);
         if (!_definitions.TryGetValue(key, out definition))
+        {
             return false;
+        }
 
         return true;
     }
@@ -378,7 +380,9 @@ internal partial class TypeCoercion : ITypeCoercion
 
         var key = CreateDefinitionKey(inputType, outputType);
         if (!_definitions.TryGetValue(key, out var value))
+        {
             return false;
+        }
 
         definition = (ITypeCoercionDefinition<TInput, TOutput>)value;
         return true;

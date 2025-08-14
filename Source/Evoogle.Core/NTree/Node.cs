@@ -306,7 +306,9 @@ public abstract class Node<TNode> : INode<TNode>
     {
         // Ensure child node exists as a child node to parent node.
         if (ReferenceEquals(parent, child.Parent))
+        {
             return;
+        }
 
         var message = $"Can not remove child node {{Name={child.Name} ParentName={child.Parent.SafeToString()}}} as it is not a child of parent node {{{parent.Name}}}.";
         throw new InvalidOperationException(message);
@@ -361,7 +363,9 @@ public abstract class Node<TNode> : INode<TNode>
             {
                 var current = enumerator.Current;
                 if (!ReferenceEquals(current, this))
+                {
                     yield return current;
+                }
             }
         }
     }
@@ -399,7 +403,9 @@ public abstract class Node<TNode> : INode<TNode>
         }
 
         while (stack.Count > 0)
+        {
             yield return stack.Pop();
+        }
     }
 
     /// <summary>
@@ -448,7 +454,9 @@ public abstract class Node<TNode> : INode<TNode>
         while (current != null)
         {
             if (ReferenceEquals(current, potentialAncestor))
+            {
                 return true;
+            }
 
             current = current.Parent;
         }
@@ -505,7 +513,9 @@ public abstract class Node<TNode> : INode<TNode>
 
             var visitResult = visitorFunction(current);
             if (!visitResult)
+            {
                 return;
+            }
         }
     }
 
@@ -531,7 +541,9 @@ public abstract class Node<TNode> : INode<TNode>
     public void Traverse(TraversalStrategy strategy, Func<TNode, bool> visitorFunction)
     {
         if (visitorFunction is null)
+        {
             throw new ArgumentNullException(nameof(visitorFunction));
+        }
 
         var enumerator = strategy switch
         {
@@ -560,7 +572,9 @@ public abstract class Node<TNode> : INode<TNode>
 
             var visitResult = visitor.Visit(current);
             if (visitResult == VisitResult.Done)
+            {
                 return;
+            }
         }
     }
 
@@ -586,7 +600,9 @@ public abstract class Node<TNode> : INode<TNode>
     public void Traverse(TraversalStrategy strategy, INodeVisitor<TNode> visitor)
     {
         if (visitor is null)
+        {
             throw new ArgumentNullException(nameof(visitor));
+        }
 
         var enumerator = strategy switch
         {

@@ -63,6 +63,7 @@ internal class DepthFirstEnumerator<TNode>(TNode node) : IEnumerator<TNode>
     #endregion
 
     #region IDisposable Methods
-    public void Dispose() { }
+    public void Dispose()
+    { }
     #endregion
 }

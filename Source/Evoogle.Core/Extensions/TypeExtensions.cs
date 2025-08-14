@@ -51,10 +51,14 @@ public static class TypeExtensions
     private static string SafeToNameCore(string? typeName, string? nullText = ExtensionsDefaults.DefaultNullText, string? emptyText = ExtensionsDefaults.DefaultEmptyText)
     {
         if (typeName == null)
+        {
             return nullText ?? ExtensionsDefaults.DefaultNullText;
+        }
 
         if (string.IsNullOrWhiteSpace(typeName))
+        {
             return emptyText ?? ExtensionsDefaults.DefaultEmptyText;
+        }
 
         return typeName;
     }

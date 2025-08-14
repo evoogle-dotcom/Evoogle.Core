@@ -396,7 +396,9 @@ internal partial class TypeCoercion : ITypeCoercion
         // Try by name
         var inputName = Enum.GetName(inputType, input);
         if (inputName != null && Enum.TryParse(outputType, inputName, out var outputByName))
+        {
             return outputByName;
+        }
 
         // Fallback to underlying value transfer (ordinal value)
         var inputUnderlying = Convert.ChangeType(input, Enum.GetUnderlyingType(inputType)) ?? throw new InvalidOperationException($"Unable to convert input {{Value={input.SafeToString()}}} of type {{Type={inputType.Name}}} to underlying type of enumeration {{Type={outputType.Name}}}.");
@@ -416,7 +418,9 @@ internal partial class TypeCoercion : ITypeCoercion
         var inputType = typeof(TInput);
         var inputName = Enum.GetName(inputType, input);
         if (inputName != null && Enum.TryParse<TOutput>(inputName, out var outputByName))
+        {
             return outputByName;
+        }
 
         // Fallback to underlying value transfer (ordinal value)
         var outputType = typeof(TOutput);
@@ -458,7 +462,9 @@ internal partial class TypeCoercion : ITypeCoercion
     {
         var isDefined = Enum.IsDefined(outputType, output);
         if (isDefined)
+        {
             return;
+        }
 
         var message = $"Unable to create enumeration {{Type={outputType.Name}}} with input {{Value={output.SafeToString()}}} as the input is not a defined enumeration value.";
         throw new InvalidOperationException(message);

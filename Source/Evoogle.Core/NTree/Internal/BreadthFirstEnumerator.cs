@@ -62,6 +62,7 @@ internal class BreadthFirstEnumerator<TNode>(TNode node) : IEnumerator<TNode>
     #endregion
 
     #region IDisposable Methods
-    public void Dispose() { }
+    public void Dispose()
+    { }
     #endregion
 }

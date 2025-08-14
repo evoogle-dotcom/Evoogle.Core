@@ -39,7 +39,9 @@ public sealed class LambdaExpressionJsonConverter : JsonConverter<LambdaExpressi
         public Type[] GetParameterTypes()
         {
             if (this.ParameterTypes is null)
+            {
                 throw new JsonException($"{nameof(this.ParameterTypes)} property is null.");
+            }
 
             return this.ParameterTypes;
         }
@@ -53,7 +55,9 @@ public sealed class LambdaExpressionJsonConverter : JsonConverter<LambdaExpressi
         public static LambdaExpression? ReadFrom(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.StartObject)
+            {
                 throw new JsonException("Expected start of object for LambdaExpression.");
+            }
 
             Type? resultType = null;
             List<Type>? parameterTypes = null;
@@ -61,9 +65,15 @@ public sealed class LambdaExpressionJsonConverter : JsonConverter<LambdaExpressi
 
             while (reader.Read())
             {
-                if (reader.TokenType == JsonTokenType.EndObject) break;
+                if (reader.TokenType == JsonTokenType.EndObject)
+                {
+                    break;
+                }
+
                 if (reader.TokenType != JsonTokenType.PropertyName)
+                {
                     throw new JsonException("Expected property name.");
+                }
 
                 var propertyName = reader.GetString();
                 reader.Read();
@@ -75,7 +85,9 @@ public sealed class LambdaExpressionJsonConverter : JsonConverter<LambdaExpressi
                 else if (string.Equals(propertyName, GetParameterTypesJsonPropertyName(), StringComparison.Ordinal))
                 {
                     if (reader.TokenType != JsonTokenType.StartArray)
+                    {
                         throw new JsonException("Expected start of array for ParameterTypes.");
+                    }
 
                     parameterTypes = [];
                     while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
@@ -95,7 +107,9 @@ public sealed class LambdaExpressionJsonConverter : JsonConverter<LambdaExpressi
             }
 
             if (resultType is null || parameterTypes is null || body is null)
+            {
                 return null;
+            }
 
             // Reconstruct the lambda using your parameter-naming convention: 'a', 'b', 'c', ...
             var parameterNameChar = 'a';
@@ -130,7 +144,10 @@ public sealed class LambdaExpressionJsonConverter : JsonConverter<LambdaExpressi
             writer.WritePropertyName(GetParameterTypesJsonPropertyName());
             writer.WriteStartArray();
             foreach (var p in value.Parameters)
+            {
                 _typeJsonConverter.Write(writer, p.Type, options);
+            }
+
             writer.WriteEndArray();
 
             writer.WritePropertyName(GetBodyJsonPropertyName());

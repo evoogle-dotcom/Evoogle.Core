@@ -22,7 +22,9 @@ public static class DictionaryExtensions
     public static TValue GetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
     {
         if (dictionary.TryGetValue(key, out var value))
+        {
             return value;
+        }
 
         var message = $"Unable to get value for given key '{key}' from dictionary, key does not exist in dictionary.";
         throw new KeyNotFoundException(message);
@@ -31,7 +33,9 @@ public static class DictionaryExtensions
     public static bool TryGetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, out TValue? value, TValue? defaultValue = default)
     {
         if (dictionary.TryGetValue(key, out value))
+        {
             return true;
+        }
 
         value = defaultValue;
         return false;

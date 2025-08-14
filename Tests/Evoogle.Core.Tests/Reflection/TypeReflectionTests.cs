@@ -377,9 +377,9 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         protected override void Act()
         {
-            var PropertyInfo = TypeReflection.GetProperty(this.Type, this.PropertyName, this.BindingFlags);
+            var propertyInfo = TypeReflection.GetProperty(this.Type, this.PropertyName, this.BindingFlags);
 
-            this.ActualPropertyName = PropertyInfo?.Name;
+            this.ActualPropertyName = propertyInfo?.Name;
             this.WriteLine($"Actual Property Name   = {this.ActualPropertyName.SafeToString()}");
         }
 
@@ -774,18 +774,18 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         public string? PublicFieldBase;
         public static string? PublicStaticFieldBase;
 
-        protected internal string? ProtectedInternalFieldBase;
-        protected internal static string? ProtectedInternalStaticFieldBase;
+        protected internal string? _protectedInternalFieldBase;
+        protected internal static string? _protectedInternalStaticFieldBase;
 
-        protected string? ProtectedFieldBase;
-        protected static string? ProtectedStaticFieldBase;
+        protected string? _protectedFieldBase;
+        protected static string? _protectedStaticFieldBase;
 
-        internal string? InternalFieldBase;
-        internal static string? InternalStaticFieldBase;
+        internal string? _internalFieldBase;
+        internal static string? _internalStaticFieldBase;
 
-        private string? PrivateFieldBase;
+        private string? _privateFieldBase;
 
-        private static string? PrivateStaticFieldBase;
+        private static string? _privateStaticFieldBase;
     }
 
     private class ClassWithFields : ClassWithFieldsBase
@@ -793,18 +793,18 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         public string? PublicField;
         public static string? PublicStaticField;
 
-        protected internal string? ProtectedInternalField;
-        protected internal static string? ProtectedInternalStaticField;
+        protected internal string? _protectedInternalField;
+        protected internal static string? _protectedInternalStaticField;
 
-        protected string? ProtectedField;
-        protected static string? ProtectedStaticField;
+        protected string? _protectedField;
+        protected static string? _protectedStaticField;
 
-        internal string? InternalField;
-        internal static string? InternalStaticField;
+        internal string? _internalField;
+        internal static string? _internalStaticField;
 
-        private string? PrivateField;
+        private string? _privateField;
 
-        private static string? PrivateStaticField;
+        private static string? _privateStaticField;
     }
     #endregion
 
@@ -873,12 +873,12 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
     [
         new GetFieldTest { Name = "With Declared Only And Public And Instance", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance, FieldName = "PublicField", ExpectedFieldName = "PublicField" },
         new GetFieldTest { Name = "With Declared Only And Public And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Static, FieldName = "PublicStaticField", ExpectedFieldName = "PublicStaticField" },
-        new GetFieldTest { Name = "With Declared Only And Non Public And Instance", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance, FieldName = "PrivateField", ExpectedFieldName = "PrivateField" },
-        new GetFieldTest { Name = "With Declared Only And Non Public And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Static, FieldName = "PrivateStaticField", ExpectedFieldName = "PrivateStaticField" },
+        new GetFieldTest { Name = "With Declared Only And Non Public And Instance", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance, FieldName = "_privateField", ExpectedFieldName = "_privateField" },
+        new GetFieldTest { Name = "With Declared Only And Non Public And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Static, FieldName = "_privateStaticField", ExpectedFieldName = "_privateStaticField" },
         new GetFieldTest { Name = "With Public And Instance", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.Public | BindingFlags.Instance, FieldName = "PublicFieldBase", ExpectedFieldName = "PublicFieldBase" },
         new GetFieldTest { Name = "With Public And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy, FieldName = "PublicStaticFieldBase", ExpectedFieldName = "PublicStaticFieldBase" },
-        new GetFieldTest { Name = "With Non Public And Instance", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.NonPublic | BindingFlags.Instance, FieldName = "ProtectedFieldBase", ExpectedFieldName = "ProtectedFieldBase" },
-        new GetFieldTest { Name = "With Non Public And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.FlattenHierarchy, FieldName = "ProtectedStaticFieldBase", ExpectedFieldName = "ProtectedStaticFieldBase" },
+        new GetFieldTest { Name = "With Non Public And Instance", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.NonPublic | BindingFlags.Instance, FieldName = "_protectedFieldBase", ExpectedFieldName = "_protectedFieldBase" },
+        new GetFieldTest { Name = "With Non Public And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.FlattenHierarchy, FieldName = "_protectedStaticFieldBase", ExpectedFieldName = "_protectedStaticFieldBase" },
     ];
 
     public static TheoryDataRow<IXUnitTest>[] GetFieldsTheoryData =>
@@ -886,17 +886,17 @@ public class TypeReflectionTests(ITestOutputHelper output) : XUnitTests(output)
         new GetFieldsTest { Name = "With Declared Only And Public And Instance", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance, ExpectedFieldNames = ["PublicField"] },
         new GetFieldsTest { Name = "With Declared Only And Public And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Static, ExpectedFieldNames = ["PublicStaticField"] },
         new GetFieldsTest { Name = "With Declared Only And Public And Instance And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy, ExpectedFieldNames = ["PublicField", "PublicStaticField"] },
-        new GetFieldsTest { Name = "With Declared Only And Non Public And Instance", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance, ExpectedFieldNames = ["ProtectedInternalField", "ProtectedField", "InternalField", "PrivateField"] },
-        new GetFieldsTest { Name = "With Declared Only And Non Public And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Static, ExpectedFieldNames = ["ProtectedInternalStaticField", "ProtectedStaticField", "InternalStaticField", "PrivateStaticField"] },
-        new GetFieldsTest { Name = "With Declared Only And Non Public And Instance And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static, ExpectedFieldNames = ["ProtectedInternalField", "ProtectedInternalStaticField", "ProtectedField", "ProtectedStaticField", "InternalField", "InternalStaticField", "PrivateField", "PrivateStaticField"] },
-        new GetFieldsTest { Name = "With Declared Only And Public And Non Public And Instance And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static, ExpectedFieldNames = ["PublicField", "PublicStaticField", "ProtectedInternalField", "ProtectedInternalStaticField", "ProtectedField", "ProtectedStaticField", "InternalField", "InternalStaticField", "PrivateField", "PrivateStaticField"] },
+        new GetFieldsTest { Name = "With Declared Only And Non Public And Instance", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance, ExpectedFieldNames = ["_protectedInternalField", "_protectedField", "_internalField", "_privateField"] },
+        new GetFieldsTest { Name = "With Declared Only And Non Public And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Static, ExpectedFieldNames = ["_protectedInternalStaticField", "_protectedStaticField", "_internalStaticField", "_privateStaticField"] },
+        new GetFieldsTest { Name = "With Declared Only And Non Public And Instance And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static, ExpectedFieldNames = ["_protectedInternalField", "_protectedInternalStaticField", "_protectedField", "_protectedStaticField", "_internalField", "_internalStaticField", "_privateField", "_privateStaticField"] },
+        new GetFieldsTest { Name = "With Declared Only And Public And Non Public And Instance And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static, ExpectedFieldNames = ["PublicField", "PublicStaticField", "_protectedInternalField", "_protectedInternalStaticField", "_protectedField", "_protectedStaticField", "_internalField", "_internalStaticField", "_privateField", "_privateStaticField"] },
         new GetFieldsTest { Name = "With Public And Instance", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.Public | BindingFlags.Instance, ExpectedFieldNames = ["PublicField", "PublicFieldBase"] },
         new GetFieldsTest { Name = "With Public And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy, ExpectedFieldNames = ["PublicStaticField", "PublicStaticFieldBase"] },
         new GetFieldsTest { Name = "With Public And Instance And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy, ExpectedFieldNames = ["PublicField", "PublicFieldBase", "PublicStaticField", "PublicStaticFieldBase"] },
-        new GetFieldsTest { Name = "With Non Public And Instance", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.NonPublic | BindingFlags.Instance, ExpectedFieldNames = ["ProtectedInternalField", "ProtectedField", "InternalField", "PrivateField", "ProtectedInternalFieldBase", "ProtectedFieldBase", "InternalFieldBase"] },
-        new GetFieldsTest { Name = "With Non Public And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.FlattenHierarchy, ExpectedFieldNames = ["ProtectedInternalStaticField", "ProtectedStaticField", "InternalStaticField", "PrivateStaticField", "ProtectedInternalStaticFieldBase", "ProtectedStaticFieldBase", "InternalStaticFieldBase"] },
-        new GetFieldsTest { Name = "With Non Public And Instance And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy, ExpectedFieldNames = ["ProtectedInternalField", "ProtectedInternalStaticField", "ProtectedField", "ProtectedStaticField", "InternalField", "InternalStaticField", "PrivateField", "PrivateStaticField", "ProtectedInternalFieldBase", "ProtectedInternalStaticFieldBase", "ProtectedFieldBase", "ProtectedStaticFieldBase", "InternalFieldBase", "InternalStaticFieldBase"] },
-        new GetFieldsTest { Name = "With Public And Non Public And Instance And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy, ExpectedFieldNames = ["PublicField", "PublicStaticField", "ProtectedInternalField", "ProtectedInternalStaticField", "ProtectedField", "ProtectedStaticField", "InternalField", "InternalStaticField", "PrivateField", "PrivateStaticField", "PublicFieldBase", "PublicStaticFieldBase", "ProtectedInternalFieldBase", "ProtectedInternalStaticFieldBase", "ProtectedFieldBase", "ProtectedStaticFieldBase", "InternalFieldBase", "InternalStaticFieldBase"] },
+        new GetFieldsTest { Name = "With Non Public And Instance", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.NonPublic | BindingFlags.Instance, ExpectedFieldNames = ["_protectedInternalField", "_protectedField", "_internalField", "_privateField", "_protectedInternalFieldBase", "_protectedFieldBase", "_internalFieldBase"] },
+        new GetFieldsTest { Name = "With Non Public And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.FlattenHierarchy, ExpectedFieldNames = ["_protectedInternalStaticField", "_protectedStaticField", "_internalStaticField", "_privateStaticField", "_protectedInternalStaticFieldBase", "_protectedStaticFieldBase", "_internalStaticFieldBase"] },
+        new GetFieldsTest { Name = "With Non Public And Instance And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy, ExpectedFieldNames = ["_protectedInternalField", "_protectedInternalStaticField", "_protectedField", "_protectedStaticField", "_internalField", "_internalStaticField", "_privateField", "_privateStaticField", "_protectedInternalFieldBase", "_protectedInternalStaticFieldBase", "_protectedFieldBase", "_protectedStaticFieldBase", "_internalFieldBase", "_internalStaticFieldBase"] },
+        new GetFieldsTest { Name = "With Public And Non Public And Instance And Static", Type = typeof(ClassWithFields), BindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy, ExpectedFieldNames = ["PublicField", "PublicStaticField", "_protectedInternalField", "_protectedInternalStaticField", "_protectedField", "_protectedStaticField", "_internalField", "_internalStaticField", "_privateField", "_privateStaticField", "PublicFieldBase", "PublicStaticFieldBase", "_protectedInternalFieldBase", "_protectedInternalStaticFieldBase", "_protectedFieldBase", "_protectedStaticFieldBase", "_internalFieldBase", "_internalStaticFieldBase"] },
     ];
 
     public static TheoryDataRow<IXUnitTest>[] GetMethodTheoryData =>

@@ -40,7 +40,8 @@ public sealed class MultiplexingLogger<T>(ILogger<T>? innerLogger = null, Multip
     private sealed class NullScope : IDisposable
     {
         public static readonly NullScope Instance = new();
-        public void Dispose() { }
+        public void Dispose()
+        { }
     }
     #endregion
 
@@ -58,7 +59,9 @@ public sealed class MultiplexingLogger<T>(ILogger<T>? innerLogger = null, Multip
     public bool IsEnabled(LogLevel logLevel)
     {
         if (_innerLogger?.IsEnabled(logLevel) == true)
+        {
             return true;
+        }
 
         return (_mode.HasFlag(MultiplexingLoggerMode.Debug) && Debugger.IsAttached) || _mode.HasFlag(MultiplexingLoggerMode.Console);
     }

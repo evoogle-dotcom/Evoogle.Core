@@ -94,13 +94,19 @@ public class StaticReflectionTests(ITestOutputHelper output) : XUnitTests(output
         public static string StaticMethod(int a) => string.Empty;
         public static string StaticMethod(int a, int b) => string.Empty;
 
-        public void VoidMethod() { }
-        public void VoidMethod(int a) { }
-        public void VoidMethod(int a, int b) { }
+        public void VoidMethod()
+        { }
+        public void VoidMethod(int a)
+        { }
+        public void VoidMethod(int a, int b)
+        { }
 
-        public static void StaticVoidMethod() { }
-        public static void StaticVoidMethod(int a) { }
-        public static void StaticVoidMethod(int a, int b) { }
+        public static void StaticVoidMethod()
+        { }
+        public static void StaticVoidMethod(int a)
+        { }
+        public static void StaticVoidMethod(int a, int b)
+        { }
 
         public string Field = string.Empty;
 

@@ -40,7 +40,9 @@ public class EnumJsonConverter<TEnum> : JsonConverter<TEnum>
     {
         var value = reader.GetString();
         if (string.IsNullOrWhiteSpace(value))
+        {
             return default;
+        }
 
         if (_hasFlags)
         {

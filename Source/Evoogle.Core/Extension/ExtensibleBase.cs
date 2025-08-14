@@ -42,12 +42,16 @@ public abstract class ExtensibleBase : IExtensible
         ArgumentNullException.ThrowIfNull(extensionType);
 
         if (this.Extensions == null)
+        {
             return null;
+        }
 
         // Remove the extension from the dictionary.
         var result = this.Extensions.Remove(extensionType, out var extension);
         if (result && extension != null)
+        {
             return extension;
+        }
 
         return null;
     }

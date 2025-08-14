@@ -33,19 +33,31 @@ public abstract class XUnitTests(ITestOutputHelper output)
     #region Helper API used by test instances
     internal void WriteLine(string message)
     {
-        if (_suppressOutput) return;
+        if (_suppressOutput)
+        {
+            return;
+        }
+
         this.Output.WriteLine(message);
     }
 
     internal void WriteDashedLine()
     {
-        if (_suppressOutput) return;
+        if (_suppressOutput)
+        {
+            return;
+        }
+
         this.Output.WriteLine(_singleDashedLine);
     }
 
     internal void WriteDoubleDashedLine()
     {
-        if (_suppressOutput) return;
+        if (_suppressOutput)
+        {
+            return;
+        }
+
         this.Output.WriteLine(_doubleDashedLine);
     }
     #endregion

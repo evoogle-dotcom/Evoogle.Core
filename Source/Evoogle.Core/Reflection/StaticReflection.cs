@@ -42,10 +42,14 @@ public static class StaticReflection
 
             case BinaryExpression binaryExpression:
                 if (binaryExpression.Left is MemberExpression leftMember)
+                {
                     return leftMember.Member.Name;
+                }
 
                 if (!throwOnUnsupported)
+                {
                     return $"Unsupported_{expression.GetType().Name}";
+                }
 
                 throw new ArgumentException("Unsupported binary expression without a left member access.");
 
@@ -57,7 +61,9 @@ public static class StaticReflection
 
             default:
                 if (!throwOnUnsupported)
+                {
                     return $"Unsupported_{expression.GetType().Name}";
+                }
 
                 throw new ArgumentException($"Unsupported expression type: {expression.GetType().Name}.");
         }

@@ -26,7 +26,9 @@ public class ExpressionFuncJsonConverter<TResult> : JsonConverter<Expression<Fun
     {
         var body = reader.GetString();
         if (string.IsNullOrEmpty(body))
+        {
             return null;
+        }
 
         var lambda = DynamicExpressionParser.ParseLambda(
             ParsingConfig.Default,
@@ -68,7 +70,9 @@ public class ExpressionFuncJsonConverter<T, TResult> : JsonConverter<Expression<
     {
         var body = reader.GetString();
         if (string.IsNullOrEmpty(body))
+        {
             return null;
+        }
 
         var lambda = DynamicExpressionParser.ParseLambda(
             ParsingConfig.Default,

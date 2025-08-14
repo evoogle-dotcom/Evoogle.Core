@@ -132,7 +132,9 @@ public static class TypeReflection
     {
         var baseType = GetBaseType(type);
         if (baseType == null)
+        {
             yield break;
+        }
 
         while (baseType != null)
         {
@@ -165,10 +167,14 @@ public static class TypeReflection
     public static bool CanBeNull(Type type)
     {
         if (!type.IsValueType)
+        {
             return true; // Reference types can be null
+        }
 
         if (Nullable.GetUnderlyingType(type) != null)
+        {
             return true; // Nullable<T> can be null
+        }
 
         return false; // Non-nullable value types (e.g., int, bool) cannot be null
     }
@@ -203,16 +209,22 @@ public static class TypeReflection
 
     public static bool IsEnumerableOfT(Type type, [NotNullWhen(true)] out Type? elementType)
     {
-        var (IsEnumerable, ElementType) = _isEnumerableOfTCache.GetOrAdd(type, static t =>
+        var (isEnumerable, foundElementType) = _isEnumerableOfTCache.GetOrAdd(type, static t =>
         {
             if (t == typeof(IEnumerable<>))
+            {
                 return (true, t.GetGenericArguments().FirstOrDefault());
+            }
 
             if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+            {
                 return (true, t.GenericTypeArguments.FirstOrDefault());
+            }
 
             if (!t.IsGenericType && !t.IsArray)
+            {
                 return (false, null);
+            }
 
             var candidates = t.GetInterfaces()
                 .Where(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
@@ -221,16 +233,20 @@ public static class TypeReflection
                 .ToList();
 
             if (candidates.Count == 1)
+            {
                 return (true, candidates[0]);
+            }
 
             if (candidates.Count > 1)
+            {
                 throw new InvalidOperationException($"Type {t.Name} implements multiple IEnumerable<T> interfaces.");
+            }
 
             return (false, null);
         });
 
-        elementType = ElementType;
-        return IsEnumerable;
+        elementType = foundElementType;
+        return isEnumerable;
     }
 
     public static bool IsFloatingPoint(Type type) => _floatingPointTypes.Contains(type);
@@ -244,7 +260,9 @@ public static class TypeReflection
     public static bool IsImplementationOf(Type type, Type interfaceType)
     {
         if (type == null || interfaceType == null)
+        {
             return false;
+        }
 
         return interfaceType.IsGenericType
             ? type.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition().Equals(interfaceType))
@@ -260,11 +278,15 @@ public static class TypeReflection
         return _isNullableEnumCache.GetOrAdd(type, static t =>
         {
             if (!IsNullableType(t))
+            {
                 return false;
+            }
 
             var nullableUnderlyingType = Nullable.GetUnderlyingType(t);
             if (nullableUnderlyingType == null)
+            {
                 return false;
+            }
 
             return IsEnum(nullableUnderlyingType);
         });
@@ -286,13 +308,17 @@ public static class TypeReflection
             while (true)
             {
                 if (IsPrimitive(t))
+                {
                     return true;
+                }
 
                 if (IsNullableType(t))
                 {
                     var nullableUnderlyingType = Nullable.GetUnderlyingType(t);
                     if (nullableUnderlyingType == null)
+                    {
                         return false;
+                    }
 
                     t = nullableUnderlyingType;
                     continue;
@@ -302,7 +328,9 @@ public static class TypeReflection
                 {
                     var enumUnderlyingType = Enum.GetUnderlyingType(t);
                     if (enumUnderlyingType == null)
+                    {
                         return false;
+                    }
 
                     t = enumUnderlyingType;
                     continue;
@@ -320,13 +348,19 @@ public static class TypeReflection
     public static bool IsSubclassOrImplementationOf(Type type, Type baseClassOrInterfaceType)
     {
         if (type.IsSubclassOf(baseClassOrInterfaceType))
+        {
             return true;
+        }
 
         if (IsImplementationOf(type, baseClassOrInterfaceType))
+        {
             return true;
+        }
 
         if (!baseClassOrInterfaceType.IsGenericType)
+        {
             return false;
+        }
 
         if (type.BaseType != null)
         {
@@ -334,17 +368,23 @@ public static class TypeReflection
             while (!baseType.Equals(typeof(object)))
             {
                 if (baseClassOrInterfaceType.Equals(baseType))
+                {
                     return true;
+                }
 
                 if (baseType.IsGenericType)
                 {
                     var baseGenericTypeDefinition = baseType.GetGenericTypeDefinition();
                     if (baseClassOrInterfaceType.Equals(baseGenericTypeDefinition))
+                    {
                         return true;
+                    }
                 }
 
                 if (baseType.BaseType != null)
+                {
                     baseType = baseType.BaseType;
+                }
             }
         }
 

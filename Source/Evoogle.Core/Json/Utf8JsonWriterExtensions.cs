@@ -41,7 +41,9 @@ public static partial class Utf8JsonWriterExtensions
 
         var (shouldWrite, _) = ShouldWriteValue(value, options, equalityComparer);
         if (!shouldWrite)
+        {
             return;
+        }
 
         writeAction(value);
     }
@@ -72,7 +74,9 @@ public static partial class Utf8JsonWriterExtensions
 
         var (shouldWrite, valueIsNull) = ShouldWriteNullableValue(nullableValue, options, equalityComparer);
         if (!shouldWrite)
+        {
             return;
+        }
 
         if (valueIsNull)
         {
@@ -109,7 +113,9 @@ public static partial class Utf8JsonWriterExtensions
 
         var (shouldWrite, valueIsNull) = ShouldWriteReference(value, options);
         if (!shouldWrite)
+        {
             return;
+        }
 
         if (valueIsNull)
         {
@@ -152,7 +158,9 @@ public static partial class Utf8JsonWriterExtensions
 
         var (shouldWrite, _) = ShouldWriteValue(value, options, equalityComparer);
         if (!shouldWrite)
+        {
             return;
+        }
 
         writeAction(propertyName, value);
     }
@@ -186,7 +194,9 @@ public static partial class Utf8JsonWriterExtensions
 
         var (shouldWrite, valueIsNull) = ShouldWriteNullableValue(nullableValue, options, equalityComparer);
         if (!shouldWrite)
+        {
             return;
+        }
 
         if (valueIsNull)
         {
@@ -226,7 +236,9 @@ public static partial class Utf8JsonWriterExtensions
 
         var (shouldWrite, valueIsNull) = ShouldWriteReference(value, options);
         if (!shouldWrite)
+        {
             return;
+        }
 
         if (valueIsNull)
         {
@@ -274,7 +286,9 @@ public static partial class Utf8JsonWriterExtensions
 
             case JsonIgnoreCondition.WhenWritingDefault:
                 if (isNull)
+                {
                     return (false, true);
+                }
 
                 var value = nullableValue!.Value; // value is not null => safe to access .Value
 

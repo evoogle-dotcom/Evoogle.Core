@@ -12,7 +12,8 @@ namespace Evoogle.XUnit;
 public abstract class XUnitTest : XUnitTestBase, IXUnitTest
 {
     #region Constructors
-    protected XUnitTest(string? name = null) : base(name) { }
+    protected XUnitTest(string? name = null) : base(name)
+    { }
     #endregion
 
     #region IXUnitTest Methods
@@ -38,12 +39,15 @@ public abstract class XUnitTest : XUnitTestBase, IXUnitTest
 
     #region Arrange/Act/Assert
     /// <summary>No-op implementation of the arrange step.</summary>
-    protected virtual void Arrange() { }
+    protected virtual void Arrange()
+    { }
 
     /// <summary>No-op implementation of the act step.</summary>
-    protected virtual void Act() { }
+    protected virtual void Act()
+    { }
 
     /// <summary>No-op implementation of the assert step.</summary>
-    protected virtual void Assert() { }
+    protected virtual void Assert()
+    { }
     #endregion
 }

@@ -148,11 +148,15 @@ public static class ServiceCollectionExtensions
         {
             var isAbstract = implementationType.IsAbstract;
             if (isAbstract)
+            {
                 continue;
+            }
 
             var isImplementationOf = TypeReflection.IsImplementationOf(implementationType, interfaceType);
             if (!isImplementationOf)
+            {
                 continue;
+            }
 
             if (!interfaceType.IsGenericType)
             {
@@ -169,7 +173,9 @@ public static class ServiceCollectionExtensions
             var interfaceTypeClosed = implementationType.GetInterfaces()
                                                         .SingleOrDefault(interfaceType.IsAssignableFrom);
             if (interfaceTypeClosed == null)
+            {
                 continue;
+            }
 
             addAction(serviceCollection, interfaceTypeClosed, implementationType);
         }

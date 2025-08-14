@@ -81,7 +81,9 @@ public class DeepCopyTests(ITestOutputHelper output) : XUnitTests(output)
             }
 
             if (this.ExpectedSafeDeepCopy.GetType() == typeof(EmptyObject))
+            {
                 return;
+            }
 
             this.ActualSafeDeepCopy.Should().BeEquivalentTo(this.ExpectedSafeDeepCopy);
         }

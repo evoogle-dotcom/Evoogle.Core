@@ -66,7 +66,10 @@ public class TypeJsonConverter : JsonConverter<Type>
     {
         _allowedAssemblies.Clear();
         foreach (var asm in assemblies)
+        {
             this.AddAllowedAssembly(asm);
+        }
+
         return this;
     }
 
@@ -107,12 +110,16 @@ public class TypeJsonConverter : JsonConverter<Type>
     {
         var typeName = reader.GetString();
         if (string.IsNullOrWhiteSpace(typeName))
+        {
             throw new JsonException("Cannot deserialize .NET type because the input string was null or empty.");
+        }
 
         var type = GetDeserializeType(typeName);
 
         if (!this.IsAllowed(type))
+        {
             throw new JsonException($"Type '{type.FullName}' is not allowed for deserialization.");
+        }
 
         return type;
     }
@@ -145,7 +152,9 @@ public class TypeJsonConverter : JsonConverter<Type>
     public static Type GetDeserializeType(string typeName)
     {
         if (string.IsNullOrWhiteSpace(typeName))
+        {
             throw new JsonException("The JSON type name was null or whitespace.");
+        }
 
         var resolvedType = Type.GetType(typeName, throwOnError: false) ?? throw new JsonException($"Unable to resolve .NET type from name: '{typeName}'.");
         return resolvedType;

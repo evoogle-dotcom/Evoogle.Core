@@ -42,7 +42,9 @@ public class TestNode : Node<TestNode>
     {
         var root = new TestNode("1");
         if (maxDepth == 0)
+        {
             return root;
+        }
 
         BuildTree(maxDepth, maxChildren, 1, root);
 
@@ -53,7 +55,9 @@ public class TestNode : Node<TestNode>
     {
         var firstChild = parent.FirstChild;
         if (firstChild == null)
+        {
             return;
+        }
 
         parent.ReplaceChild(firstChild, newChild);
     }
@@ -62,11 +66,15 @@ public class TestNode : Node<TestNode>
     {
         var firstChild = parent.FirstChild;
         if (firstChild == null)
+        {
             return;
+        }
 
         var secondChild = firstChild.NextSibling;
         if (secondChild == null)
+        {
             return;
+        }
 
         parent.ReplaceChild(secondChild, newChild);
     }
@@ -75,15 +83,21 @@ public class TestNode : Node<TestNode>
     {
         var firstChild = parent.FirstChild;
         if (firstChild == null)
+        {
             return;
+        }
 
         var secondChild = firstChild.NextSibling;
         if (secondChild == null)
+        {
             return;
+        }
 
         var thirdChild = secondChild.NextSibling;
         if (thirdChild == null)
+        {
             return;
+        }
 
         parent.ReplaceChild(thirdChild, newChild);
     }
@@ -92,7 +106,9 @@ public class TestNode : Node<TestNode>
     {
         var firstChild = tree.FirstChild;
         if (firstChild == null)
+        {
             return;
+        }
 
         tree.RemoveChild(firstChild);
     }
@@ -101,11 +117,15 @@ public class TestNode : Node<TestNode>
     {
         var firstChild = tree.FirstChild;
         if (firstChild == null)
+        {
             return;
+        }
 
         var secondChild = firstChild.NextSibling;
         if (secondChild == null)
+        {
             return;
+        }
 
         tree.RemoveChild(secondChild);
     }
@@ -114,15 +134,21 @@ public class TestNode : Node<TestNode>
     {
         var firstChild = tree.FirstChild;
         if (firstChild == null)
+        {
             return;
+        }
 
         var secondChild = firstChild.NextSibling;
         if (secondChild == null)
+        {
             return;
+        }
 
         var thirdChild = secondChild.NextSibling;
         if (thirdChild == null)
+        {
             return;
+        }
 
         tree.RemoveChild(thirdChild);
     }
@@ -143,7 +169,9 @@ public class TestNode : Node<TestNode>
 
         // If we are at maximum depth, then return.
         if (currentDepth == maxDepth)
+        {
             return;
+        }
 
         for (var i = 0; i < maxChildren; ++i)
         {

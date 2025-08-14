@@ -46,7 +46,9 @@ public static class ExtensibleExtensions
     {
         // If the extension already exists, then do nothing.
         if (extensible.ContainsExtension<TExtension>())
+        {
             return;
+        }
 
         // Create a default extension and attach it.
         var extension = new TExtension();
@@ -76,7 +78,9 @@ public static class ExtensibleExtensions
     {
         // If extension is already attached, then return the attached extension.
         if (extensible.TryGetExtension<TExtension>(out var extension))
+        {
             return extension;
+        }
 
         // Create a default extension and attach it.
         extension = new TExtension();

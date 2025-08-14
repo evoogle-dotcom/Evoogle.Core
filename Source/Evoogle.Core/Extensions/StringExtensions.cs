@@ -36,14 +36,18 @@ public static partial class StringExtensions
         int minMaskedCount = 8)
     {
         if (string.IsNullOrWhiteSpace(str))
+        {
             return str;
+        }
 
         str = str.Trim();
         var len = str.Length;
 
         // If not enough characters to satisfy the minimum masking, mask the entire string
         if (len <= minMaskedCount)
+        {
             return new string(maskChar, len);
+        }
 
         var leftLen = Math.Clamp(unmaskedLeftCount, 0, len);
         var rightLen = unmaskedRightCount ?? (len > 6 ? Math.Min((len - 6) / 2, 4) : 0);
@@ -68,7 +72,9 @@ public static partial class StringExtensions
 
                 // Final fallback: mask whole string
                 if (maskedLen < minMaskedCount)
+                {
                     return new string(maskChar, len);
+                }
             }
         }
 
@@ -89,7 +95,9 @@ public static partial class StringExtensions
     public static string? MaskFully(this string? str, char maskChar = '*')
     {
         if (string.IsNullOrEmpty(str))
+        {
             return str;
+        }
 
         str = str.Trim();
         return new string(maskChar, str.Length);
@@ -103,7 +111,9 @@ public static partial class StringExtensions
     public static string? RemoveWhitespace(this string? str)
     {
         if (string.IsNullOrEmpty(str))
+        {
             return str;
+        }
 
         return WhitespaceRegex().Replace(str, string.Empty);
     }
