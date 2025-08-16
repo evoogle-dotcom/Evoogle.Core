@@ -24,7 +24,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsBoolean("value", value, options);
+        writer.TryWritePropertyAsBoolean("value", value, options);
     }
 
     public static void WritePropertyNullableBoolean(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -33,7 +33,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsBoolean("value", value, options);
+        writer.TryWritePropertyAsBoolean("value", value, options);
     }
     #endregion
 
@@ -44,7 +44,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyWithConverter("value", value, options, _testEnumConverter);
+        writer.TryWritePropertyWithConverter("value", value, options, _testEnumConverter);
     }
 
     public static void WritePropertyNullableEnumWithConverter(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -53,7 +53,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyWithConverter("value", value, options, _testEnumConverter);
+        writer.TryWritePropertyWithConverter("value", value, options, _testEnumConverter);
     }
 
     public static void WritePropertyTypeWithConverter(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -62,7 +62,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyWithConverter("value", value, options, _typeConverter);
+        writer.TryWritePropertyWithConverter("value", value, options, _typeConverter);
     }
     #endregion
 
@@ -73,7 +73,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options);
     }
 
     public static void WritePropertyDouble(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
@@ -82,7 +82,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options);
     }
 
     public static void WritePropertyFloat(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
@@ -91,7 +91,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options);
     }
 
     public static void WritePropertyInt(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
@@ -100,7 +100,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options);
     }
 
     public static void WritePropertyLong(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
@@ -109,7 +109,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options);
     }
 
     public static void WritePropertyNullableDecimal(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -118,7 +118,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options);
     }
 
     public static void WritePropertyNullableDouble(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -127,7 +127,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options);
     }
 
     public static void WritePropertyNullableFloat(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -136,7 +136,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options);
     }
 
     public static void WritePropertyNullableInt(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -145,7 +145,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options);
     }
 
     public static void WritePropertyNullableLong(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -154,7 +154,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options);
     }
     #endregion
 
@@ -165,7 +165,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyWithSerializer("value", value, options);
+        writer.TryWritePropertyWithSerializer("value", value, options);
     }
 
     public static void WritePropertyNullableBooleanWithSerializer(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -174,7 +174,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyWithSerializer("value", value, options);
+        writer.TryWritePropertyWithSerializer("value", value, options);
     }
 
     public static void WritePropertyDecimalWithSerializer(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
@@ -183,7 +183,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyWithSerializer("value", value, options);
+        writer.TryWritePropertyWithSerializer("value", value, options);
     }
 
     public static void WritePropertyNullableDecimalWithSerializer(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -192,7 +192,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyWithSerializer("value", value, options);
+        writer.TryWritePropertyWithSerializer("value", value, options);
     }
 
     public static void WritePropertyGuidWithSerializer(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
@@ -201,7 +201,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyWithSerializer("value", value, options);
+        writer.TryWritePropertyWithSerializer("value", value, options);
     }
 
     public static void WritePropertyNullableGuidWithSerializer(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -210,7 +210,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyWithSerializer("value", value, options);
+        writer.TryWritePropertyWithSerializer("value", value, options);
     }
 
     public static void WritePropertyStringWithSerializer(Utf8JsonWriter writer, string? value, string conditionAsString)
@@ -218,7 +218,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyWithSerializer("value", value, options);
+        writer.TryWritePropertyWithSerializer("value", value, options);
     }
     #endregion
 
@@ -229,7 +229,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options);
     }
 
     public static void WritePropertyDateTimeOffset(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
@@ -238,7 +238,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options);
     }
 
     public static void WritePropertyEnum(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
@@ -247,7 +247,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options);
     }
 
     public static void WritePropertyGuid(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
@@ -256,7 +256,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options);
     }
 
     public static void WritePropertyNullableDateTime(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -265,7 +265,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options);
     }
 
     public static void WritePropertyNullableDateTimeOffset(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -274,7 +274,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options);
     }
 
     public static void WritePropertyNullableEnum(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -283,7 +283,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options);
     }
 
     public static void WritePropertyNullableGuid(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -292,7 +292,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options);
     }
 
     public static void WritePropertyNullableTimeSpan(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -301,7 +301,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options);
     }
 
     public static void WritePropertyNullableUlid(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
@@ -310,7 +310,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options);
     }
 
     public static void WritePropertyString(Utf8JsonWriter writer, string? value, string conditionAsString)
@@ -318,7 +318,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options);
     }
 
     public static void WritePropertyTimeSpan(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
@@ -327,7 +327,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options);
     }
 
     public static void WritePropertyUlid(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
@@ -336,7 +336,7 @@ public static class Utf8JsonWriterTestHelper
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.WriteConditionalPropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options);
     }
     #endregion
 
