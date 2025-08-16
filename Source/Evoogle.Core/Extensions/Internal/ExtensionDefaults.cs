@@ -12,7 +12,14 @@ namespace Evoogle.Extensions.Internal;
 internal static class ExtensionsDefaults
 {
     #region Fields
+    /// <summary>
+    ///     Text used when representing a <see langword="null"/> value as a string.
+    /// </summary>
     public const string DefaultNullText = "<null>";
+
+    /// <summary>
+    ///     Text used when representing an empty string value.
+    /// </summary>
     public const string DefaultEmptyText = "<empty>";
     #endregion
 }

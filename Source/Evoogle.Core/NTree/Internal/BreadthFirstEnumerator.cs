@@ -21,8 +21,14 @@ internal class BreadthFirstEnumerator<TNode>(TNode node) : IEnumerator<TNode>
     #endregion
 
     #region IEnumerator<TNode> Properties
+    /// <summary>
+    ///     Gets the current node in the enumeration.
+    /// </summary>
     public TNode Current => this.NullableCurrent ?? throw new NullReferenceException($"{nameof(this.Current)} is undefined.");
 
+    /// <summary>
+    ///     Gets or sets the current node in the enumeration, or <see langword="null"/> if the enumeration has not started or has finished.
+    /// </summary>
     public TNode? NullableCurrent { get; set; }
     #endregion
 
@@ -31,6 +37,10 @@ internal class BreadthFirstEnumerator<TNode>(TNode node) : IEnumerator<TNode>
     #endregion
 
     #region IEnumerator Methods
+    /// <summary>
+    ///     Advances the enumerator to the next node in breadth-first order.
+    /// </summary>
+    /// <returns><see langword="true"/> if the enumerator was successfully advanced to the next node; <see langword="false"/> if the enumerator has passed the end of the collection.</returns>
     public bool MoveNext()
     {
         if (this.Queue.Count == 0)
@@ -52,6 +62,9 @@ internal class BreadthFirstEnumerator<TNode>(TNode node) : IEnumerator<TNode>
         return true;
     }
 
+    /// <summary>
+    ///     Resets the enumerator to its initial position, before the first node in the collection.
+    /// </summary>
     public void Reset()
     {
         this.Queue.Clear();
@@ -62,6 +75,9 @@ internal class BreadthFirstEnumerator<TNode>(TNode node) : IEnumerator<TNode>
     #endregion
 
     #region IDisposable Methods
+    /// <summary>
+    ///     Releases all resources used by the enumerator.
+    /// </summary>
     public void Dispose()
     { }
     #endregion

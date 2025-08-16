@@ -30,6 +30,22 @@ public static class DictionaryExtensions
         throw new KeyNotFoundException(message);
     }
 
+    /// <summary>
+    ///     Attempts to retrieve a value for the specified <paramref name="key"/> from the dictionary.
+    /// </summary>
+    /// <typeparam name="TKey">Key type.</typeparam>
+    /// <typeparam name="TValue">Value type.</typeparam>
+    /// <param name="dictionary">Dictionary object to call extension method on.</param>
+    /// <param name="key">Key to get the value by in the dictionary.</param>
+    /// <param name="value">
+    ///     When this method returns, contains the value associated with the specified key, if the key is found;
+    ///     otherwise, the provided <paramref name="defaultValue"/>.
+    /// </param>
+    /// <param name="defaultValue">Value to return if the key is not found in the dictionary.</param>
+    /// <returns>
+    ///     <see langword="true"/> if the key exists in the dictionary; otherwise, <see langword="false"/> and
+    ///     <paramref name="value"/> is set to <paramref name="defaultValue"/>.
+    /// </returns>
     public static bool TryGetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, out TValue? value, TValue? defaultValue = default)
     {
         if (dictionary.TryGetValue(key, out value))
