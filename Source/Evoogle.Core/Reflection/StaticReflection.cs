@@ -13,20 +13,94 @@ namespace Evoogle.Reflection;
 public static class StaticReflection
 {
     #region Methods
+    /// <summary>
+    ///     Gets the member name represented by a strongly-typed expression.
+    /// </summary>
+    /// <typeparam name="T">Type containing the member.</typeparam>
+    /// <param name="expression">Expression selecting the member.</param>
+    /// <param name="throwOnUnsupported">
+    ///     If <see langword="true"/>, throws an <see cref="ArgumentException"/> when the expression type is unsupported;
+    ///     otherwise, returns a placeholder name.
+    /// </param>
+    /// <returns>The name of the member.</returns>
     public static string GetMemberName<T>(Expression<Func<T, object>> expression, bool throwOnUnsupported = true) => GetMemberName(expression.Body, throwOnUnsupported);
 
+    /// <summary>
+    ///     Gets the member name represented by a strongly-typed expression.
+    /// </summary>
+    /// <typeparam name="T">Type containing the member.</typeparam>
+    /// <typeparam name="TResult">Return type of the member.</typeparam>
+    /// <param name="expression">Expression selecting the member.</param>
+    /// <param name="throwOnUnsupported">
+    ///     If <see langword="true"/>, throws an <see cref="ArgumentException"/> when the expression type is unsupported;
+    ///     otherwise, returns a placeholder name.
+    /// </param>
+    /// <returns>The name of the member.</returns>
     public static string GetMemberName<T, TResult>(Expression<Func<T, TResult>> expression, bool throwOnUnsupported = true) => GetMemberName(expression.Body, throwOnUnsupported);
 
+    /// <summary>
+    ///     Gets the member name represented by a strongly-typed action expression.
+    /// </summary>
+    /// <typeparam name="T">Type containing the member.</typeparam>
+    /// <param name="expression">Expression selecting the member.</param>
+    /// <param name="throwOnUnsupported">
+    ///     If <see langword="true"/>, throws an <see cref="ArgumentException"/> when the expression type is unsupported;
+    ///     otherwise, returns a placeholder name.
+    /// </param>
+    /// <returns>The name of the member.</returns>
     public static string GetMemberName<T>(Expression<Action<T>> expression, bool throwOnUnsupported = true) => GetMemberName(expression.Body, throwOnUnsupported);
 
+    /// <summary>
+    ///     Gets the member name represented by a strongly-typed expression for the specified instance.
+    /// </summary>
+    /// <typeparam name="T">Type containing the member.</typeparam>
+    /// <param name="_">Instance providing the generic type argument.</param>
+    /// <param name="expression">Expression selecting the member.</param>
+    /// <param name="throwOnUnsupported">
+    ///     If <see langword="true"/>, throws an <see cref="ArgumentException"/> when the expression type is unsupported;
+    ///     otherwise, returns a placeholder name.
+    /// </param>
+    /// <returns>The name of the member.</returns>
     public static string GetMemberName<T>(this T _, Expression<Func<T, object>> expression, bool throwOnUnsupported = true) => GetMemberName(expression.Body, throwOnUnsupported);
 
+    /// <summary>
+    ///     Gets the member name represented by a strongly-typed expression for the specified instance.
+    /// </summary>
+    /// <typeparam name="T">Type containing the member.</typeparam>
+    /// <typeparam name="TResult">Return type of the member.</typeparam>
+    /// <param name="_">Instance providing the generic type argument.</param>
+    /// <param name="expression">Expression selecting the member.</param>
+    /// <param name="throwOnUnsupported">
+    ///     If <see langword="true"/>, throws an <see cref="ArgumentException"/> when the expression type is unsupported;
+    ///     otherwise, returns a placeholder name.
+    /// </param>
+    /// <returns>The name of the member.</returns>
     public static string GetMemberName<T, TResult>(this T _, Expression<Func<T, TResult>> expression, bool throwOnUnsupported = true) => GetMemberName(expression.Body, throwOnUnsupported);
 
+    /// <summary>
+    ///     Gets the member name represented by a strongly-typed action expression for the specified instance.
+    /// </summary>
+    /// <typeparam name="T">Type containing the member.</typeparam>
+    /// <param name="_">Instance providing the generic type argument.</param>
+    /// <param name="expression">Expression selecting the member.</param>
+    /// <param name="throwOnUnsupported">
+    ///     If <see langword="true"/>, throws an <see cref="ArgumentException"/> when the expression type is unsupported;
+    ///     otherwise, returns a placeholder name.
+    /// </param>
+    /// <returns>The name of the member.</returns>
     public static string GetMemberName<T>(this T _, Expression<Action<T>> expression, bool throwOnUnsupported = true) => GetMemberName(expression.Body, throwOnUnsupported);
     #endregion
 
     #region Implementation Methods
+    /// <summary>
+    ///     Core logic that extracts the member name from an expression tree.
+    /// </summary>
+    /// <param name="expression">Expression tree to analyze.</param>
+    /// <param name="throwOnUnsupported">
+    ///     If <see langword="true"/>, throws an <see cref="ArgumentException"/> when the expression type is unsupported;
+    ///     otherwise, returns a placeholder name.
+    /// </param>
+    /// <returns>The name of the member represented by the expression.</returns>
     internal static string GetMemberName(Expression expression, bool throwOnUnsupported)
     {
         switch (expression)
