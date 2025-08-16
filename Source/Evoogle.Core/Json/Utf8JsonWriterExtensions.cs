@@ -8,10 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace Evoogle.Json;
 
-/// <summary>
-///     Provides extension methods for <see cref="Utf8JsonWriter"/> to conditionally write values only and properties/values based on null/default value handling defined by <see cref="JsonSerializerOptions.DefaultIgnoreCondition"/>.
-/// </summary>
-public static partial class Utf8JsonWriterExtensions2
+public static partial class Utf8JsonWriterExtensions
 {
     #region TryWrite Methods
     public static bool TryWrite<T>
