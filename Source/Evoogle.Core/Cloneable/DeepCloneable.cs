@@ -22,7 +22,7 @@ public abstract class DeepCloneable : IDeepCloneable
     public virtual object? DeepClone()
     {
         var sourceType = this.GetType();
-        return this.DeepCopyWithJson(sourceType);
+        return this.DeepCopy(sourceType);
     }
     #endregion
 }
@@ -57,7 +57,7 @@ public abstract class DeepCloneable<T> : IDeepCloneable<T>
             throw new InvalidOperationException($"Type mismatch: {this.GetType().Name} is not assignable to {typeof(T).Name}");
         }
 
-        return (T)this.DeepCopyWithJson(typeof(T))!;
+        return (T)this.DeepCopy(typeof(T))!;
     }
     #endregion
 }

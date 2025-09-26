@@ -17,7 +17,7 @@ namespace Evoogle.Extensions;
 public static class ObjectExtensions
 {
     #region Fields
-    private static readonly JsonSerializerOptions _defaultDeepCopyWithJsonOptions = new()
+    private static readonly JsonSerializerOptions _defaultDeepCopyJsonOptions = new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.Never,
         ReferenceHandler = ReferenceHandler.Preserve,
@@ -32,7 +32,6 @@ public static class ObjectExtensions
     #endregion
 
     #region Methods
-
     /// <summary>
     ///     Create a deep copy by using the serializing/deserializing to/from JSON idiom of making a deep copy of an object.
     /// </summary>
@@ -49,15 +48,15 @@ public static class ObjectExtensions
     /// <returns>
     ///     Null if the source object is null, otherwise a deep copy of the source object.
     /// </returns>
-    public static object? DeepCopyWithJson(this object? sourceObject, Type sourceType, JsonSerializerOptions? options = null)
+    public static object? DeepCopy(this object? sourceObject, Type sourceType, JsonSerializerOptions? options = null)
     {
         if (sourceObject == null)
         {
             return null;
         }
 
-        var sourceJson = JsonSerializer.Serialize(sourceObject, sourceType, options ?? _defaultDeepCopyWithJsonOptions);
-        var resultObject = JsonSerializer.Deserialize(sourceJson, sourceType, options ?? _defaultDeepCopyWithJsonOptions);
+        var sourceJson = JsonSerializer.Serialize(sourceObject, sourceType, options ?? _defaultDeepCopyJsonOptions);
+        var resultObject = JsonSerializer.Deserialize(sourceJson, sourceType, options ?? _defaultDeepCopyJsonOptions);
         return resultObject;
     }
 
@@ -80,15 +79,15 @@ public static class ObjectExtensions
     /// <returns>
     ///     Null if the source object is null, otherwise a deep copy of the source object.
     /// </returns>
-    public static object? DeepCopyWithJson(this object? sourceObject, Type sourceType, Type resultType, JsonSerializerOptions? options = null)
+    public static object? DeepCopy(this object? sourceObject, Type sourceType, Type resultType, JsonSerializerOptions? options = null)
     {
         if (sourceObject == null)
         {
             return null;
         }
 
-        var sourceJson = JsonSerializer.Serialize(sourceObject, sourceType, options ?? _defaultDeepCopyWithJsonOptions);
-        var resultObject = JsonSerializer.Deserialize(sourceJson, resultType, options ?? _defaultDeepCopyWithJsonOptions);
+        var sourceJson = JsonSerializer.Serialize(sourceObject, sourceType, options ?? _defaultDeepCopyJsonOptions);
+        var resultObject = JsonSerializer.Deserialize(sourceJson, resultType, options ?? _defaultDeepCopyJsonOptions);
         return resultObject;
     }
 
@@ -108,12 +107,12 @@ public static class ObjectExtensions
     /// <returns>
     ///     Null if the source object is null, otherwise a strongly-typed deep copy of the source object.
     /// </returns>
-    public static T? DeepCopyWithJson<T>(this T? source, JsonSerializerOptions? options = null)
+    public static T? DeepCopy<T>(this T? source, JsonSerializerOptions? options = null)
         where T : class
     {
         var sourceObject = (object?)source;
         var sourceType = typeof(T);
-        var resultObject = sourceObject.DeepCopyWithJson(sourceType, options);
+        var resultObject = sourceObject.DeepCopy(sourceType, options);
         var result = (T?)resultObject;
         return result;
     }
@@ -137,14 +136,14 @@ public static class ObjectExtensions
     /// <returns>
     ///     Null if the source object is null, otherwise a strongly-typed deep copy of the source object.
     /// </returns>
-    public static TResult? DeepCopyWithJson<T, TResult>(this T? source, JsonSerializerOptions? options = null)
+    public static TResult? DeepCopy<T, TResult>(this T? source, JsonSerializerOptions? options = null)
         where T : class
         where TResult : class
     {
         var sourceObject = (object?)source;
         var sourceType = typeof(T);
         var resultType = typeof(TResult);
-        var resultObject = sourceObject.DeepCopyWithJson(sourceType, resultType, options);
+        var resultObject = sourceObject.DeepCopy(sourceType, resultType, options);
         var result = (TResult?)resultObject;
         return result;
     }
