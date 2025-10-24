@@ -3,6 +3,7 @@
 //
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
+using System.Globalization;
 using System.Linq.Dynamic.Core.CustomTypeProviders;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -13,6 +14,7 @@ namespace Evoogle.Json;
 public static class Utf8JsonWriterTestHelper
 {
     #region Fields
+    private static readonly CultureInfoJsonConverter _cultureInfoJsonConverter = new();
     private static readonly EnumJsonConverter<Utf8JsonWriterTestEnum> _testEnumConverter = new();
     private static readonly TypeJsonConverter _typeConverter = new();
     #endregion
@@ -38,6 +40,15 @@ public static class Utf8JsonWriterTestHelper
     #endregion
 
     #region Converter Methods
+    public static void WritePropertyCultureInfoWithConverter(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    {
+        var value = valueAsString != null ? CultureInfo.GetCultureInfo(valueAsString, predefinedOnly: true) : null;
+        var condition = GetCondition(conditionAsString);
+
+        var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
+        writer.TryWritePropertyWithConverter("value", value, options, _cultureInfoJsonConverter);
+    }
+
     public static void WritePropertyEnumWithConverter(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
     {
         var value = Enum.Parse<Utf8JsonWriterTestEnum>(valueAsString);

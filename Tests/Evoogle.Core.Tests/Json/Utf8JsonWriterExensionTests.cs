@@ -97,6 +97,26 @@ public class Utf8JsonWriterExensionTests(ITestOutputHelper output) : XUnitTests(
 
         // Converter Tests
 
+        // .. CultureInfo (null) With Converter
+        new WritePropertyTest
+        {
+            Name = "CultureInfo=CultureInfo With Converter, Value=null, Condition=WhenWritingNull",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyCultureInfoWithConverter(a, null, nameof(JsonIgnoreCondition.WhenWritingNull)),
+            ExpectedJson = @"{}",
+        },
+        new WritePropertyTest
+        {
+            Name = "CultureInfo=CultureInfo With Converter, Value=null, Condition=WhenWritingDefault",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyCultureInfoWithConverter(a, null, nameof(JsonIgnoreCondition.WhenWritingDefault)),
+            ExpectedJson = @"{}",
+        },
+        new WritePropertyTest
+        {
+            Name = "CultureInfo=CultureInfo With Converter, Value=null, Condition=Never",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WritePropertyCultureInfoWithConverter(a, null, nameof(JsonIgnoreCondition.Never)),
+            ExpectedJson = $@"{{""value"":null}}",
+        },
+
         // .. Enum (default) With Converter
         new WritePropertyTest
         {
