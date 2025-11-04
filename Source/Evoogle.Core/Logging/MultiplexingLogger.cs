@@ -10,11 +10,11 @@ using Microsoft.Extensions.Logging;
 namespace Evoogle.Logging;
 
 /// <summary>
-///     A flexible implementation of <see cref="ILogger{T}"/> that can forward log messages to multiple outputs depending on configuration.
+///     A flexible implementation of <see cref="ILogger"/> that can forward log messages to multiple outputs depending on configuration.
 ///
 ///     <para>This logger supports:</para>
 ///     <list type="bullet">
-///         <item><description><see cref="ILogger{T}"/> forwarding, if injected</description></item>
+///         <item><description><see cref="ILogger"/> forwarding, if injected</description></item>
 ///         <item><description><see cref="Debug.WriteLine(string)"/> when debugging</description></item>
 ///         <item><description><see cref="Console.WriteLine(string)"/> for command-line diagnostics or visibility</description></item>
 ///     </list>
@@ -23,17 +23,16 @@ namespace Evoogle.Logging;
 ///         Configure the desired behavior via <see cref="MultiplexingLoggerMode"/>.
 ///     </para>
 /// </summary>
-/// <typeparam name="T">The logger category type.</typeparam>
 /// <remarks>
 ///     Use <see cref="MultiplexingLoggerMode"/> to configure one or more targets.
 ///     This logger is especially useful in test utilities, converters, or diagnostics where structured logging may not be fully wired up.
 /// </remarks>
 /// <remarks>
-///     Initializes a new instance of the <see cref="MultiplexingLogger{T}"/> class.
+///     Initializes a new instance of the <see cref="MultiplexingLogger"/> class.
 /// </remarks>
-/// <param name="innerLogger">An optional <see cref="ILogger{T}"/> to forward log messages to.</param>
+/// <param name="innerLogger">An optional <see cref="ILogger"/> to forward log messages to.</param>
 /// <param name="mode">Specifies one or more log targets for output.</param>
-public sealed class MultiplexingLogger<T>(ILogger<T>? innerLogger = null, MultiplexingLoggerMode mode = MultiplexingLoggerMode.Logger) : ILogger<T>
+public sealed class MultiplexingLogger(ILogger? innerLogger = null, MultiplexingLoggerMode mode = MultiplexingLoggerMode.Logger) : ILogger
 {
     #region Types
     /// <summary>Represents a no-op scope used when no logger is available.</summary>
@@ -46,11 +45,11 @@ public sealed class MultiplexingLogger<T>(ILogger<T>? innerLogger = null, Multip
     #endregion
 
     #region Fields
-    private readonly ILogger<T>? _innerLogger = innerLogger;
+    private readonly ILogger? _innerLogger = innerLogger;
     private readonly MultiplexingLoggerMode _mode = mode;
     #endregion
 
-    #region ILogger<T> Methods
+    #region ILogger Methods
     /// <inheritdoc />
     public IDisposable? BeginScope<TState>(TState state)
         where TState : notnull => _innerLogger?.BeginScope(state) ?? NullScope.Instance;
