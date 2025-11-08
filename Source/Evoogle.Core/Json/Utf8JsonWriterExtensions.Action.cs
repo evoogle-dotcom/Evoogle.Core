@@ -4,6 +4,7 @@
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
 using System.Text.Json;
+using System;
 
 namespace Evoogle.Json;
 
@@ -121,6 +122,33 @@ public static partial class Utf8JsonWriterExtensions
                 writeAction(o);
             }
         );
+    }
+
+    /// <summary>
+    ///     Writes a property whose value is represented by a contiguous <see cref="ReadOnlySpan{T}"/> without generic constraints on the span itself.
+    ///     This overload bypasses default-value filtering and always writes the property name, delegating full control of serialization
+    ///     to the provided <paramref name="writeAction"/>.
+    /// </summary>
+    /// <typeparam name="T">The element type contained in the span.</typeparam>
+    /// <param name="writer">The JSON writer.</param>
+    /// <param name="propertyName">The JSON property name to write.</param>
+    /// <param name="span">The read-only span of elements to serialize.</param>
+    /// <param name="options">Serializer options (reserved for consistency; not used for filtering here).</param>
+    /// <param name="writeAction">Action that receives the span and writes its contents.</param>
+    /// <returns><c>true</c> (the property is always written).</returns>
+    public static bool TryWritePropertyWithAction<T>
+    (
+        this Utf8JsonWriter writer,
+        string propertyName,
+        ReadOnlySpan<T> span,
+        JsonSerializerOptions options,
+        Action<ReadOnlySpan<T>> writeAction
+    )
+    {
+        // We intentionally always write the property to avoid span capture complexities in generic filtering.
+        writer.WritePropertyName(propertyName);
+        writeAction(span);
+        return true;
     }
     #endregion
 }
