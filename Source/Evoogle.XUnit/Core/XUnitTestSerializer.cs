@@ -28,7 +28,13 @@ public class XUnitTestSerializer : IXunitSerializer
     #endregion
 
     #region Constructors
-    static XUnitTestSerializer() => DefaultJsonSerializerOptions.Converters.Add(new TypeJsonConverter());
+    static XUnitTestSerializer()
+    {
+        // Ensure strict object envelope converter wins
+        DefaultJsonSerializerOptions.Converters.Insert(0, new ObjectJsonConverter());
+
+        DefaultJsonSerializerOptions.Converters.Add(new TypeJsonConverter());
+    }
     #endregion
 
     #region IXunitSerializer Implementation
