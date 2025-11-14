@@ -236,7 +236,7 @@ public static class Utf8JsonWriterTestHelper
     #region String Methods
     public static void WritePropertyDateTime(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
     {
-        var value = DateTime.Parse(valueAsString);
+        var value = DateTime.Parse(UnescapeJsonString(valueAsString));
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
@@ -245,7 +245,7 @@ public static class Utf8JsonWriterTestHelper
 
     public static void WritePropertyDateTimeOffset(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
     {
-        var value = DateTimeOffset.Parse(valueAsString);
+        var value = DateTimeOffset.Parse(UnescapeJsonString(valueAsString));
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
@@ -272,7 +272,7 @@ public static class Utf8JsonWriterTestHelper
 
     public static void WritePropertyNullableDateTime(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
     {
-        var value = valueAsString != null ? DateTime.Parse(valueAsString) : (DateTime?)null;
+        var value = valueAsString != null ? DateTime.Parse(UnescapeJsonString(valueAsString)) : (DateTime?)null;
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
@@ -281,7 +281,7 @@ public static class Utf8JsonWriterTestHelper
 
     public static void WritePropertyNullableDateTimeOffset(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
     {
-        var value = valueAsString != null ? DateTimeOffset.Parse(valueAsString) : (DateTimeOffset?)null;
+        var value = valueAsString != null ? DateTimeOffset.Parse(UnescapeJsonString(valueAsString)) : (DateTimeOffset?)null;
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
@@ -308,7 +308,7 @@ public static class Utf8JsonWriterTestHelper
 
     public static void WritePropertyNullableTimeSpan(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
     {
-        var value = valueAsString != null ? TimeSpan.Parse(valueAsString) : (TimeSpan?)null;
+        var value = valueAsString != null ? TimeSpan.Parse(UnescapeJsonString(valueAsString)) : (TimeSpan?)null;
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
@@ -334,7 +334,7 @@ public static class Utf8JsonWriterTestHelper
 
     public static void WritePropertyTimeSpan(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
     {
-        var value = TimeSpan.Parse(valueAsString);
+        var value = TimeSpan.Parse(UnescapeJsonString(valueAsString));
         var condition = GetCondition(conditionAsString);
 
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
@@ -357,6 +357,13 @@ public static class Utf8JsonWriterTestHelper
         return Enum.TryParse<JsonIgnoreCondition>(conditionAsString, out var condition)
             ? condition
             : throw new ArgumentException($"Invalid condition: {conditionAsString}", nameof(conditionAsString));
+    }
+
+    private static string UnescapeJsonString(string escaped)
+    {
+        // Deserialize as a JSON string literal to handle all escape sequences
+        return JsonSerializer.Deserialize<string>($"\"{escaped}\"")
+               ?? throw new ArgumentException("Failed to unescape string", nameof(escaped));
     }
     #endregion
 }
