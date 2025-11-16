@@ -24,6 +24,7 @@ public class XUnitTestSerializer : IXunitSerializer
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.Never,
         WriteIndented = false,
+        PropertyNameCaseInsensitive = true, // Allow case-insensitive matching for constructor parameters
     };
     #endregion
 
