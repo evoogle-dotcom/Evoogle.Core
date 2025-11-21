@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024-2025 Evoogle.com
+// Copyright (c) 2024-2025 Evoogle.com
 // SPDX-License-Identifier: MIT
 //
 // This file is licensed under the MIT License.
@@ -8,35 +8,35 @@ using System.Reflection;
 namespace Evoogle.Reflection;
 
 /// <summary>
-///     Reflection methods for the .NET <see cref="PropertyInfo"> class.
+///     Reflection methods for the .NET <see cref="FieldInfo"> class.
 /// </summary>
-public static class PropertyReflection
+public static class FieldReflection
 {
     #region Methods
     /// <summary>
-    ///     Gets a detailed breakdown of a property’s nullability including:
-    ///     whether the property itself is nullable, whether it is a collection (excluding <see cref="string"/>),
+    ///     Gets a detailed breakdown of a field's nullability including:
+    ///     whether the field itself is nullable, whether it is a collection (excluding <see cref="string"/>),
     ///     and the nullability of nested collection types and their elements (if any).
     /// </summary>
-    /// <param name="propertyInfo">The <see cref="PropertyInfo"/> to analyze.</param>
+    /// <param name="fieldInfo">The <see cref="FieldInfo"/> to analyze.</param>
     /// <returns>
-    ///     A <see cref="MemberNullableInfo"/> object containing nullability metadata of the property,
+    ///     A <see cref="MemberNullableInfo"/> object containing nullability metadata of the field,
     ///     including recursive collection nullability if applicable.
     /// </returns>    
-    public static MemberNullableInfo GetNullabilityInfo(PropertyInfo propertyInfo)
+    public static MemberNullableInfo GetNullabilityInfo(FieldInfo fieldInfo)
     {
-        ArgumentNullException.ThrowIfNull(propertyInfo, nameof(propertyInfo));
+        ArgumentNullException.ThrowIfNull(fieldInfo, nameof(fieldInfo));
 
         var context = new NullabilityInfoContext();
-        var nullabilityInfo = context.Create(propertyInfo);
+        var nullabilityInfo = context.Create(fieldInfo);
 
-        var propertyType = propertyInfo.PropertyType;
+        var fieldType = fieldInfo.FieldType;
         var collectionChain = new List<MemberNullableInfo.CollectionInfo>();
 
-        var currentType = propertyType;
+        var currentType = fieldType;
         var currentNullability = nullabilityInfo;
 
-        var isPropertyNullable = currentNullability.ReadState == NullabilityState.Nullable;
+        var isFieldNullable = currentNullability.ReadState == NullabilityState.Nullable;
 
         // Handle collections and possible collections within collections (IEnumerable<T>, arrays, etc.)
         while (TypeReflection.IsEnumerableOfT(currentType, out var elementType))
@@ -70,22 +70,22 @@ public static class PropertyReflection
 
         return new MemberNullableInfo
         {
-            MemberType = propertyType,
-            IsNullable = isPropertyNullable,
+            MemberType = fieldType,
+            IsNullable = isFieldNullable,
             CollectionChain = collectionChain
         };
     }
 
     /// <summary>
-    ///     Predicate if property is static or an instance property.
+    ///     Predicate if field is static or an instance field.
     /// </summary>
-    /// <param name="propertyInfo"><see cref="PropertyInfo"/> metadata from property centric reflection method calls on the <see cref="Type"/> class.</param>
-    /// <returns>True if the represented property metadata is a static property, false otherwise.</returns>
-    public static bool IsStatic(PropertyInfo propertyInfo)
+    /// <param name="fieldInfo"><see cref="FieldInfo"/> metadata from field centric reflection method calls on the <see cref="Type"/> class.</param>
+    /// <returns>True if the represented field metadata is a static field, false otherwise.</returns>
+    public static bool IsStatic(FieldInfo fieldInfo)
     {
-        ArgumentNullException.ThrowIfNull(propertyInfo, nameof(propertyInfo));
+        ArgumentNullException.ThrowIfNull(fieldInfo, nameof(fieldInfo));
 
-        var isStatic = (propertyInfo.CanRead && propertyInfo.GetMethod?.IsStatic == true) || (propertyInfo.CanWrite && propertyInfo.SetMethod?.IsStatic == true);
+        var isStatic = fieldInfo.IsStatic;
         return isStatic;
     }
     #endregion

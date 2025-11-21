@@ -6,10 +6,10 @@
 namespace Evoogle.Reflection;
 
 /// <summary>
-///     Represents the nullability information of a property.
+///     Represents the nullability information of a data member which can either be a property or field.
 ///     Includes reference and value types, collection types, and element types. Supports recursive collection layers.
 /// </summary>
-public sealed record PropertyNullableInfo
+public sealed record MemberNullableInfo
 {
     #region Types
     /// <summary>
@@ -33,21 +33,21 @@ public sealed record PropertyNullableInfo
     #endregion
 
     #region Properties
-    /// <summary>The type of the property being inspected.</summary>
-    public Type PropertyType { get; init; } = null!;
+    /// <summary>The type of the member being inspected.</summary>
+    public Type MemberType { get; init; } = null!;
 
-    /// <summary>True if the property itself is nullable.</summary>
+    /// <summary>True if the member itself is nullable.</summary>
     public bool IsNullable { get; init; }
 
     /// <summary>
     ///     Recursive chain of collection types (if applicable), each layer describing its type and nullability.
-    ///     Empty if the property is not a collection.
+    ///     Empty if the member is not a collection.
     /// </summary>
     public IReadOnlyList<CollectionInfo> CollectionChain { get; init; } = [];
     #endregion
 
     #region Computed Properties
-    /// <summary>True if the top-level property type is a collection (excluding string).</summary>
+    /// <summary>True if the top-level member type is a collection (excluding string).</summary>
     public bool IsCollection => this.CollectionChain.Count > 0;
     #endregion
 }
