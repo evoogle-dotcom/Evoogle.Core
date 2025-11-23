@@ -6,7 +6,6 @@
 using System.Linq.Expressions;
 using System.Text.Json.Serialization;
 
-using Evoogle.Coercion.Internal;
 using Evoogle.Extensions;
 using Evoogle.Reflection;
 using Evoogle.XUnit;
@@ -61,7 +60,7 @@ public abstract class CoerceTest<TInput, TOutput> : CoerceTest
     #endregion
 
     #region Calculated Properties
-    private ITypeCoercion TypeCoercion { get; set; } = null!;
+    private TypeCoercion TypeCoercion { get; set; } = null!;
     private TypeCoercionContext TypeCoercionContext { get; set; } = null!;
     private bool ActualResult { get; set; }
     private TOutput? ActualOutput { get; set; }
@@ -151,7 +150,7 @@ public abstract class CoerceTest<TInput, TOutput> : CoerceTest
     #endregion
 
     #region Methods
-    protected abstract TOutput? CoerceImpl(ITypeCoercion typeCoercion, TInput? input, TypeCoercionContext context);
+    protected abstract TOutput? CoerceImpl(TypeCoercion typeCoercion, TInput? input, TypeCoercionContext context);
 
     private void AssertOutputForSuccessResult()
     {

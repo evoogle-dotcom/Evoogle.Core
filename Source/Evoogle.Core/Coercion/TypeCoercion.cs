@@ -7,23 +7,41 @@ using System.Diagnostics.CodeAnalysis;
 
 using Evoogle.Reflection;
 
-namespace Evoogle.Coercion.Internal;
+namespace Evoogle.Coercion;
 
 /// <summary>
-///     This API supports the Evoogle.Core infrastructure and is not intended to be used directly from your code.
-///     This API may change or be removed in future releases.
+///    Implements type coercion methods for converting between different data types.
 /// </summary>
-internal partial class TypeCoercion : ITypeCoercion
+/// <remarks>
+///     If the input value is <c>null</c>, the method returns <c>null</c>.  
+///     If coercion fails for a non-null value, a <see cref="TypeCoercionException"/> is thrown.
+/// </remarks>
+public partial class TypeCoercion
 {
     #region Fields
     private readonly Dictionary<Tuple<Type, Type>, ITypeCoercionDefinition> _definitions = [];
     #endregion
 
     #region Constructors
+    /// <summary>
+    ///    Initializes a new instance of the <see cref="TypeCoercion"/> class and adds built-in type coercion definitions.
+    /// </summary>
     public TypeCoercion() => this.AddBuiltInDefinitions();
     #endregion
 
-    #region ITypeCoercion Methods
+    #region TypeCoercion Methods
+    /// <summary>
+    ///     Attempts to coerce the given <paramref name="input"/> into the specified <paramref name="outputType"/>.
+    /// </summary>
+    /// <param name="input">The value to be converted. If <c>null</c>, the method returns <c>null</c>.</param>
+    /// <param name="outputType">The target type to which the value should be converted.</param>
+    /// <param name="context">The context that provides additional details for the coercion process.</param>
+    /// <returns>
+    ///     The coerced value of the specified type if conversion is successful; otherwise, <c>null</c> if the input is <c>null</c>.
+    /// </returns>
+    /// <exception cref="TypeCoercionException">
+    ///     Thrown if coercion is not possible for a non-null input value.
+    /// </exception>
     public object? Coerce(object? input, Type outputType, TypeCoercionContext context)
     {
         // Try corce for null input.
@@ -68,6 +86,19 @@ internal partial class TypeCoercion : ITypeCoercion
         throw TypeCoercionException.Create(input, outputType);
     }
 
+    /// <summary>
+    ///     Attempts to coerce a value of type <typeparamref name="TInput"/> into <typeparamref name="TOutput"/>.
+    /// </summary>
+    /// <typeparam name="TInput">The input type.</typeparam>
+    /// <typeparam name="TOutput">The target type to which the value should be converted.</typeparam>
+    /// <param name="input">The value to be converted. If <c>null</c>, the method returns <c>null</c>.</param>
+    /// <param name="context">The context that provides additional details for the coercion process.</param>
+    /// <returns>
+    ///     The coerced value of type <typeparamref name="TOutput"/> if conversion is successful; otherwise, <c>null</c> if the input is <c>null</c>.
+    /// </returns>
+    /// <exception cref="TypeCoercionException">
+    ///     Thrown if coercion is not possible for a non-null input value.
+    /// </exception>
     public TOutput? Coerce<TInput, TOutput>(TInput? input, TypeCoercionContext context)
     {
         // Try corce for null input.

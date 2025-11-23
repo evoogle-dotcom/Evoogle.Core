@@ -8,7 +8,7 @@ namespace Evoogle.Coercion;
 public class GenericCoerceTest<TInput, TOutput> : CoerceTest<TInput, TOutput>
 {
     #region Methods
-    protected override TOutput? CoerceImpl(ITypeCoercion typeCoercion, TInput? input, TypeCoercionContext context)
+    protected override TOutput? CoerceImpl(TypeCoercion typeCoercion, TInput? input, TypeCoercionContext context)
     {
         var actualOutput = typeCoercion.Coerce<TInput, TOutput>(input, context);
         return actualOutput;

@@ -5,13 +5,10 @@
 // See the LICENSE file in the project root for more information.
 using Evoogle.Reflection;
 
-namespace Evoogle.Coercion.Internal;
+namespace Evoogle.Coercion;
 
-/// <summary>
-///     This API supports the Evoogle.Core infrastructure and is not intended to be used directly from your code.
-///     This API may change or be removed in future releases.
-/// </summary>
-internal partial class TypeCoercion : ITypeCoercion
+/// <inheritdoc cref="TypeCoercion"/>
+public partial class TypeCoercion
 {
     #region Fields
     private static readonly ITypeCoercionDefinition[] _builtInDefinitions =

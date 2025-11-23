@@ -29,7 +29,7 @@ public static class TypeCoercionExtensions
     ///     This method safely attempts to coerce the input value to the output type.
     ///     If coercion fails, the output is assigned the default value and <c>false</c> is returned.
     /// </remarks>
-    public static bool TryCoerce<TInput, TOutput>(this ITypeCoercion typeCoercion, TInput? input, out TOutput? output, TypeCoercionContext context, TOutput? defaultValue = default)
+    public static bool TryCoerce<TInput, TOutput>(this TypeCoercion typeCoercion, TInput? input, out TOutput? output, TypeCoercionContext context, TOutput? defaultValue = default)
     {
         try
         {
@@ -59,7 +59,7 @@ public static class TypeCoercionExtensions
     ///     This method safely attempts to coerce the input value to the output type.
     ///     If coercion fails, the output is assigned the default value and <c>false</c> is returned.
     /// </remarks>
-    public static bool TryCoerce(this ITypeCoercion typeCoercion, object? input, Type outputType, out object? output, TypeCoercionContext context, object? defaultValue = null)
+    public static bool TryCoerce(this TypeCoercion typeCoercion, object? input, Type outputType, out object? output, TypeCoercionContext context, object? defaultValue = null)
     {
         try
         {
