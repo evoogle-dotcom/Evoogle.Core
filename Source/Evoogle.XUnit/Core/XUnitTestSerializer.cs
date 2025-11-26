@@ -23,8 +23,8 @@ public class XUnitTestSerializer : IXunitSerializer
     private static JsonSerializerOptions DefaultJsonSerializerOptions { get; } = new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+        IncludeFields = true,
         WriteIndented = false,
-        PropertyNameCaseInsensitive = true, // Allow case-insensitive matching for constructor parameters
     };
     #endregion
 
