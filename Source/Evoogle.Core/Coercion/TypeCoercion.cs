@@ -73,7 +73,7 @@ public partial class TypeCoercion
             }
 
             // Try coerce if any of the input and output types are enums.
-            if (this.TryCoerceForEnumTypes(input, inputType, outputType, context, out output))
+            if (TryCoerceForEnumTypes(input, inputType, outputType, context, out output))
             {
                 return output;
             }
@@ -209,7 +209,7 @@ public partial class TypeCoercion
         return true;
     }
 
-    private bool TryCoerceForEnumTypes(object input, Type inputType, Type outputType, TypeCoercionContext context, out object? output)
+    private static bool TryCoerceForEnumTypes(object input, Type inputType, Type outputType, TypeCoercionContext context, out object? output)
     {
         var isInputTypeEnum = TypeReflection.IsEnum(inputType);
         var isOutputTypeEnum = TypeReflection.IsEnum(outputType);
