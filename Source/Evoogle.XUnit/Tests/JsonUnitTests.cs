@@ -19,7 +19,6 @@ namespace Evoogle.XUnit;
 public static class JsonUnitTests
 {
     #region Test Classes
-
     /// <summary>
     ///     Base test harness for JSON converter tests targeting a model of type <typeparamref name="T"/>.
     ///     Supplies common configuration and helper utilities to derived test scenarios.
@@ -28,7 +27,6 @@ public static class JsonUnitTests
     public abstract class JsonConverterTestBase<T> : XUnitTest
     {
         #region Default Properties
-
         /// <summary>
         ///     Gets the default <see cref="JsonSerializerOptions"/> used by tests when no explicit options are supplied.
         /// </summary>
@@ -47,7 +45,6 @@ public static class JsonUnitTests
         #endregion
 
         #region User Supplied Properties
-
         /// <summary>
         ///     Gets or initializes an optional extension type to attach to the object under test.
         ///     When specified, a new instance of this type is created and attached via <see cref="IExtensible.AttachExtension(Type, object)"/> during <c>Arrange</c>.
@@ -78,7 +75,6 @@ public static class JsonUnitTests
         #endregion
 
         #region Helper Methods
-
         /// <summary>
         ///     Casts the supplied object to <see cref="IExtensible"/> or throws if not compatible.
         /// </summary>
@@ -106,7 +102,6 @@ public static class JsonUnitTests
     public class JsonDeserializeTest<T> : JsonConverterTestBase<T>
     {
         #region User Supplied Properties
-
         /// <summary>
         ///     Gets or initializes the JSON source payload to deserialize.
         /// </summary>
@@ -117,10 +112,15 @@ public static class JsonUnitTests
         ///     Optional extensions (see <see cref="JsonConverterTestBase{T}.ExtensionType1"/> and <see cref="JsonConverterTestBase{T}.ExtensionType2"/>) are attached to this instance during <c>Arrange</c>.
         /// </summary>
         public T? Expected { get; init; }
+
+        /// <summary>
+        ///     Gets or initializes an optional list of member paths to exclude from the equivalence comparison during <c>Assert</c>.
+        ///     Member paths should use the same syntax as FluentAssertions' <c>Excluding</c> option.
+        /// </summary>
+        public List<string>? ExcludeMembers { get; init; } = null;
         #endregion
 
         #region Calculated Properties
-
         /// <summary>
         ///     Gets or sets the actual deserialized instance created during <c>Act</c>.
         /// </summary>
@@ -128,7 +128,6 @@ public static class JsonUnitTests
         #endregion
 
         #region XUnitTest Methods
-
         /// <summary>
         ///     Prepares the expected instance by optionally attaching configured extensions.
         /// </summary>
@@ -185,7 +184,17 @@ public static class JsonUnitTests
         /// <exception cref="FluentAssertions.Execution.AssertionFailedException">
         ///     Thrown when the objects are not equivalent.
         /// </exception>
-        protected override void Assert() => this.Actual.Should().BeEquivalentTo(this.Expected);
+        protected override void Assert()
+        {
+            if (this.ExcludeMembers == null || this.ExcludeMembers.Count == 0)
+            {
+                this.Actual.Should().BeEquivalentTo(this.Expected);
+                return;
+            }
+
+            var excludeMembersSet = new HashSet<string>(this.ExcludeMembers!);
+            this.Actual.Should().BeEquivalentTo(this.Expected, opt => opt.Excluding(info => excludeMembersSet.Contains(info.Path)));
+        }
         #endregion
     }
 
@@ -196,17 +205,21 @@ public static class JsonUnitTests
     public class JsonRoundtripTest<T> : JsonConverterTestBase<T>
     {
         #region User Supplied Properties
-
         /// <summary>
         ///     Gets or initializes the object to serialize and then deserialize.
         ///     Optional extensions (see <see cref="JsonConverterTestBase{T}.ExtensionType1"/> and
         ///     <see cref="JsonConverterTestBase{T}.ExtensionType2"/>) are attached to this instance during <c>Arrange</c>.
         /// </summary>
         public T? Expected { get; init; }
+
+        /// <summary>
+        ///     Gets or initializes an optional list of member paths to exclude from the equivalence comparison during <c>Assert</c>.
+        ///     Member paths should use the same syntax as FluentAssertions' <c>Excluding</c> option.
+        /// </summary>
+        public List<string>? ExcludeMembers { get; init; } = null;
         #endregion
 
         #region Calculated Properties
-
         /// <summary>
         ///     Gets or sets the instance produced by the serialize-deserialize cycle during <c>Act</c>.
         /// </summary>
@@ -214,7 +227,6 @@ public static class JsonUnitTests
         #endregion
 
         #region XUnitTest Methods
-
         /// <summary>
         ///     Prepares the expected instance by optionally attaching configured extensions.
         /// </summary>
@@ -269,7 +281,17 @@ public static class JsonUnitTests
         /// <exception cref="FluentAssertions.Execution.AssertionFailedException">
         ///     Thrown when the objects are not equivalent.
         /// </exception>
-        protected override void Assert() => this.Actual.Should().BeEquivalentTo(this.Expected);
+        protected override void Assert()
+        {
+            if (this.ExcludeMembers == null || this.ExcludeMembers.Count == 0)
+            {
+                this.Actual.Should().BeEquivalentTo(this.Expected);
+                return;
+            }
+
+            var excludeMembersSet = new HashSet<string>(this.ExcludeMembers!);
+            this.Actual.Should().BeEquivalentTo(this.Expected, opt => opt.Excluding(info => excludeMembersSet.Contains(info.Path)));
+        }
         #endregion
     }
 
@@ -280,7 +302,6 @@ public static class JsonUnitTests
     public class JsonSerializeTest<T> : JsonConverterTestBase<T>
     {
         #region User Supplied Properties
-
         /// <summary>
         ///     Gets or initializes the source object to serialize.
         ///     Optional extensions (see <see cref="JsonConverterTestBase{T}.ExtensionType1"/> and
@@ -298,7 +319,6 @@ public static class JsonUnitTests
         #endregion
 
         #region Calculated Properties
-
         /// <summary>
         ///     Gets or sets the JSON produced during <c>Act</c>.
         /// </summary>
@@ -306,7 +326,6 @@ public static class JsonUnitTests
         #endregion
 
         #region XUnitTest Methods
-
         /// <summary>
         ///     Prepares the source instance by optionally attaching configured extensions.
         ///     Writes source and expected payload information to the test output.
