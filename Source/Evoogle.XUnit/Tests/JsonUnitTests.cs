@@ -3,15 +3,15 @@
 //
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
+using System.Linq.Expressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-using Evoogle.Extension;
 using Evoogle.Extensions;
 
 using FluentAssertions;
 
-namespace Evoogle.XUnit;
+namespace Evoogle.XUnit.Tests;
 
 /// <summary>
 ///     Provides reusable xUnit test harnesses for verifying System.Text.Json serialization, deserialization, and roundtrip behavior for models under test.
@@ -20,10 +20,9 @@ public static class JsonUnitTests
 {
     #region Test Classes
     /// <summary>
-    ///     Base test harness for JSON converter tests targeting a model of type <typeparamref name="T"/>.
-    ///     Supplies common configuration and helper utilities to derived test scenarios.
+    ///     Base class for JSON serialization/deserialization tests providing common configuration and infrastructure.
     /// </summary>
-    /// <typeparam name="T">The model type under test for JSON operations.</typeparam>
+    /// <typeparam name="T">The type being tested for JSON serialization and/or deserialization.</typeparam>
     public abstract class JsonConverterTestBase<T> : XUnitTest
     {
         #region Default Properties
@@ -46,26 +45,6 @@ public static class JsonUnitTests
 
         #region User Supplied Properties
         /// <summary>
-        ///     Gets or initializes an optional extension type to attach to the object under test.
-        ///     When specified, a new instance of this type is created and attached via <see cref="IExtensible.AttachExtension(Type, object)"/> during <c>Arrange</c>.
-        /// </summary>
-        /// <remarks>
-        ///     The target object must implement <see cref="IExtensible"/> when an extension type is supplied.
-        ///     The extension type should be instantiable via a public parameterless constructor.
-        /// </remarks>
-        public Type? ExtensionType1 { get; init; }
-
-        /// <summary>
-        ///     Gets or initializes a second optional extension type to attach to the object under test.
-        ///     When specified, a new instance of this type is created and attached via <see cref="IExtensible.AttachExtension(Type, object)"/> during <c>Arrange</c>.
-        /// </summary>
-        /// <remarks>
-        ///     The target object must implement <see cref="IExtensible"/> when an extension type is supplied.
-        ///     The extension type should be instantiable via a public parameterless constructor.
-        /// </remarks>
-        public Type? ExtensionType2 { get; init; }
-
-        /// <summary>
         ///     Gets or initializes the <see cref="JsonSerializerOptions"/> used by the test to serialize and/or deserialize.
         /// </summary>
         /// <value>
@@ -73,117 +52,70 @@ public static class JsonUnitTests
         /// </value>
         public JsonSerializerOptions JsonSerializerOptions { get; init; } = DefaultJsonSerializerOptions;
         #endregion
-
-        #region Helper Methods
-        /// <summary>
-        ///     Casts the supplied object to <see cref="IExtensible"/> or throws if not compatible.
-        /// </summary>
-        /// <param name="obj">The object instance expected to implement <see cref="IExtensible"/>.</param>
-        /// <returns>The same instance cast to <see cref="IExtensible"/>.</returns>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when <paramref name="obj"/> is <see langword="null"/> or does not implement <see cref="IExtensible"/>.
-        /// </exception>
-        protected static IExtensible AsExtensible(T? obj)
-        {
-            if (obj == null)
-            {
-                throw new InvalidOperationException("Object cannot be null.");
-            }
-
-            return obj as IExtensible ?? throw new InvalidOperationException("Object must implement IExtensible.");
-        }
-        #endregion
     }
 
     /// <summary>
-    ///     Verifies that a JSON string deserializes into an object of type <typeparamref name="T"/> that is equivalent to an expected instance (optionally with extensions attached).
+    ///     Test harness for verifying JSON deserialization behavior.
+    ///     Deserializes a JSON string and compares the result against an expected object created via a factory expression.
     /// </summary>
-    /// <typeparam name="T">The model type under test for deserialization.</typeparam>
-    public class JsonDeserializeTest<T> : JsonConverterTestBase<T>
+    /// <typeparam name="T">The type to deserialize from JSON.</typeparam>
+    /// <typeparam name="TFactoryArg">The type of argument passed to the factory expression to create the expected object.</typeparam>
+    public class JsonDeserializeTest<T, TFactoryArg> : JsonConverterTestBase<T>
     {
         #region User Supplied Properties
         /// <summary>
-        ///     Gets or initializes the JSON source payload to deserialize.
+        ///     Gets the JSON string to deserialize.
         /// </summary>
-        public string? Source { get; init; }
+        public required string? SourceJson { get; init; }
 
         /// <summary>
-        ///     Gets or initializes the expected object resulting from deserialization.
-        ///     Optional extensions (see <see cref="JsonConverterTestBase{T}.ExtensionType1"/> and <see cref="JsonConverterTestBase{T}.ExtensionType2"/>) are attached to this instance during <c>Arrange</c>.
+        ///     Gets the argument to pass to the factory expression that creates the expected object.
         /// </summary>
-        public T? Expected { get; init; }
+        public required TFactoryArg? ExpectedFactoryArgument { get; init; }
 
         /// <summary>
-        ///     Gets or initializes an optional list of member paths to exclude from the equivalence comparison during <c>Assert</c>.
-        ///     Member paths should use the same syntax as FluentAssertions' <c>Excluding</c> option.
+        ///     Gets the factory expression that creates the expected object for comparison.
+        /// </summary>
+        public required Expression<Func<TFactoryArg?, T?>> ExpectedFactoryExpression { get; init; }
+
+        /// <summary>
+        ///     Gets an optional list of member names to exclude from the equivalence comparison.
+        ///     If <see langword="null"/> or empty, all members will be compared.
         /// </summary>
         public List<string>? ExcludeMembers { get; init; } = null;
         #endregion
 
         #region Calculated Properties
-        /// <summary>
-        ///     Gets or sets the actual deserialized instance created during <c>Act</c>.
-        /// </summary>
+        private T? Expected { get; set; }
         private T? Actual { get; set; }
         #endregion
 
         #region XUnitTest Methods
-        /// <summary>
-        ///     Prepares the expected instance by optionally attaching configured extensions.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when configured extensions are provided but <see cref="Expected"/> is <see langword="null"/> or does not implement <see cref="IExtensible"/>.
-        /// </exception>
         protected override void Arrange()
         {
-            this.WriteLine($"Source:   {this.Source.SafeToString().RemoveWhitespace()}");
+            var expectedFactoryFunc = this.ExpectedFactoryExpression.Compile();
+            var expected = expectedFactoryFunc(this.ExpectedFactoryArgument);
+            this.Expected = expected;
+
+            this.WriteLine($"Source JSON:\n{this.SourceJson.SafeToString().RemoveWhitespace()}");
+            this.WriteLine();
             this.WriteLine($"Expected: {this.Expected.SafeToString()}");
-
-            if (this.ExtensionType1 != null)
-            {
-                this.WriteLine();
-                this.WriteLine($"Extension 1: {this.ExtensionType1.SafeToName()}");
-
-                var extension1 = Activator.CreateInstance(this.ExtensionType1);
-                var expectedAsExtensible = AsExtensible(this.Expected);
-
-                expectedAsExtensible.AttachExtension(this.ExtensionType1, extension1!);
-            }
-
-            if (this.ExtensionType2 != null)
-            {
-                if (this.ExtensionType1 == null)
-                {
-                    this.WriteLine();
-                }
-                this.WriteLine($"Extension 2: {this.ExtensionType2.SafeToName()}");
-
-                var extension2 = Activator.CreateInstance(this.ExtensionType2);
-                var expectedAsExtensible = AsExtensible(this.Expected);
-
-                expectedAsExtensible.AttachExtension(this.ExtensionType2, extension2!);
-            }
         }
 
         /// <summary>
-        ///     Deserializes <see cref="Source"/> into <see cref="Actual"/> using the configured <see cref="JsonConverterTestBase{T}.JsonSerializerOptions"/>.
+        ///     Acts on the test by deserializing the source JSON string.
         /// </summary>
-        /// <exception cref="ArgumentNullException">Thrown when <see cref="Source"/> is <see langword="null"/>.</exception>
-        /// <exception cref="JsonException">Thrown when the JSON payload is invalid.</exception>
-        /// <exception cref="NotSupportedException">Thrown when the target type <typeparamref name="T"/> is not supported.</exception>
         protected override void Act()
         {
-            this.Actual = JsonSerializer.Deserialize<T>(this.Source!, this.JsonSerializerOptions);
+            this.Actual = JsonSerializer.Deserialize<T>(this.SourceJson!, this.JsonSerializerOptions);
             this.WriteLine();
             this.WriteLine($"Actual:   {this.Actual.SafeToString()}");
         }
 
         /// <summary>
-        ///     Asserts that the deserialized <see cref="Actual"/> is equivalent to <see cref="Expected"/>.
+        ///     Asserts that the actual deserialized object is equivalent to the expected object,
+        ///     optionally excluding specified members from the comparison.
         /// </summary>
-        /// <exception cref="FluentAssertions.Execution.AssertionFailedException">
-        ///     Thrown when the objects are not equivalent.
-        /// </exception>
         protected override void Assert()
         {
             if (this.ExcludeMembers == null || this.ExcludeMembers.Count == 0)
@@ -199,75 +131,61 @@ public static class JsonUnitTests
     }
 
     /// <summary>
-    ///     Verifies that an object of type <typeparamref name="T"/> can be serialized and then deserialized back to a value equivalent to the original (a JSON roundtrip).
+    ///     Test harness for verifying JSON roundtrip serialization and deserialization behavior.
+    ///     Serializes an object to JSON, then deserializes it back and compares the result to the original.
     /// </summary>
-    /// <typeparam name="T">The model type under test for roundtrip serialization.</typeparam>
-    public class JsonRoundtripTest<T> : JsonConverterTestBase<T>
+    /// <typeparam name="T">The type to serialize and deserialize.</typeparam>
+    /// <typeparam name="TFactoryArg">The type of argument passed to the factory expression to create the original object.</typeparam>
+    public class JsonRoundtripTest<T, TFactoryArg> : JsonConverterTestBase<T>
     {
         #region User Supplied Properties
         /// <summary>
-        ///     Gets or initializes the object to serialize and then deserialize.
-        ///     Optional extensions (see <see cref="JsonConverterTestBase{T}.ExtensionType1"/> and
-        ///     <see cref="JsonConverterTestBase{T}.ExtensionType2"/>) are attached to this instance during <c>Arrange</c>.
+        ///     Gets the argument to pass to the factory expression that creates the original object.
         /// </summary>
-        public T? Expected { get; init; }
+        public required TFactoryArg? ExpectedFactoryArgument { get; init; }
 
         /// <summary>
-        ///     Gets or initializes an optional list of member paths to exclude from the equivalence comparison during <c>Assert</c>.
-        ///     Member paths should use the same syntax as FluentAssertions' <c>Excluding</c> option.
+        ///     Gets the factory expression that creates the original object for serialization and comparison.
+        /// </summary>
+        public required Expression<Func<TFactoryArg?, T?>> ExpectedFactoryExpression { get; init; }
+
+        /// <summary>
+        ///     Gets an optional list of member names to exclude from the equivalence comparison.
+        ///     If <see langword="null"/> or empty, all members will be compared.
         /// </summary>
         public List<string>? ExcludeMembers { get; init; } = null;
         #endregion
 
         #region Calculated Properties
         /// <summary>
-        ///     Gets or sets the instance produced by the serialize-deserialize cycle during <c>Act</c>.
+        ///     Gets or sets the expected object (the original before roundtrip).
+        /// </summary>
+        private T? Expected { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the actual object after roundtrip serialization and deserialization.
         /// </summary>
         private T? Actual { get; set; }
         #endregion
 
         #region XUnitTest Methods
         /// <summary>
-        ///     Prepares the expected instance by optionally attaching configured extensions.
+        ///     Arranges the test by creating the original object using the factory expression.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when configured extensions are provided but <see cref="Expected"/> is <see langword="null"/> or does not implement <see cref="IExtensible"/>.
-        /// </exception>
         protected override void Arrange()
         {
+            var expectedFactoryFunc = this.ExpectedFactoryExpression.Compile();
+            var expected = expectedFactoryFunc(this.ExpectedFactoryArgument);
+            this.Expected = expected;
+
             this.WriteLine($"Expected: {this.Expected.SafeToString()}");
-
-            if (this.ExtensionType1 != null)
-            {
-                this.WriteLine();
-                this.WriteLine($"Extension 1: {this.ExtensionType1.SafeToName()}");
-
-                var extension1 = Activator.CreateInstance(this.ExtensionType1);
-                var expectedAsExtensible = AsExtensible(this.Expected);
-
-                expectedAsExtensible.AttachExtension(this.ExtensionType1, extension1!);
-            }
-
-            if (this.ExtensionType2 != null)
-            {
-                if (this.ExtensionType1 == null)
-                {
-                    this.WriteLine();
-                }
-                this.WriteLine($"Extension 2: {this.ExtensionType2.SafeToName()}");
-
-                var extension2 = Activator.CreateInstance(this.ExtensionType2);
-                var expectedAsExtensible = AsExtensible(this.Expected);
-
-                expectedAsExtensible.AttachExtension(this.ExtensionType2, extension2!);
-            }
+            this.WriteLine();
         }
 
         /// <summary>
-        ///     Serializes <see cref="Expected"/> to JSON and deserializes it back into <see cref="Actual"/> using the configured <see cref="JsonConverterTestBase{T}.JsonSerializerOptions"/>.
+        ///     Acts on the test by performing a roundtrip: serializing the original object to JSON,
+        ///     then deserializing it back to an object.
         /// </summary>
-        /// <exception cref="NotSupportedException">Thrown when the type <typeparamref name="T"/> cannot be serialized.</exception>
-        /// <exception cref="JsonException">Thrown when deserialization of the serialized JSON fails.</exception>
         protected override void Act()
         {
             var json = JsonSerializer.Serialize(this.Expected, this.JsonSerializerOptions);
@@ -276,11 +194,9 @@ public static class JsonUnitTests
         }
 
         /// <summary>
-        ///     Asserts that the roundtripped <see cref="Actual"/> is equivalent to <see cref="Expected"/>.
+        ///     Asserts that the roundtripped object is equivalent to the original,
+        ///     optionally excluding specified members from the comparison.
         /// </summary>
-        /// <exception cref="FluentAssertions.Execution.AssertionFailedException">
-        ///     Thrown when the objects are not equivalent.
-        /// </exception>
         protected override void Assert()
         {
             if (this.ExcludeMembers == null || this.ExcludeMembers.Count == 0)
@@ -296,95 +212,75 @@ public static class JsonUnitTests
     }
 
     /// <summary>
-    ///     Verifies that serializing an object of type <typeparamref name="T"/> yields the expected JSON payload.
+    ///     Test harness for verifying JSON serialization behavior.
+    ///     Serializes an object to JSON and compares the result against an expected JSON string.
     /// </summary>
-    /// <typeparam name="T">The model type under test for serialization.</typeparam>
-    public class JsonSerializeTest<T> : JsonConverterTestBase<T>
+    /// <typeparam name="T">The type to serialize to JSON.</typeparam>
+    /// <typeparam name="TFactoryArg">The type of argument passed to the factory expression to create the source object.</typeparam>
+    public class JsonSerializeTest<T, TFactoryArg> : JsonConverterTestBase<T>
     {
         #region User Supplied Properties
         /// <summary>
-        ///     Gets or initializes the source object to serialize.
-        ///     Optional extensions (see <see cref="JsonConverterTestBase{T}.ExtensionType1"/> and
-        ///     <see cref="JsonConverterTestBase{T}.ExtensionType2"/>) are attached to this instance during <c>Arrange</c>.
+        ///     Gets the argument to pass to the factory expression that creates the source object to serialize.
         /// </summary>
-        public T? Source { get; init; }
+        public required TFactoryArg? SourceFactoryArgument { get; init; }
 
         /// <summary>
-        ///     Gets or initializes the expected JSON payload.
+        ///     Gets the factory expression that creates the source object to serialize.
         /// </summary>
-        /// <remarks>
-        ///     Comparison ignores all whitespace characters (spaces, tabs, newlines) to reduce noise from formatting.
-        /// </remarks>
-        public string? Expected { get; init; }
+        public required Expression<Func<TFactoryArg?, T?>> SourceFactoryExpression { get; init; }
+
+        /// <summary>
+        ///     Gets the expected JSON string after serialization.
+        /// </summary>
+        public required string? ExpectedJson { get; init; }
         #endregion
 
         #region Calculated Properties
         /// <summary>
-        ///     Gets or sets the JSON produced during <c>Act</c>.
+        ///     Gets or sets the source object to serialize.
+        /// </summary>
+        private T? Source { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the actual JSON string produced by serialization.
         /// </summary>
         private string? ActualJson { get; set; }
         #endregion
 
         #region XUnitTest Methods
         /// <summary>
-        ///     Prepares the source instance by optionally attaching configured extensions.
-        ///     Writes source and expected payload information to the test output.
+        ///     Arranges the test by creating the source object using the factory expression.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when configured extensions are provided but <see cref="Source"/> is <see langword="null"/> or does not implement <see cref="IExtensible"/>.
-        /// </exception>
         protected override void Arrange()
         {
-            this.WriteLine($"Source:   {this.Source.SafeToString()}");
-            this.WriteLine($"Expected: {this.Expected.SafeToString().RemoveWhitespace()}");
+            var sourceFactoryFunc = this.SourceFactoryExpression.Compile();
+            var source = sourceFactoryFunc(this.SourceFactoryArgument);
+            this.Source = source;
+
+            this.WriteLine($"Source: {this.Source.SafeToString()}");
             this.WriteLine();
-
-            if (this.ExtensionType1 != null)
-            {
-                this.WriteLine();
-                this.WriteLine($"Extension 1: {this.ExtensionType1.SafeToName()}");
-
-                var extension1 = Activator.CreateInstance(this.ExtensionType1);
-                var sourceAsExtensible = AsExtensible(this.Source);
-
-                sourceAsExtensible.AttachExtension(this.ExtensionType1, extension1!);
-            }
-
-            if (this.ExtensionType2 != null)
-            {
-                if (this.ExtensionType1 == null)
-                {
-                    this.WriteLine();
-                }
-                this.WriteLine($"Extension 2: {this.ExtensionType2.SafeToName()}");
-
-                var extension2 = Activator.CreateInstance(this.ExtensionType2);
-                var sourceAsExtensible = AsExtensible(this.Source);
-
-                sourceAsExtensible.AttachExtension(this.ExtensionType2, extension2!);
-            }
+            this.WriteLine($"Expected JSON:\n{this.ExpectedJson.SafeToString().RemoveWhitespace()}");
+            this.WriteLine();
         }
 
         /// <summary>
-        ///     Serializes <see cref="Source"/> into <see cref="ActualJson"/> using the configured <see cref="JsonConverterTestBase{T}.JsonSerializerOptions"/>.
+        ///     Acts on the test by serializing the source object to JSON.
         /// </summary>
-        /// <exception cref="NotSupportedException">Thrown when the type <typeparamref name="T"/> cannot be serialized.</exception>
         protected override void Act()
         {
             this.ActualJson = JsonSerializer.Serialize(this.Source, this.JsonSerializerOptions);
-            this.WriteLine($"Actual:   {this.ActualJson.SafeToString().RemoveWhitespace()}");
+            this.WriteLine($"Actual JSON:\n{this.ActualJson.SafeToString().RemoveWhitespace()}");
         }
 
         /// <summary>
-        ///     Asserts that the produced JSON equals <see cref="Expected"/> when both are normalized by removing all whitespace characters.
+        ///     Asserts that the actual serialized JSON matches the expected JSON,
+        ///     comparing without whitespace.
         /// </summary>
-        /// <exception cref="FluentAssertions.Execution.AssertionFailedException">
-        ///     Thrown when the normalized JSON strings are not equal.
-        /// </exception>
         protected override void Assert()
         {
             var actualJsonMinusWhitespace = this.ActualJson.RemoveWhitespace();
-            var expectedJsonMinusWhitespace = this.Expected.RemoveWhitespace();
+            var expectedJsonMinusWhitespace = this.ExpectedJson.RemoveWhitespace();
 
             actualJsonMinusWhitespace.Should().Be(expectedJsonMinusWhitespace);
         }
