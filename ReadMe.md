@@ -1,4 +1,4 @@
-# Repository
+﻿# Repository
 
 This repository hosts the **Evoogle** projects, maintained by [Evoogle](https://github.com/evoogle-dotcom) and licensed under the [MIT License](License.txt).
 
