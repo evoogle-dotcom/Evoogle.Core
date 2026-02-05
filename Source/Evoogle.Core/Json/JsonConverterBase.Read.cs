@@ -59,6 +59,23 @@ public abstract partial class JsonConverterBase<T>
     }
 
     /// <summary>
+    ///     Deserializes a list of elements from the JSON reader.
+    /// </summary>
+    /// <typeparam name="TOut">The type of the elements.</typeparam>
+    /// <param name="reader">The JSON reader.</param>
+    /// <param name="options">The JSON serializer options.</param>
+    /// <param name="propertyName">The name of the property being deserialized (for error messages).</param>
+    /// <returns>A list of deserialized elements.</returns>
+    /// <exception cref="JsonException">
+    ///     Thrown if deserialization fails.
+    /// </exception>
+    protected static List<TOut> DeserializeListOf<TOut>(ref Utf8JsonReader reader, JsonSerializerOptions options, string propertyName)
+    {
+        var list = DeserializeOrThrow<List<TOut>>(ref reader, options, propertyName);
+        return list;
+    }
+
+    /// <summary>
     ///     Deserializes a list of derived type elements from the JSON reader, ensuring
     ///     that each element is of the expected derived type.
     /// </summary>

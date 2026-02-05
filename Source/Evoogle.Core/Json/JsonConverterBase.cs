@@ -86,6 +86,12 @@ public abstract partial class JsonConverterBase<T>(ILogger? logger) : JsonConver
     /// <param name="options">Serializer options.</param>
     public override sealed void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
     {
+        if (value is null)
+        {
+            writer.WriteNullValue();
+            return;
+        }
+
         if (this.Logger.IsEnabled(LogLevel.Trace))
         {
             this.LogTrace("Serializing {Value}", value.SafeToString());
