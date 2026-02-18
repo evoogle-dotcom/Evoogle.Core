@@ -86,8 +86,10 @@ public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
                     extensibleMutateAction(extensible);
                 }
 
-                this.ActualResult = extensible.TryGetExtension<TestExtension>(out var actualExtension);
-                this.ActualExtension = this.ActualResult.GetValueOrDefault(true) ? actualExtension : null;
+                var actualResult = extensible.TryGetExtension<TestExtension>(out var actualExtension);
+
+                this.ActualResult = actualResult;
+                this.ActualExtension = actualResult ? actualExtension : null;
             }
             catch (ArgumentNullException)
             {
@@ -97,9 +99,9 @@ public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
 
         protected override void Assert()
         {
-            this.ActualArgumentNullExceptionThrown.Should().Be(this.ExpectedArgumentNullExceptionThrown);
-            if (this.ActualArgumentNullExceptionThrown.GetValueOrDefault(false) == false)
+            if (this.ActualArgumentNullExceptionThrown.HasValue)
             {
+                this.ActualArgumentNullExceptionThrown.Value.Should().Be(this.ExpectedArgumentNullExceptionThrown);
                 return;
             }
 
