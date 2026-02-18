@@ -59,8 +59,8 @@ public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
         #endregion
 
         #region Calculated Properties
-        private bool ActualResult { get; set; }
-        private bool ActualArgumentNullExceptionThrown { get; set; }
+        private bool? ActualResult { get; set; }
+        private bool? ActualArgumentNullExceptionThrown { get; set; }
 
         private TestExtension? ActualExtension { get; set; }
         #endregion
@@ -87,7 +87,7 @@ public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
                 }
 
                 this.ActualResult = extensible.TryGetExtension<TestExtension>(out var actualExtension);
-                this.ActualExtension = this.ActualResult ? actualExtension : null;
+                this.ActualExtension = this.ActualResult.GetValueOrDefault(true) ? actualExtension : null;
             }
             catch (ArgumentNullException)
             {
@@ -98,7 +98,7 @@ public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
         protected override void Assert()
         {
             this.ActualArgumentNullExceptionThrown.Should().Be(this.ExpectedArgumentNullExceptionThrown);
-            if (this.ActualArgumentNullExceptionThrown == true)
+            if (this.ActualArgumentNullExceptionThrown.GetValueOrDefault(false) == false)
             {
                 return;
             }

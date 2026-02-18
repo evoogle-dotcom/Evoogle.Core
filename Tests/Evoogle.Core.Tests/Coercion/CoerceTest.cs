@@ -62,7 +62,7 @@ public abstract class CoerceTest<TInput, TOutput> : CoerceTest
     #region Calculated Properties
     private TypeCoercion TypeCoercion { get; set; } = null!;
     private TypeCoercionContext TypeCoercionContext { get; set; } = null!;
-    private bool ActualResult { get; set; }
+    private bool? ActualResult { get; set; }
     private TOutput? ActualOutput { get; set; }
     #endregion
 
@@ -128,7 +128,7 @@ public abstract class CoerceTest<TInput, TOutput> : CoerceTest
 
         this.WriteLine($"Actual Output");
         this.WriteLine($"  Result: {this.ActualResult}");
-        if (this.ActualResult)
+        if (this.ActualResult.GetValueOrDefault(true))
         {
             var actualOutputAsString = ValueAsString(actualOutput);
             var actualOutputTypeAsString = TypeAsString<TOutput>();
@@ -140,7 +140,7 @@ public abstract class CoerceTest<TInput, TOutput> : CoerceTest
     protected override void Assert()
     {
         this.ActualResult.Should().Be(this.ExpectedResult);
-        if (this.ActualResult == false)
+        if (this.ActualResult.GetValueOrDefault(false) == false)
         {
             return;
         }

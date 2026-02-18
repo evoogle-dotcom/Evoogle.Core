@@ -124,7 +124,7 @@ public static class JsonUnitTests
                 return;
             }
 
-            var excludeMembersSet = new HashSet<string>(this.ExcludeMembers!);
+            var excludeMembersSet = new HashSet<string>(this.ExcludeMembers);
             this.Actual.Should().BeEquivalentTo(this.Expected, opt => opt.Excluding(info => excludeMembersSet.Contains(info.Path)));
         }
         #endregion
@@ -205,7 +205,7 @@ public static class JsonUnitTests
                 return;
             }
 
-            var excludeMembersSet = new HashSet<string>(this.ExcludeMembers!);
+            var excludeMembersSet = new HashSet<string>(this.ExcludeMembers);
             this.Actual.Should().BeEquivalentTo(this.Expected, opt => opt.Excluding(info => excludeMembersSet.Contains(info.Path)));
         }
         #endregion
