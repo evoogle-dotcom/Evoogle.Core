@@ -63,12 +63,22 @@ public abstract class Node<TNode> : INode<TNode>
     #endregion
 
     #region Constructors
-    // Initially, the node is its own root
+    /// <summary>
+    ///     Initializes a new standalone node that is its own root.
+    /// </summary>
     protected Node() => this.Root = (TNode)this;
 
+    /// <summary>
+    ///     Initializes a new node with a single initial child.
+    /// </summary>
+    /// <param name="child">The initial child node to add.</param>
     protected Node(TNode child)
         : this() => this.AddChild(child);
 
+    /// <summary>
+    ///     Initializes a new node with an initial collection of children.
+    /// </summary>
+    /// <param name="childCollection">The initial collection of child nodes to add.</param>
     protected Node(IEnumerable<TNode> childCollection)
         : this()
     {

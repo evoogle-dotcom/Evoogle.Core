@@ -13,10 +13,10 @@ using Evoogle.XUnit.Json.Internal;
 namespace Evoogle.XUnit.Json;
 
 /// <summary>
-///     JSON converter for the <see cref="Expression{Action{T}}"/>> .NET class.
-///     As a convention, the lambda expression argument must have the 'a' name, i.e. a => Foo(a);
+///     JSON converter for <c>Expression&lt;Action&lt;T&gt;&gt;</c> .NET lambda expressions.
+///     As a convention, the lambda expression argument must have the 'a' name, i.e. <c>a =&gt; Foo(a)</c>.
 /// </summary>
-/// <typeparam name="T">Type of the lambda argument.</typeparam>
+/// <typeparam name="T">Type of the single lambda argument.</typeparam>
 public sealed class ExpressionActionJsonConverter<T> : JsonConverter<Expression<Action<T>>>
 {
     #region Properties
@@ -58,10 +58,11 @@ public sealed class ExpressionActionJsonConverter<T> : JsonConverter<Expression<
 }
 
 /// <summary>
-///     JSON converter for the <see cref="Expression{Action{T1,T2}}"/>> .NET class.
-///     As a convention, the lambda expression argument must have the 'a' and 'b' names, i.e. (a,b) => Foo(a,b);
+///     JSON converter for <c>Expression&lt;Action&lt;T1, T2&gt;&gt;</c> .NET lambda expressions.
+///     As a convention, the lambda expression arguments must have the 'a' and 'b' names, i.e. <c>(a, b) =&gt; Foo(a, b)</c>.
 /// </summary>
-/// <typeparam name="T">Type of the lambda argument.</typeparam>
+/// <typeparam name="T1">Type of the first lambda argument.</typeparam>
+/// <typeparam name="T2">Type of the second lambda argument.</typeparam>
 public sealed class ExpressionActionJsonConverter<T1, T2> : JsonConverter<Expression<Action<T1, T2>>>
 {
     #region Properties

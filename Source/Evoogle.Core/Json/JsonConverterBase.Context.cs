@@ -14,7 +14,6 @@ namespace Evoogle.Json;
 /// <summary>
 ///     Partial <see cref="JsonConverterBase{T}"/> that provides helpers for converter contexts.
 /// </summary>
-/// <typeparam name="T">The CLR type being converted.</typeparam>
 public abstract partial class JsonConverterBase<T>
 {
     #region Types
@@ -84,6 +83,15 @@ public abstract partial class JsonConverterBase<T>
     /// </summary>
     protected interface IWriteContext : IContext;
 
+    /// <summary>
+    ///     Abstract base context providing logger, serializer options, naming policy, and pre-computed property
+    ///     names for converter read/write operations.
+    /// </summary>
+    /// <typeparam name="TPropertyNames">The type that holds the serialized property names for this converter.</typeparam>
+    /// <param name="logger">The logger to use during conversion.</param>
+    /// <param name="options">The serializer options in effect for this operation.</param>
+    /// <param name="propertyNamingPolicy">The naming policy used for property name conversion.</param>
+    /// <param name="propertyNames">The pre-computed property names for this converter.</param>
     protected abstract class DefaultContext<TPropertyNames>
     (
         ILogger logger,
@@ -92,12 +100,32 @@ public abstract partial class JsonConverterBase<T>
         TPropertyNames propertyNames
     ) : IContext
     {
+        /// <inheritdoc />
         public ILogger Logger { get; } = logger;
+
+        /// <inheritdoc />
         public JsonSerializerOptions Options { get; } = options;
+
+        /// <summary>Gets the naming policy used when converting property names.</summary>
         public JsonNamingPolicy PropertyNamingPolicy { get; } = propertyNamingPolicy;
+
+        /// <summary>Gets the pre-computed property names for this converter.</summary>
         public TPropertyNames PropertyNames { get; } = propertyNames;
     }
 
+    /// <summary>
+    ///     Default read context that extends <see cref="DefaultContext{TPropertyNames}"/> with read handlers
+    ///     and transient read data for accumulating values during deserialization.
+    /// </summary>
+    /// <typeparam name="TPropertyNames">The type that holds the serialized property names for this converter.</typeparam>
+    /// <typeparam name="TReadData">The type used to accumulate data while reading JSON.</typeparam>
+    /// <typeparam name="TReadHandlers">The type that holds per-property read handler delegates.</typeparam>
+    /// <param name="logger">The logger to use during conversion.</param>
+    /// <param name="options">The serializer options in effect for this operation.</param>
+    /// <param name="propertyNamingPolicy">The naming policy used for property name conversion.</param>
+    /// <param name="propertyNames">The pre-computed property names for this converter.</param>
+    /// <param name="readHandlers">The per-property handler delegates used during reading.</param>
+    /// <param name="readData">The transient data object populated while reading.</param>
     protected class DefaultReadContext<TPropertyNames, TReadData, TReadHandlers>
     (
         ILogger logger,
@@ -108,10 +136,21 @@ public abstract partial class JsonConverterBase<T>
         TReadData readData
     ) : DefaultContext<TPropertyNames>(logger, options, propertyNamingPolicy, propertyNames), IReadContext
     {
+        /// <summary>Gets the per-property read handler delegates used during deserialization.</summary>
         public TReadHandlers ReadHandlers { get; } = readHandlers;
+
+        /// <summary>Gets the transient data object that is populated while reading JSON.</summary>
         public TReadData ReadData { get; } = readData;
     }
 
+    /// <summary>
+    ///     Default write context that extends <see cref="DefaultContext{TPropertyNames}"/> for write operations.
+    /// </summary>
+    /// <typeparam name="TPropertyNames">The type that holds the serialized property names for this converter.</typeparam>
+    /// <param name="logger">The logger to use during conversion.</param>
+    /// <param name="options">The serializer options in effect for this operation.</param>
+    /// <param name="propertyNamingPolicy">The naming policy used for property name conversion.</param>
+    /// <param name="propertyNames">The pre-computed property names for this converter.</param>
     protected class DefaultWriteContext<TPropertyNames>
     (
         ILogger logger,

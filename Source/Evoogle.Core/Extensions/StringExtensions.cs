@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 namespace Evoogle.Extensions;
 
 /// <summary>
-///     Extension methods for .NET <see cref="string"> class.
+///     Extension methods for .NET <see cref="string"/> class.
 /// </summary>
 public static partial class StringExtensions
 {

@@ -8,7 +8,7 @@ using System.Text.Json;
 namespace Evoogle.Json;
 
 /// <summary>
-///     Extension methods for .NET <see cref="JsonSerializerOptions"> class.
+///     Extension methods for .NET <see cref="JsonSerializerOptions"/> class.
 /// </summary>
 public static class JsonSerializerOptionsExtensions
 {

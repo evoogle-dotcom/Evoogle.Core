@@ -12,7 +12,6 @@ namespace Evoogle.Json;
 /// <summary>
 ///     Base class for JSON converters providing common read functionality.
 /// </summary>
-/// <typeparam name="T">The CLR type being converted.</typeparam>
 public abstract partial class JsonConverterBase<T>
 {
     #region Types

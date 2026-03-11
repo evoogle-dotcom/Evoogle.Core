@@ -18,7 +18,6 @@ namespace Evoogle.Json;
 ///     Partial <see cref="JsonConverterBase{T}"/> that provides helpers and lifecycle hooks
 ///     for reading and writing attached extension objects on extensible types.
 /// </summary>
-/// <typeparam name="T">The CLR type being converted.</typeparam>
 public abstract partial class JsonConverterBase<T>
 {
     #region Types
@@ -57,6 +56,14 @@ public abstract partial class JsonConverterBase<T>
     #endregion
 
     #region JsonConverterBase<T> Methods
+    /// <summary>
+    ///     Creates a <see cref="JsonReaderHandler{TContext}"/> that reads the JSON extensions object and stores
+    ///     the result in <see cref="ExtensibleReadData.Extensions"/> on the context's read data.
+    /// </summary>
+    /// <typeparam name="TPropertyNames">The type that holds the serialized property names.</typeparam>
+    /// <typeparam name="TReadData">The read data type; must derive from <see cref="ExtensibleReadData"/>.</typeparam>
+    /// <typeparam name="TReadHandlers">The type holding per-property read handler delegates.</typeparam>
+    /// <returns>A handler delegate that reads the extensions object into the context's read data.</returns>
     protected static JsonReaderHandler<DefaultReadContext<TPropertyNames, TReadData, TReadHandlers>> CreateExtensionsHandler<TPropertyNames, TReadData, TReadHandlers>()
         where TReadData : ExtensibleReadData, new()
     {

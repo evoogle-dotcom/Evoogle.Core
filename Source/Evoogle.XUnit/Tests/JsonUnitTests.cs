@@ -55,19 +55,14 @@ public static class JsonUnitTests
     }
 
     /// <summary>
-    ///     Test harness for verifying JSON deserialization behavior.
-    ///     Deserializes a JSON string and compares the result against an expected object created via a factory expression.
+    ///     Intermediate base class for JSON equivalence tests, providing shared factory, state, and assertion logic
+    ///     for <see cref="JsonDeserializeTest{T, TFactoryArg}"/> and <see cref="JsonRoundtripTest{T, TFactoryArg}"/>.
     /// </summary>
-    /// <typeparam name="T">The type to deserialize from JSON.</typeparam>
-    /// <typeparam name="TFactoryArg">The type of argument passed to the factory expression to create the expected object.</typeparam>
-    public class JsonDeserializeTest<T, TFactoryArg> : JsonConverterTestBase<T>
+    /// <typeparam name="T">The type being tested.</typeparam>
+    /// <typeparam name="TFactoryArg">The type of argument passed to the factory expression.</typeparam>
+    public abstract class JsonEquivalenceTestBase<T, TFactoryArg> : JsonConverterTestBase<T>
     {
         #region User Supplied Properties
-        /// <summary>
-        ///     Gets the JSON string to deserialize.
-        /// </summary>
-        public required string? SourceJson { get; init; }
-
         /// <summary>
         ///     Gets the argument to pass to the factory expression that creates the expected object.
         /// </summary>
@@ -77,20 +72,46 @@ public static class JsonUnitTests
         ///     Gets the factory expression that creates the expected object for comparison.
         /// </summary>
         public required Expression<Func<TFactoryArg?, T?>> ExpectedFactoryExpression { get; init; }
-
-        /// <summary>
-        ///     Gets an optional list of member names to exclude from the equivalence comparison.
-        ///     If <see langword="null"/> or empty, all members will be compared.
-        /// </summary>
-        public List<string>? ExcludeMembers { get; init; } = null;
         #endregion
 
         #region Calculated Properties
-        private T? Expected { get; set; }
-        private T? Actual { get; set; }
+        /// <summary>
+        ///     Gets or sets the expected object.
+        /// </summary>
+        protected T? Expected { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the actual object produced by the test.
+        /// </summary>
+        protected T? Actual { get; set; }
         #endregion
 
         #region XUnitTest Methods
+        /// <summary>
+        ///     Asserts that <see cref="Actual"/> is equivalent to <see cref="Expected"/>,
+        ///     optionally excluding members specified by <see cref="XUnitTestBase.ExcludeMembers"/>.
+        /// </summary>
+        protected override void Assert() => this.AssertBeEquivalentTo(this.Actual, this.Expected);
+        #endregion
+    }
+
+    /// <summary>
+    ///     Test harness for verifying JSON deserialization behavior.
+    ///     Deserializes a JSON string and compares the result against an expected object created via a factory expression.
+    /// </summary>
+    /// <typeparam name="T">The type to deserialize from JSON.</typeparam>
+    /// <typeparam name="TFactoryArg">The type of argument passed to the factory expression to create the expected object.</typeparam>
+    public class JsonDeserializeTest<T, TFactoryArg> : JsonEquivalenceTestBase<T, TFactoryArg>
+    {
+        #region User Supplied Properties
+        /// <summary>
+        ///     Gets the JSON string to deserialize.
+        /// </summary>
+        public required string? SourceJson { get; init; }
+        #endregion
+
+        #region XUnitTest Methods
+        /// <inheritdoc />
         protected override void Arrange()
         {
             var expectedFactoryFunc = this.ExpectedFactoryExpression.Compile();
@@ -111,22 +132,6 @@ public static class JsonUnitTests
             this.WriteLine();
             this.WriteLine($"Actual:   {this.Actual.SafeToString()}");
         }
-
-        /// <summary>
-        ///     Asserts that the actual deserialized object is equivalent to the expected object,
-        ///     optionally excluding specified members from the comparison.
-        /// </summary>
-        protected override void Assert()
-        {
-            if (this.ExcludeMembers == null || this.ExcludeMembers.Count == 0)
-            {
-                this.Actual.Should().BeEquivalentTo(this.Expected);
-                return;
-            }
-
-            var excludeMembersSet = new HashSet<string>(this.ExcludeMembers);
-            this.Actual.Should().BeEquivalentTo(this.Expected, opt => opt.Excluding(info => excludeMembersSet.Contains(info.Path)));
-        }
         #endregion
     }
 
@@ -136,38 +141,8 @@ public static class JsonUnitTests
     /// </summary>
     /// <typeparam name="T">The type to serialize and deserialize.</typeparam>
     /// <typeparam name="TFactoryArg">The type of argument passed to the factory expression to create the original object.</typeparam>
-    public class JsonRoundtripTest<T, TFactoryArg> : JsonConverterTestBase<T>
+    public class JsonRoundtripTest<T, TFactoryArg> : JsonEquivalenceTestBase<T, TFactoryArg>
     {
-        #region User Supplied Properties
-        /// <summary>
-        ///     Gets the argument to pass to the factory expression that creates the original object.
-        /// </summary>
-        public required TFactoryArg? ExpectedFactoryArgument { get; init; }
-
-        /// <summary>
-        ///     Gets the factory expression that creates the original object for serialization and comparison.
-        /// </summary>
-        public required Expression<Func<TFactoryArg?, T?>> ExpectedFactoryExpression { get; init; }
-
-        /// <summary>
-        ///     Gets an optional list of member names to exclude from the equivalence comparison.
-        ///     If <see langword="null"/> or empty, all members will be compared.
-        /// </summary>
-        public List<string>? ExcludeMembers { get; init; } = null;
-        #endregion
-
-        #region Calculated Properties
-        /// <summary>
-        ///     Gets or sets the expected object (the original before roundtrip).
-        /// </summary>
-        private T? Expected { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the actual object after roundtrip serialization and deserialization.
-        /// </summary>
-        private T? Actual { get; set; }
-        #endregion
-
         #region XUnitTest Methods
         /// <summary>
         ///     Arranges the test by creating the original object using the factory expression.
@@ -191,22 +166,6 @@ public static class JsonUnitTests
             var json = JsonSerializer.Serialize(this.Expected, this.JsonSerializerOptions);
             this.Actual = JsonSerializer.Deserialize<T>(json, this.JsonSerializerOptions);
             this.WriteLine($"Actual:   {this.Actual.SafeToString()}");
-        }
-
-        /// <summary>
-        ///     Asserts that the roundtripped object is equivalent to the original,
-        ///     optionally excluding specified members from the comparison.
-        /// </summary>
-        protected override void Assert()
-        {
-            if (this.ExcludeMembers == null || this.ExcludeMembers.Count == 0)
-            {
-                this.Actual.Should().BeEquivalentTo(this.Expected);
-                return;
-            }
-
-            var excludeMembersSet = new HashSet<string>(this.ExcludeMembers);
-            this.Actual.Should().BeEquivalentTo(this.Expected, opt => opt.Excluding(info => excludeMembersSet.Contains(info.Path)));
         }
         #endregion
     }
@@ -274,8 +233,7 @@ public static class JsonUnitTests
         }
 
         /// <summary>
-        ///     Asserts that the actual serialized JSON matches the expected JSON,
-        ///     comparing without whitespace.
+        ///     Asserts that the actual serialized JSON matches the expected JSON, comparing without whitespace.
         /// </summary>
         protected override void Assert()
         {

@@ -14,7 +14,7 @@ namespace Evoogle.Json;
 /// <summary>
 ///     A custom JSON converter for serializing and deserializing .NET <see cref="Type"/> objects.
 /// </summary>
-/// <remarks
+/// <remarks>
 ///     Supports filtering deserialization using per-instance namespace and assembly whitelists.
 ///     This converter allows for the conversion of <see cref="Type"/> instances to and from JSON strings, using a compact, fully-qualified type name representation.
 /// </remarks>
@@ -144,7 +144,7 @@ public class TypeJsonConverter : JsonConverter<Type>
     /// <param name="typeName">The string representation of the type, typically a compact qualified name (e.g., "System.String").</param>
     /// <returns>The <see cref="Type"/> object corresponding to the provided <paramref name="typeName"/>.</returns>
     /// <exception cref="JsonException">Thrown when the <paramref name="typeName"/> cannot be resolved to a valid .NET type.</exception>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="typeName"/> is null (handled internally by <see cref="Type.GetType"/>).</exception>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="typeName"/> is null (handled internally by <see cref="Type.GetType(string)"/>).</exception>
     /// <remarks>
     ///     This method uses <see cref="Type.GetType(string, bool)"/> to resolve the type name. The <paramref name="typeName"/>
     ///     should match the format produced by <see cref="GetSerializeTypeName(Type)"/> to ensure successful roundtrip conversion.

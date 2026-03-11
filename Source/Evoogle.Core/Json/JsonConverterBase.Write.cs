@@ -10,7 +10,6 @@ namespace Evoogle.Json;
 /// <summary>
 ///     Partial <see cref="JsonConverterBase{T}"/> that provides helpers for writing JSON.
 /// </summary>
-/// <typeparam name="T">The CLR type being converted.</typeparam>
 public abstract partial class JsonConverterBase<T>
 {
     #region Write Methods

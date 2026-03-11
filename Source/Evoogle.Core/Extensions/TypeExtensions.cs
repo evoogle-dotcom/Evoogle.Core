@@ -8,27 +8,27 @@ using Evoogle.Extensions.Internal;
 namespace Evoogle.Extensions;
 
 /// <summary>
-///     Extension methods for .NET <see cref="Type"> class.
+///     Extension methods for .NET <see cref="Type"/> class.
 /// </summary>
 public static class TypeExtensions
 {
     #region Methods
     /// <summary>
-    ///     Safely returns the <see cref="Type.Name"/> of the specified type, or fallback text if the type is null or the name is empty.
+    ///     Safely returns the <c>Name</c> of the specified type, or fallback text if the type is null or the name is empty.
     /// </summary>
-    /// <param name="type">The type whose <see cref="Type.Name"/> should be returned.</param>
+    /// <param name="type">The type whose <c>Name</c> should be returned.</param>
     /// <param name="nullText">Optional fallback text if the type is null. Defaults to "&lt;null&gt;".</param>
     /// <param name="emptyText">Optional fallback text if the name is empty or whitespace. Defaults to "&lt;empty&gt;".</param>
     /// <returns>
     ///     The name of the type, or <paramref name="nullText"/> if the type is null,
     ///     or <paramref name="emptyText"/> if the name is null or whitespace.
-    /// </returns>    
+    /// </returns>
     public static string SafeToName(this Type? type, string? nullText = ExtensionsDefaults.DefaultNullText, string? emptyText = ExtensionsDefaults.DefaultEmptyText) => SafeToNameCore(type?.Name, nullText, emptyText);
 
     /// <summary>
-    ///     Safely returns the <see cref="Type.FullName"/> of the specified type, or fallback text if the type is null or the full name is empty.
+    ///     Safely returns the <c>FullName</c> of the specified type, or fallback text if the type is null or the full name is empty.
     /// </summary>
-    /// <param name="type">The type whose <see cref="Type.FullName"/> should be returned.</param>
+    /// <param name="type">The type whose <c>FullName</c> should be returned.</param>
     /// <param name="nullText">Optional fallback text if the type is null. Defaults to "&lt;null&gt;".</param>
     /// <param name="emptyText">Optional fallback text if the full name is empty or whitespace. Defaults to "&lt;empty&gt;".</param>
     /// <returns>
@@ -47,7 +47,7 @@ public static class TypeExtensions
     /// <param name="emptyText">Fallback text if <paramref name="typeName"/> is whitespace or empty.</param>
     /// <returns>
     ///     The original name if valid; otherwise, fallback text for null or empty cases.
-    /// </returns>    
+    /// </returns>
     private static string SafeToNameCore(string? typeName, string? nullText = ExtensionsDefaults.DefaultNullText, string? emptyText = ExtensionsDefaults.DefaultEmptyText)
     {
         if (typeName == null)

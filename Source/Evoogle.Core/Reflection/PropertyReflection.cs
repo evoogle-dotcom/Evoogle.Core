@@ -8,7 +8,7 @@ using System.Reflection;
 namespace Evoogle.Reflection;
 
 /// <summary>
-///     Reflection methods for the .NET <see cref="PropertyInfo"> class.
+///     Reflection methods for the .NET <see cref="PropertyInfo"/> class.
 /// </summary>
 public static class PropertyReflection
 {
@@ -22,7 +22,7 @@ public static class PropertyReflection
     /// <returns>
     ///     A <see cref="MemberNullableInfo"/> object containing nullability metadata of the property,
     ///     including recursive collection nullability if applicable.
-    /// </returns>    
+    /// </returns>
     public static MemberNullableInfo GetNullabilityInfo(PropertyInfo propertyInfo)
     {
         ArgumentNullException.ThrowIfNull(propertyInfo, nameof(propertyInfo));

@@ -6,7 +6,7 @@
 namespace Evoogle.Coercion;
 
 /// <summary>
-///     Extension methods for the <see cref="ITypeCoercion"/> abstraction.
+///     Extension methods for the <see cref="TypeCoercion"/> class.
 /// </summary>
 /// <remarks>
 ///     Provides utility methods for coercing types safely with default values in case of failure.
@@ -15,12 +15,13 @@ public static class TypeCoercionExtensions
 {
     #region Extension Methods
     /// <summary>
-    ///     Attempts to coerce a value of type <paramref name="input"/> to the specified output type <paramref name="outputType"/>.
+    ///     Attempts to coerce a value of type <typeparamref name="TInput"/> to type <typeparamref name="TOutput"/>.
     ///     If coercion fails, a default value is returned.
     /// </summary>
-    /// <param name="typeCoercion">The <see cref="ITypeCoercion"/> object that performs the coercion.</param>
+    /// <typeparam name="TInput">The input type to coerce from.</typeparam>
+    /// <typeparam name="TOutput">The target type to coerce to.</typeparam>
+    /// <param name="typeCoercion">The <see cref="TypeCoercion"/> object that performs the coercion.</param>
     /// <param name="input">The input value to coerce.</param>
-    /// <param name="outputType">The target output type to coerce to.</param>
     /// <param name="output">The output value after coercion, or the default value if coercion fails.</param>
     /// <param name="context">The context that provides additional details for coercion.</param>
     /// <param name="defaultValue">The default value to return if coercion fails.</param>
@@ -44,13 +45,12 @@ public static class TypeCoercionExtensions
     }
 
     /// <summary>
-    ///     Attempts to coerce a value of type <typeparamref name="TInput"/> to the specified output type <typeparamref name="TOutput"/>.
+    ///     Attempts to coerce <paramref name="input"/> to the specified <paramref name="outputType"/>.
     ///     If coercion fails, a default value is returned.
     /// </summary>
-    /// <typeparam name="TInput">The input type to coerce from.</typeparam>
-    /// <typeparam name="TOutput">The target type to coerce to.</typeparam>
-    /// <param name="typeCoercion">The <see cref="ITypeCoercion"/> object that performs the coercion.</param>
+    /// <param name="typeCoercion">The <see cref="TypeCoercion"/> object that performs the coercion.</param>
     /// <param name="input">The input value to coerce.</param>
+    /// <param name="outputType">The target output <see cref="Type"/> to coerce to.</param>
     /// <param name="output">The output value after coercion, or the default value if coercion fails.</param>
     /// <param name="context">The context that provides additional details for coercion.</param>
     /// <param name="defaultValue">The default value to return if coercion fails.</param>

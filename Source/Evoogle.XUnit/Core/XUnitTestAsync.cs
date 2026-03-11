@@ -9,14 +9,9 @@ namespace Evoogle.XUnit;
 ///     Captures boilerplate code for an individual named xUnit test (async) using
 ///     explicit Arrange, Act, Assert steps executed in an xUnit tests container.
 /// </summary>
-public abstract class XUnitTestAsync : XUnitTestBase, IXUnitTestAsync
+public abstract class XUnitTestAsync(string? name = null) : XUnitTestBase(name), IXUnitTestAsync
 {
-    #region Constructors
-    protected XUnitTestAsync(string? name = null) : base(name)
-    { }
-    #endregion
-
-    #region IXUnitTestAsync Implementation
+    #region IXUnitTestAsync Methods
     /// <summary>
     ///     Executes the unit test asynchronously by writing the test header and calling the Arrange/Act/Assert steps.
     /// </summary>
@@ -37,7 +32,7 @@ public abstract class XUnitTestAsync : XUnitTestBase, IXUnitTestAsync
     }
     #endregion
 
-    #region Arrange/Act/Assert (async)
+    #region Arrange/Act/Assert Async Methods
     /// <summary>No-op implementation of the arrange step.</summary>
     protected virtual Task ArrangeAsync() => Task.CompletedTask;
 

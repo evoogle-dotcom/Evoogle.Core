@@ -160,9 +160,11 @@ public sealed class LambdaExpressionJsonConverter : JsonConverter<LambdaExpressi
     }
     #endregion
 
+    /// <inheritdoc />
     public override LambdaExpression? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         => LambdaExpressionInfo.ReadFrom(ref reader, options);
 
+    /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, LambdaExpression value, JsonSerializerOptions options)
         => LambdaExpressionInfo.WriteTo(writer, value, options);
 }

@@ -8,7 +8,7 @@ using System.Reflection;
 namespace Evoogle.Reflection;
 
 /// <summary>
-///     Reflection methods for the .NET <see cref="FieldInfo"> class.
+///     Reflection methods for the .NET <see cref="FieldInfo"/> class.
 /// </summary>
 public static class FieldReflection
 {
@@ -22,7 +22,7 @@ public static class FieldReflection
     /// <returns>
     ///     A <see cref="MemberNullableInfo"/> object containing nullability metadata of the field,
     ///     including recursive collection nullability if applicable.
-    /// </returns>    
+    /// </returns>
     public static MemberNullableInfo GetNullabilityInfo(FieldInfo fieldInfo)
     {
         ArgumentNullException.ThrowIfNull(fieldInfo, nameof(fieldInfo));

@@ -6,7 +6,7 @@
 namespace Evoogle.Logging;
 
 /// <summary>
-///     Specifies one or more log destinations for a <see cref="MultiplexingLogger{T}"/>.
+///     Specifies one or more log destinations for a <see cref="MultiplexingLogger"/>.
 ///     Multiple values can be combined using bitwise OR.
 /// </summary>
 [Flags]
@@ -18,17 +18,17 @@ public enum MultiplexingLoggerMode
     None = 0,
 
     /// <summary>
-    ///     Log to the provided <see cref="ILogger{T}"/>, if available.
+    ///     Log to the provided <see cref="Microsoft.Extensions.Logging.ILogger"/>, if available.
     /// </summary>
     Logger = 1 << 0,
 
     /// <summary>
-    ///     Log to <see cref="Debug.WriteLine(string)"/> if a debugger is attached.
+    ///     Log to <see cref="System.Diagnostics.Debug.WriteLine(string)"/> if a debugger is attached.
     /// </summary>
     Debug = 1 << 1,
 
     /// <summary>
-    ///     Log to <see cref="Console.WriteLine(string)"/>, regardless of debugger presence.
+    ///     Log to <see cref="System.Console.WriteLine(string)"/>, regardless of debugger presence.
     /// </summary>
     Console = 1 << 2,
 

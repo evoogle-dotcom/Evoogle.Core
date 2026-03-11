@@ -13,9 +13,9 @@ using Evoogle.XUnit.Json.Internal;
 namespace Evoogle.XUnit.Json;
 
 /// <summary>
-///     JSON converter for the <see cref="Expression{Func{TResult}}"/>> .NET class.
+///     JSON converter for <c>Expression&lt;Func&lt;TResult&gt;&gt;</c> .NET lambda expressions.
 /// </summary>
-/// <typeparam name="TResult">Type of the lambda result.</typeparam>
+/// <typeparam name="TResult">Type of the lambda return value.</typeparam>
 public class ExpressionFuncJsonConverter<TResult> : JsonConverter<Expression<Func<TResult>>>
 {
     #region JsonConverter Methods
@@ -51,11 +51,11 @@ public class ExpressionFuncJsonConverter<TResult> : JsonConverter<Expression<Fun
 }
 
 /// <summary>
-///     JSON converter for the <see cref="Expression{Func{T, TResult}}"/>> .NET class.
-///     As a convention, the lambda expression argument must have the 'a' name, i.e. a => a.Foo();
+///     JSON converter for <c>Expression&lt;Func&lt;T, TResult&gt;&gt;</c> .NET lambda expressions.
+///     As a convention, the lambda expression argument must have the 'a' name, i.e. <c>a =&gt; a.Foo()</c>.
 /// </summary>
-/// <typeparam name="T">Type of the lambda argument.</typeparam>
-/// <typeparam name="TResult">Type of the lambda result.</typeparam>
+/// <typeparam name="T">Type of the single lambda argument.</typeparam>
+/// <typeparam name="TResult">Type of the lambda return value.</typeparam>
 public class ExpressionFuncJsonConverter<T, TResult> : JsonConverter<Expression<Func<T, TResult>>>
 {
     #region Properties

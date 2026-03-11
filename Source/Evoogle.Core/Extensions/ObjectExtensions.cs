@@ -12,7 +12,7 @@ using Evoogle.Extensions.Internal;
 namespace Evoogle.Extensions;
 
 /// <summary>
-///     Extension methods for .NET <see cref="object"> class.
+///     Extension methods for .NET <see cref="object"/> class.
 /// </summary>
 public static class ObjectExtensions
 {
@@ -220,11 +220,11 @@ public static class ObjectExtensions
     /// <param name="obj">.NET object to call extension method on.</param>
     /// <param name="nullText">
     ///     Optional parameter to set what text should be used if the reference object or the ToString result is indeed null.
-    ///     Defaults to the text '<null>' if not supplied.
+    ///     Defaults to the text '&lt;null&gt;' if not supplied.
     /// </param>
     /// <param name="emptyText">
     ///     Optional parameter to set what text should be used if the reference object ToString is indeed empty.
-    ///     Defaults to the text '<empty>' if not supplied.
+    ///     Defaults to the text '&lt;empty&gt;' if not supplied.
     /// </param>
     /// <returns>
     ///     The actual <c>ToString</c> representation if available.

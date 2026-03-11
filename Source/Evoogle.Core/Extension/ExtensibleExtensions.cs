@@ -17,6 +17,7 @@ public static class ExtensibleExtensions
     ///     Attaches an extension object based on the extension type.
     /// </summary>
     /// <typeparam name="TExtension">The type of extension to attach.</typeparam>
+    /// <param name="extensible">The extensible object to attach the extension to.</param>
     /// <param name="extension">The extension object to attach.</param>
     public static void AttachExtension<TExtension>(this IExtensible extensible, TExtension extension)
         where TExtension : class
@@ -59,6 +60,7 @@ public static class ExtensibleExtensions
     ///     Detaches an extension object based on the extension type.
     /// </summary>
     /// <typeparam name="TExtension">The type of extension to detach.</typeparam>
+    /// <param name="extensible">The extensible object to detach the extension from.</param>
     /// <returns>Extension object if the extension is detached; otherwise, null.</returns>
     public static TExtension? DetachExtension<TExtension>(this IExtensible extensible)
         where TExtension : class
@@ -101,6 +103,7 @@ public static class ExtensibleExtensions
     ///     Tries to retrieve the attached extension object of the specified extension type.
     /// </summary>
     /// <typeparam name="TExtension">The type of extension to retrieve.</typeparam>
+    /// <param name="extensible">The extensible object to retrieve the extension from.</param>
     /// <param name="extension">When this method returns, contains the attached extension object if found; otherwise, null.</param>
     /// <returns>True if the extension is found; otherwise, false.</returns>
     public static bool TryGetExtension<TExtension>(this IExtensible extensible, [NotNullWhen(true)] out TExtension? extension)

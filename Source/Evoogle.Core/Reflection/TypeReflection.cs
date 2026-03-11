@@ -11,7 +11,7 @@ using System.Text;
 namespace Evoogle.Reflection;
 
 /// <summary>
-///     Reflection methods for the .NET <see cref="Type"> class.
+///     Reflection methods for the .NET <see cref="Type"/> class.
 /// </summary>
 public static class TypeReflection
 {
@@ -72,62 +72,174 @@ public static class TypeReflection
     #endregion
 
     #region Constructor Methods
+    /// <summary>Gets the public declared constructor of <paramref name="type"/> matching the given parameter types.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="parameterTypes">The parameter types of the desired constructor.</param>
+    /// <returns>The matching <see cref="ConstructorInfo"/>, or <see langword="null"/> if not found.</returns>
     public static ConstructorInfo? GetConstructor(Type type, params Type[] parameterTypes) => GetConstructor(type, _defaultConstructorReflectionFlags, parameterTypes);
 
+    /// <summary>Gets the constructor of <paramref name="type"/> matching the given binding flags and parameter types.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="bindingFlags">The binding flags to filter constructors.</param>
+    /// <param name="parameterTypes">The parameter types of the desired constructor.</param>
+    /// <returns>The matching <see cref="ConstructorInfo"/>, or <see langword="null"/> if not found.</returns>
     public static ConstructorInfo? GetConstructor(Type type, BindingFlags bindingFlags, params Type[] parameterTypes) => type.GetConstructor(bindingFlags, parameterTypes ?? _emptyTypes);
 
+    /// <summary>Gets the public declared constructor of <paramref name="type"/> matching the given parameter types.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="parameterTypes">The parameter types of the desired constructor.</param>
+    /// <returns>The matching <see cref="ConstructorInfo"/>, or <see langword="null"/> if not found.</returns>
     public static ConstructorInfo? GetConstructor(Type type, IEnumerable<Type> parameterTypes) => GetConstructor(type, _defaultConstructorReflectionFlags, parameterTypes);
 
+    /// <summary>Gets the constructor of <paramref name="type"/> matching the given binding flags and parameter types.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="bindingFlags">The binding flags to filter constructors.</param>
+    /// <param name="parameterTypes">The parameter types of the desired constructor.</param>
+    /// <returns>The matching <see cref="ConstructorInfo"/>, or <see langword="null"/> if not found.</returns>
     public static ConstructorInfo? GetConstructor(Type type, BindingFlags bindingFlags, IEnumerable<Type> parameterTypes) => type.GetConstructor(bindingFlags, [.. parameterTypes ?? _emptyTypes]);
 
+    /// <summary>Gets all public declared constructors of <paramref name="type"/>.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <returns>A sequence of <see cref="ConstructorInfo"/> objects.</returns>
     public static IEnumerable<ConstructorInfo> GetConstructors(Type type) => GetConstructors(type, _defaultConstructorReflectionFlags);
 
+    /// <summary>Gets all constructors of <paramref name="type"/> matching the given binding flags.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="bindingFlags">The binding flags to filter constructors.</param>
+    /// <returns>A sequence of <see cref="ConstructorInfo"/> objects.</returns>
     public static IEnumerable<ConstructorInfo> GetConstructors(Type type, BindingFlags bindingFlags) => type.GetConstructors(bindingFlags);
 
+    /// <summary>Gets the public declared default (parameterless) constructor of <paramref name="type"/>.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <returns>The default <see cref="ConstructorInfo"/>, or <see langword="null"/> if not found.</returns>
     public static ConstructorInfo? GetDefaultConstructor(Type type) => GetConstructor(type, _defaultConstructorReflectionFlags, _emptyTypes);
 
+    /// <summary>Gets the default (parameterless) constructor of <paramref name="type"/> matching the given binding flags.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="bindingFlags">The binding flags to filter the constructor.</param>
+    /// <returns>The default <see cref="ConstructorInfo"/>, or <see langword="null"/> if not found.</returns>
     public static ConstructorInfo? GetDefaultConstructor(Type type, BindingFlags bindingFlags) => GetConstructor(type, bindingFlags, _emptyTypes);
     #endregion
 
     #region Field Methods
+    /// <summary>Gets the public declared field of <paramref name="type"/> with the given name.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="fieldName">The name of the field.</param>
+    /// <returns>The matching <see cref="FieldInfo"/>, or <see langword="null"/> if not found.</returns>
     public static FieldInfo? GetField(Type type, string fieldName) => GetField(type, fieldName, _defaultFieldReflectionFlags);
 
+    /// <summary>Gets the field of <paramref name="type"/> with the given name and binding flags.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="fieldName">The name of the field.</param>
+    /// <param name="bindingFlags">The binding flags to filter fields.</param>
+    /// <returns>The matching <see cref="FieldInfo"/>, or <see langword="null"/> if not found.</returns>
     public static FieldInfo? GetField(Type type, string fieldName, BindingFlags bindingFlags) => type.GetField(fieldName, bindingFlags);
 
+    /// <summary>Gets all public declared fields of <paramref name="type"/>.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <returns>A sequence of <see cref="FieldInfo"/> objects.</returns>
     public static IEnumerable<FieldInfo> GetFields(Type type) => GetFields(type, _defaultFieldReflectionFlags);
 
+    /// <summary>Gets all fields of <paramref name="type"/> matching the given binding flags.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="bindingFlags">The binding flags to filter fields.</param>
+    /// <returns>A sequence of <see cref="FieldInfo"/> objects.</returns>
     public static IEnumerable<FieldInfo> GetFields(Type type, BindingFlags bindingFlags) => type.GetFields(bindingFlags);
     #endregion
 
     #region Method Methods
+    /// <summary>Gets the generic method definition on <paramref name="type"/> with the given name.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="methodName">The name of the method.</param>
+    /// <returns>The matching <see cref="MethodInfo"/>, or <see langword="null"/> if not found.</returns>
     public static MethodInfo? GetGenericMethodDefinition(Type type, string methodName) => GetGenericMethodDefinition(type, methodName, _defaultMethodReflectionFlags);
 
+    /// <summary>Gets the generic method definition on <paramref name="type"/> with the given name and binding flags.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="methodName">The name of the method.</param>
+    /// <param name="bindingFlags">The binding flags to filter methods.</param>
+    /// <returns>The matching <see cref="MethodInfo"/>, or <see langword="null"/> if not found.</returns>
     public static MethodInfo? GetGenericMethodDefinition(Type type, string methodName, BindingFlags bindingFlags) => type.GetMethods(bindingFlags).SingleOrDefault(method => method.Name == methodName && method.IsGenericMethodDefinition);
 
+    /// <summary>Gets the generic method definition on <paramref name="type"/> with the given name and parameter count.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="methodName">The name of the method.</param>
+    /// <param name="parameterCount">The required number of parameters.</param>
+    /// <returns>The matching <see cref="MethodInfo"/>, or <see langword="null"/> if not found.</returns>
     public static MethodInfo? GetGenericMethodDefinition(Type type, string methodName, int parameterCount) => GetGenericMethodDefinition(type, methodName, _defaultMethodReflectionFlags, parameterCount);
 
+    /// <summary>Gets the generic method definition on <paramref name="type"/> with the given name, binding flags, and parameter count.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="methodName">The name of the method.</param>
+    /// <param name="bindingFlags">The binding flags to filter methods.</param>
+    /// <param name="parameterCount">The required number of parameters.</param>
+    /// <returns>The matching <see cref="MethodInfo"/>, or <see langword="null"/> if not found.</returns>
     public static MethodInfo? GetGenericMethodDefinition(Type type, string methodName, BindingFlags bindingFlags, int parameterCount) => type.GetMethods(bindingFlags).SingleOrDefault(method => method.Name == methodName && method.IsGenericMethodDefinition && method.GetParameters().Length == parameterCount);
 
+    /// <summary>Gets the public declared method on <paramref name="type"/> with the given name.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="methodName">The name of the method.</param>
+    /// <returns>The matching <see cref="MethodInfo"/>, or <see langword="null"/> if not found.</returns>
     public static MethodInfo? GetMethod(Type type, string methodName) => GetMethod(type, methodName, _defaultMethodReflectionFlags);
 
+    /// <summary>Gets the method on <paramref name="type"/> with the given name and binding flags.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="methodName">The name of the method.</param>
+    /// <param name="bindingFlags">The binding flags to filter methods.</param>
+    /// <returns>The matching <see cref="MethodInfo"/>, or <see langword="null"/> if not found.</returns>
     public static MethodInfo? GetMethod(Type type, string methodName, BindingFlags bindingFlags) => type.GetMethod(methodName, bindingFlags);
 
+    /// <summary>Gets the public declared method on <paramref name="type"/> with the given name and parameter types.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="methodName">The name of the method.</param>
+    /// <param name="parameterTypes">The parameter types of the desired method.</param>
+    /// <returns>The matching <see cref="MethodInfo"/>, or <see langword="null"/> if not found.</returns>
     public static MethodInfo? GetMethod(Type type, string methodName, params Type[] parameterTypes) => GetMethod(type, methodName, _defaultMethodReflectionFlags, parameterTypes);
 
+    /// <summary>Gets the method on <paramref name="type"/> with the given name, binding flags, and parameter types.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="methodName">The name of the method.</param>
+    /// <param name="bindingFlags">The binding flags to filter methods.</param>
+    /// <param name="parameterTypes">The parameter types of the desired method.</param>
+    /// <returns>The matching <see cref="MethodInfo"/>, or <see langword="null"/> if not found.</returns>
     public static MethodInfo? GetMethod(Type type, string methodName, BindingFlags bindingFlags, params Type[] parameterTypes) => type.GetMethod(methodName, bindingFlags, parameterTypes ?? _emptyTypes);
 
+    /// <summary>Gets the public declared method on <paramref name="type"/> with the given name and parameter types.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="methodName">The name of the method.</param>
+    /// <param name="parameterTypes">The parameter types of the desired method.</param>
+    /// <returns>The matching <see cref="MethodInfo"/>, or <see langword="null"/> if not found.</returns>
     public static MethodInfo? GetMethod(Type type, string methodName, IEnumerable<Type> parameterTypes) => GetMethod(type, methodName, _defaultMethodReflectionFlags, parameterTypes);
 
+    /// <summary>Gets the method on <paramref name="type"/> with the given name, binding flags, and parameter types.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="methodName">The name of the method.</param>
+    /// <param name="bindingFlags">The binding flags to filter methods.</param>
+    /// <param name="parameterTypes">The parameter types of the desired method.</param>
+    /// <returns>The matching <see cref="MethodInfo"/>, or <see langword="null"/> if not found.</returns>
     public static MethodInfo? GetMethod(Type type, string methodName, BindingFlags bindingFlags, IEnumerable<Type> parameterTypes) => type.GetMethod(methodName, bindingFlags, [.. parameterTypes ?? _emptyTypes]);
 
+    /// <summary>Gets all public declared methods of <paramref name="type"/>.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <returns>A sequence of <see cref="MethodInfo"/> objects.</returns>
     public static IEnumerable<MethodInfo> GetMethods(Type type) => GetMethods(type, _defaultMethodReflectionFlags);
 
+    /// <summary>Gets all methods of <paramref name="type"/> matching the given binding flags.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="bindingFlags">The binding flags to filter methods.</param>
+    /// <returns>A sequence of <see cref="MethodInfo"/> objects.</returns>
     public static IEnumerable<MethodInfo> GetMethods(Type type, BindingFlags bindingFlags) => type.GetMethods(bindingFlags);
     #endregion
 
     #region Miscellaneous Methods
+    /// <summary>Gets the direct base type of <paramref name="type"/>, or <see langword="null"/> if none.</summary>
+    /// <param name="type">The type to inspect.</param>
+    /// <returns>The base <see cref="Type"/>, or <see langword="null"/>.</returns>
     public static Type? GetBaseType(Type type) => type.BaseType;
 
+    /// <summary>Enumerates all base types of <paramref name="type"/> up the inheritance chain, excluding <see cref="object"/>.</summary>
+    /// <param name="type">The type to inspect.</param>
+    /// <returns>A sequence of base <see cref="Type"/> objects from immediate parent up to (but not including) <see cref="object"/>.</returns>
     public static IEnumerable<Type> GetBaseTypes(Type type)
     {
         var baseType = GetBaseType(type);
@@ -188,12 +300,21 @@ public static class TypeReflection
     /// <returns>True if objects of this type can be null, false otherwise.</returns>
     public static bool CanBeNull<T>() => default(T) == null;
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is abstract.</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsAbstract(Type type) => type.IsAbstract;
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="fromType"/> is assignable to <paramref name="type"/>.</summary>
+    /// <param name="type">The target type.</param>
+    /// <param name="fromType">The source type to check.</param>
     public static bool IsAssignableFrom(Type type, Type fromType) => fromType != null && type.IsAssignableFrom(fromType);
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is <see cref="bool"/>.</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsBoolean(Type type) => type == typeof(bool);
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is a class.</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsClass(Type type) => type.IsClass;
 
     /// <summary>
@@ -203,10 +324,20 @@ public static class TypeReflection
     /// <returns>True is this type cannot be converted with a type converter, false otherwise.</returns>
     public static bool IsComplex(Type type) => _isComplexCache.GetOrAdd(type, t => !IsSimple(t));
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is an enum.</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsEnum(Type type) => type.IsEnum;
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> implements <c>IEnumerable&lt;T&gt;</c> for some element type.</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsEnumerableOfT(Type type) => IsEnumerableOfT(type, out _);
 
+    /// <summary>
+    ///     Returns <see langword="true"/> if <paramref name="type"/> implements <c>IEnumerable&lt;T&gt;</c>,
+    ///     and outputs the element type <paramref name="elementType"/>.
+    /// </summary>
+    /// <param name="type">The type to check.</param>
+    /// <param name="elementType">When <see langword="true"/>, the element type; otherwise <see langword="null"/>.</param>
     public static bool IsEnumerableOfT(Type type, [NotNullWhen(true)] out Type? elementType)
     {
         var (isEnumerable, foundElementType) = _isEnumerableOfTCache.GetOrAdd(type, static t =>
@@ -249,14 +380,25 @@ public static class TypeReflection
         return isEnumerable;
     }
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is a floating-point numeric type.</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsFloatingPoint(Type type) => _floatingPointTypes.Contains(type);
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is an open generic type definition.</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsGenericTypeDefinition(Type type) => type.IsGenericTypeDefinition;
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is a closed or open generic type.</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsGenericType(Type type) => type.IsGenericType;
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is <see cref="Guid"/>.</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsGuid(Type type) => type == typeof(Guid);
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> directly or indirectly implements <paramref name="interfaceType"/>.</summary>
+    /// <param name="type">The type to check.</param>
+    /// <param name="interfaceType">The interface type to look for. May be an open generic interface.</param>
     public static bool IsImplementationOf(Type type, Type interfaceType)
     {
         if (type == null || interfaceType == null)
@@ -269,10 +411,16 @@ public static class TypeReflection
             : type.GetInterfaces().Any(x => !x.IsGenericType && x.Equals(interfaceType));
     }
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is an integer numeric type.</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsInteger(Type type) => _integerTypes.Contains(type);
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is <c>Nullable&lt;T&gt;</c>.</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsNullableType(Type type) => _isNullableTypeCache.GetOrAdd(type, t => IsGenericType(t) && t.GetGenericTypeDefinition() == typeof(Nullable<>));
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is a nullable enum (i.e., <c>Nullable&lt;TEnum&gt;</c>).</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsNullableEnum(Type type)
     {
         return _isNullableEnumCache.GetOrAdd(type, static t =>
@@ -292,8 +440,12 @@ public static class TypeReflection
         });
     }
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is any numeric type (integer or floating-point).</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsNumber(Type type) => IsInteger(type) || IsFloatingPoint(type);
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is a primitive or well-known simple type.</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsPrimitive(Type type) => type.IsPrimitive || _primitiveTypes.Contains(type);
 
     /// <summary>
@@ -341,10 +493,18 @@ public static class TypeReflection
         });
     }
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is <see cref="string"/>.</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsString(Type type) => type == typeof(string);
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is a subclass of <paramref name="baseClass"/>.</summary>
+    /// <param name="type">The type to check.</param>
+    /// <param name="baseClass">The base class to check against.</param>
     public static bool IsSubclassOf(Type type, Type baseClass) => baseClass != null && type.IsSubclassOf(baseClass);
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is a subclass of, or implements, <paramref name="baseClassOrInterfaceType"/>.</summary>
+    /// <param name="type">The type to check.</param>
+    /// <param name="baseClassOrInterfaceType">The base class or interface type to check against.</param>
     public static bool IsSubclassOrImplementationOf(Type type, Type baseClassOrInterfaceType)
     {
         if (type.IsSubclassOf(baseClassOrInterfaceType))
@@ -391,18 +551,38 @@ public static class TypeReflection
         return false;
     }
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is a value type.</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsValueType(Type type) => type.IsValueType;
 
+    /// <summary>Returns <see langword="true"/> if <paramref name="type"/> is <see cref="void"/>.</summary>
+    /// <param name="type">The type to check.</param>
     public static bool IsVoid(Type type) => type == typeof(void);
     #endregion
 
     #region Property Methods
+    /// <summary>Gets the public declared property on <paramref name="type"/> with the given name.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <returns>The matching <see cref="PropertyInfo"/>, or <see langword="null"/> if not found.</returns>
     public static PropertyInfo? GetProperty(Type type, string propertyName) => GetProperty(type, propertyName, _defaultPropertyReflectionFlags);
 
+    /// <summary>Gets the property on <paramref name="type"/> with the given name and binding flags.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <param name="bindingFlags">The binding flags to filter properties.</param>
+    /// <returns>The matching <see cref="PropertyInfo"/>, or <see langword="null"/> if not found.</returns>
     public static PropertyInfo? GetProperty(Type type, string propertyName, BindingFlags bindingFlags) => type.GetProperty(propertyName, bindingFlags);
 
+    /// <summary>Gets all public declared properties of <paramref name="type"/>.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <returns>A sequence of <see cref="PropertyInfo"/> objects.</returns>
     public static IEnumerable<PropertyInfo> GetProperties(Type type) => GetProperties(type, _defaultPropertyReflectionFlags);
 
+    /// <summary>Gets all properties of <paramref name="type"/> matching the given binding flags.</summary>
+    /// <param name="type">The type to reflect.</param>
+    /// <param name="bindingFlags">The binding flags to filter properties.</param>
+    /// <returns>A sequence of <see cref="PropertyInfo"/> objects.</returns>
     public static IEnumerable<PropertyInfo> GetProperties(Type type, BindingFlags bindingFlags) => type.GetProperties(bindingFlags);
     #endregion
 

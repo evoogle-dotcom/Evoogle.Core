@@ -9,13 +9,8 @@ namespace Evoogle.XUnit;
 ///     Captures boilerplate code for an individual named xUnit test to break the unit test into
 ///     explicit Arrange, Act, Assert steps that are executed in the context of an xUnit tests container.
 /// </summary>
-public abstract class XUnitTest : XUnitTestBase, IXUnitTest
+public abstract class XUnitTest(string? name = null) : XUnitTestBase(name), IXUnitTest
 {
-    #region Constructors
-    protected XUnitTest(string? name = null) : base(name)
-    { }
-    #endregion
-
     #region IXUnitTest Methods
     /// <summary>
     ///     Executes the unit test by writing the test header and calling the Arrange, Act, and Assert steps.
@@ -37,7 +32,7 @@ public abstract class XUnitTest : XUnitTestBase, IXUnitTest
     }
     #endregion
 
-    #region Arrange/Act/Assert
+    #region Arrange/Act/Assert Methods
     /// <summary>No-op implementation of the arrange step.</summary>
     protected virtual void Arrange()
     { }

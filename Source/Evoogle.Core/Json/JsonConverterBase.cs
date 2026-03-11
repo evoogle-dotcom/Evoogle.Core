@@ -30,7 +30,7 @@ public abstract partial class JsonConverterBase<T>(ILogger? logger) : JsonConver
     #region IHasLogger Properties
     /// <summary>
     ///     Logger used by the converter and its contexts. A <see cref="MultiplexingLogger"/> is created
-    ///     around the provided <paramref name="logger"/> to ensure consistent logging behavior.
+    ///     around the injected logger to ensure consistent logging behavior.
     /// </summary>
     public ILogger Logger { get; } = new MultiplexingLogger(logger, MultiplexingLoggerMode.None);
     #endregion

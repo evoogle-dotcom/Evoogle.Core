@@ -27,6 +27,7 @@ public abstract class XUnitTests(ITestOutputHelper output)
     #endregion
 
     #region Properties
+    /// <summary>Gets the xUnit test output helper.</summary>
     protected ITestOutputHelper Output { get; } = output;
     #endregion
 
@@ -63,12 +64,16 @@ public abstract class XUnitTests(ITestOutputHelper output)
     #endregion
 
     #region Convenience runners (optional)
+    /// <summary>Runs a synchronous test instance against this test container.</summary>
+    /// <param name="test">The test instance to execute.</param>
     protected void Run(IXUnitTest test)
     {
         ArgumentNullException.ThrowIfNull(test);
         test.Execute(this);
     }
 
+    /// <summary>Runs an asynchronous test instance against this test container.</summary>
+    /// <param name="test">The asynchronous test instance to execute.</param>
     protected Task RunAsync(IXUnitTestAsync test)
     {
         ArgumentNullException.ThrowIfNull(test);
