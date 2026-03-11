@@ -9,7 +9,7 @@ namespace Evoogle.XUnit;
 ///     Captures boilerplate code for an individual named xUnit test (async) using
 ///     explicit Arrange, Act, Assert steps executed in an xUnit tests container.
 /// </summary>
-public abstract class XUnitTestAsync(string? name = null) : XUnitTestBase(name), IXUnitTestAsync
+public abstract class XUnitTestAsync : XUnitTestBase, IXUnitTestAsync
 {
     #region IXUnitTestAsync Methods
     /// <summary>

@@ -9,7 +9,7 @@ namespace Evoogle.XUnit;
 ///     Captures boilerplate code for an individual named xUnit test to break the unit test into
 ///     explicit Arrange, Act, Assert steps that are executed in the context of an xUnit tests container.
 /// </summary>
-public abstract class XUnitTest(string? name = null) : XUnitTestBase(name), IXUnitTest
+public abstract class XUnitTest : XUnitTestBase, IXUnitTest
 {
     #region IXUnitTest Methods
     /// <summary>

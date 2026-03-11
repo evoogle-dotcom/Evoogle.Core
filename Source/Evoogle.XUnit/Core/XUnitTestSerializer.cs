@@ -48,7 +48,7 @@ public class XUnitTestSerializer : IXunitSerializer
     /// <exception cref="InvalidOperationException">Thrown is the JSON deserialization returns null.</exception>
     public object Deserialize(Type type, string serializedValue)
     {
-        var value = JsonSerializer.Deserialize(serializedValue, type, DefaultJsonSerializerOptions) ?? throw new JsonException("JSON serializer deserialilzed JSON {{SerializedValue={serializedValue}}} to null.");
+        var value = JsonSerializer.Deserialize(serializedValue, type, DefaultJsonSerializerOptions) ?? throw new JsonException($"JSON serializer deserialized JSON to null. SerializedValue={serializedValue}");
         return value;
     }
 

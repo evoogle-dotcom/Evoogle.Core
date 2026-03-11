@@ -16,30 +16,30 @@ namespace Evoogle.XUnit;
 public abstract class XUnitTestBase
 {
     #region XUnitTestBase Fields
-    private HashSet<ExcludeMember>? _excludeMembersSet;
-
-    private readonly HashSet<ExcludeMember> _excludedMembersSet = [];
-    private readonly HashSet<ExcludeMember> _includedMembersSet = [];
+    private HashSet<(Type DeclaringType, string Name)>? _excludeMembersSet;
     #endregion
 
     #region XUnitTestBase Properties
     /// <summary>Gets the display name of the test.</summary>
     public required string Name { get; init; }
 
-    /// <summary>Gets the list of members to exclude from equivalency assertions.</summary>
-    public List<ExcludeMember>? ExcludeMembers { get; init; }
+    /// <summary>Gets the members to exclude from equivalency assertions.</summary>
+    public IEnumerable<ExcludeMember>? ExcludeMembers { get; init; }
+
+    /// <summary>
+    ///     Gets a value indicating whether excluded members are written to the test output.
+    ///     Defaults to <see langword="false"/>; opt in to enable this level of logging.
+    /// </summary>
+    public bool LogExcludedMembers { get; init; }
+
+    /// <summary>
+    ///     Gets a value indicating whether included members are written to the test output.
+    ///     Defaults to <see langword="false"/>; opt in to enable this level of logging.
+    /// </summary>
+    public bool LogIncludedMembers { get; init; }
 
     /// <summary>Gets the parent test container instance while the test is running.</summary>
     protected XUnitTests? Parent { get; private set; }
-    #endregion
-
-    #region XUnitTestBase Constructors
-    /// <summary>Initializes a new instance, using the declaring class name as the test name when <paramref name="name"/> is not supplied.</summary>
-    /// <param name="name">Optional explicit test name; defaults to the declaring class name.</param>
-    protected XUnitTestBase(string? name = null)
-    {
-        this.Name = name ?? this.GetType().Name;
-    }
     #endregion
 
     #region Object Methods
@@ -63,7 +63,7 @@ public abstract class XUnitTestBase
             return;
         }
 
-        if (this.ExcludeMembers == null || this.ExcludeMembers.Count == 0)
+        if (this.ExcludeMembers == null)
         {
             actual.Should().BeEquivalentTo(expected, opt => opt.PreferringRuntimeMemberTypes());
             return;
@@ -89,27 +89,19 @@ public abstract class XUnitTestBase
 
     private bool IsMemberExcluded(IMemberInfo info)
     {
-        _excludeMembersSet ??= [.. this.ExcludeMembers!];
+        _excludeMembersSet ??= this.ExcludeMembers!.Select(e => (e.DeclaringType, e.Name)).ToHashSet();
 
         var declaringType = info.DeclaringType;
         var name = info.Name;
-        var fullMemberName = $"{declaringType.SafeToName()}.{name.SafeToString()}";
-        var excludeMember = new ExcludeMember(declaringType, name);
+        var isExcluded = _excludeMembersSet.Contains((declaringType, name));
 
-        var isExcluded = _excludeMembersSet.Contains(excludeMember);
-        if (isExcluded)
+        if (isExcluded && this.LogExcludedMembers)
         {
-            if (this._excludedMembersSet.Add(excludeMember))
-            {
-                this.WriteLine($"Excluded member: {fullMemberName}");
-            }
+            this.WriteLine($"Excluded member: {declaringType.SafeToName()}.{name.SafeToString()}");
         }
-        else
+        else if (!isExcluded && this.LogIncludedMembers)
         {
-            if (this._includedMembersSet.Add(excludeMember))
-            {
-                this.WriteLine($"Included member: {fullMemberName}");
-            }
+            this.WriteLine($"Included member: {declaringType.SafeToName()}.{name.SafeToString()}");
         }
 
         return isExcluded;
