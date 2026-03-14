@@ -4,6 +4,7 @@
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace Evoogle.XUnit;
 
@@ -36,6 +37,7 @@ public readonly record struct ExcludeMember
     ///     Thrown when <paramref name="name"/> is <see langword="null"/> or empty, or does not correspond to any
     ///     member declared on <paramref name="declaringType"/>.
     /// </exception>
+    [JsonConstructor]
     public ExcludeMember(Type declaringType, string name)
     {
         ArgumentNullException.ThrowIfNull(declaringType);
