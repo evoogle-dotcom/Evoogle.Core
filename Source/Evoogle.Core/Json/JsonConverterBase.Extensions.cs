@@ -74,6 +74,8 @@ public abstract partial class JsonConverterBase<T>
     /// <summary>
     ///     Gets the cached <see cref="ExtensibleBasePropertyNames"/> for the specified <paramref name="policy"/>.
     /// </summary>
+    /// <param name="policy">The naming policy used to derive serialized property names.</param>
+    /// <returns>A cached <see cref="ExtensibleBasePropertyNames"/> instance with names converted by <paramref name="policy"/>.</returns>
     protected static ExtensibleBasePropertyNames GetExtensiblePropertyNames(JsonNamingPolicy policy)
        => _extensiblePropertyNamesCache.GetOrAdd(policy, p => new ExtensibleBasePropertyNames
        {

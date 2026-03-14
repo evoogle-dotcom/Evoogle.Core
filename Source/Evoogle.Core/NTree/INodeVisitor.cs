@@ -8,7 +8,7 @@ namespace Evoogle.NTree;
 /// <summary>
 ///     Abstracts a visitor in the visitor design pattern for a 1-N tree.
 /// </summary>
-/// <typeparam name="TNode"></typeparam>
+/// <typeparam name="TNode">The concrete node type in the 1-N tree.</typeparam>
 public interface INodeVisitor<TNode>
     where TNode : Node<TNode>
 {

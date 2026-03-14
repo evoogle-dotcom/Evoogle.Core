@@ -56,12 +56,16 @@ public class TypeJsonConverter : JsonConverter<Type>
     /// <summary>
     ///     Adds the assembly of a given type <typeparamref name="T"/> to the allowlist.
     /// </summary>
+    /// <typeparam name="T">The type whose containing assembly is added to the deserialization filter.</typeparam>
+    /// <returns>The current <see cref="TypeJsonConverter"/> instance.</returns>
     public TypeJsonConverter AddAllowedAssemblyOf<T>() =>
         this.AddAllowedAssembly(typeof(T).Assembly);
 
     /// <summary>
     ///     Replaces the set of allowed assemblies with the given collection.
     /// </summary>
+    /// <param name="assemblies">The new collection of assemblies to allow for deserialization.</param>
+    /// <returns>The current <see cref="TypeJsonConverter"/> instance.</returns>
     public TypeJsonConverter SetAllowedAssemblies(IEnumerable<Assembly> assemblies)
     {
         _allowedAssemblies.Clear();
@@ -89,6 +93,7 @@ public class TypeJsonConverter : JsonConverter<Type>
     ///     Replaces the set of allowed namespace prefixes.
     /// </summary>
     /// <param name="prefixes">The new list of prefixes.</param>
+    /// <returns>The current <see cref="TypeJsonConverter"/> instance.</returns>
     public TypeJsonConverter SetAllowedNamespaces(IEnumerable<string> prefixes)
     {
         _allowedNamespacePrefixes.Clear();

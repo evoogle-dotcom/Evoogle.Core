@@ -260,6 +260,7 @@ public static class TypeReflection
     ///     The compact(partial) type name can be used by the static method Type.GetType(string) to create .NET <c>Type</c> object like a factory method.
     /// </summary>
     /// <param name="type">.NET type to call extension method on.</param>
+    /// <returns>A compact assembly-qualified name string suitable for use with <see cref="Type.GetType(string)"/>.</returns>
     public static string GetCompactQualifiedName(Type type)
     {
         var assemblyQualifiedName = type.AssemblyQualifiedName ?? throw new NullReferenceException($"{nameof(Type)} property {{Name={nameof(Type.AssemblyQualifiedName)}}} is null.");
