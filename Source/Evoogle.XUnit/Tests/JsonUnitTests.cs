@@ -3,7 +3,6 @@
 //
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
-using System.Linq.Expressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -67,11 +66,6 @@ public static class JsonUnitTests
         ///     Gets the argument to pass to the factory expression that creates the expected object.
         /// </summary>
         public required TFactoryArg? ExpectedFactoryArgument { get; init; }
-
-        /// <summary>
-        ///     Gets the factory expression that creates the expected object for comparison.
-        /// </summary>
-        public required Expression<Func<TFactoryArg?, T?>> ExpectedFactoryExpression { get; init; }
         #endregion
 
         #region Calculated Properties
@@ -84,6 +78,15 @@ public static class JsonUnitTests
         ///     Gets or sets the actual object produced by the test.
         /// </summary>
         protected T? Actual { get; set; }
+        #endregion
+
+        #region JsonEquivalenceTestBase<T, TFactoryArg> Methods
+        /// <summary>
+        ///     Creates the expected object used for comparison during the assertion step.
+        /// </summary>
+        /// <param name="factoryArg">The argument passed to the factory to create the expected object.</param>
+        /// <returns>The expected object, or <see langword="null"/> if the factory produces no result.</returns>
+        protected abstract T? CreateExpected(TFactoryArg? factoryArg);
         #endregion
 
         #region XUnitTest Methods
@@ -101,7 +104,7 @@ public static class JsonUnitTests
     /// </summary>
     /// <typeparam name="T">The type to deserialize from JSON.</typeparam>
     /// <typeparam name="TFactoryArg">The type of argument passed to the factory expression to create the expected object.</typeparam>
-    public class JsonDeserializeTest<T, TFactoryArg> : JsonEquivalenceTestBase<T, TFactoryArg>
+    public abstract class JsonDeserializeTest<T, TFactoryArg> : JsonEquivalenceTestBase<T, TFactoryArg>
     {
         #region User Supplied Properties
         /// <summary>
@@ -114,8 +117,7 @@ public static class JsonUnitTests
         /// <inheritdoc />
         protected override void Arrange()
         {
-            var expectedFactoryFunc = this.ExpectedFactoryExpression.Compile();
-            var expected = expectedFactoryFunc(this.ExpectedFactoryArgument);
+            var expected = this.CreateExpected(this.ExpectedFactoryArgument);
             this.Expected = expected;
 
             this.WriteLine($"Source JSON:\n{this.SourceJson.SafeToString().RemoveWhitespace()}");
@@ -141,7 +143,7 @@ public static class JsonUnitTests
     /// </summary>
     /// <typeparam name="T">The type to serialize and deserialize.</typeparam>
     /// <typeparam name="TFactoryArg">The type of argument passed to the factory expression to create the original object.</typeparam>
-    public class JsonRoundtripTest<T, TFactoryArg> : JsonEquivalenceTestBase<T, TFactoryArg>
+    public abstract class JsonRoundtripTest<T, TFactoryArg> : JsonEquivalenceTestBase<T, TFactoryArg>
     {
         #region XUnitTest Methods
         /// <summary>
@@ -149,8 +151,7 @@ public static class JsonUnitTests
         /// </summary>
         protected override void Arrange()
         {
-            var expectedFactoryFunc = this.ExpectedFactoryExpression.Compile();
-            var expected = expectedFactoryFunc(this.ExpectedFactoryArgument);
+            var expected = this.CreateExpected(this.ExpectedFactoryArgument);
             this.Expected = expected;
 
             this.WriteLine($"Expected: {this.Expected.SafeToString()}");
@@ -176,18 +177,13 @@ public static class JsonUnitTests
     /// </summary>
     /// <typeparam name="T">The type to serialize to JSON.</typeparam>
     /// <typeparam name="TFactoryArg">The type of argument passed to the factory expression to create the source object.</typeparam>
-    public class JsonSerializeTest<T, TFactoryArg> : JsonConverterTestBase<T>
+    public abstract class JsonSerializeTest<T, TFactoryArg> : JsonConverterTestBase<T>
     {
         #region User Supplied Properties
         /// <summary>
         ///     Gets the argument to pass to the factory expression that creates the source object to serialize.
         /// </summary>
         public required TFactoryArg? SourceFactoryArgument { get; init; }
-
-        /// <summary>
-        ///     Gets the factory expression that creates the source object to serialize.
-        /// </summary>
-        public required Expression<Func<TFactoryArg?, T?>> SourceFactoryExpression { get; init; }
 
         /// <summary>
         ///     Gets the expected JSON string after serialization.
@@ -207,14 +203,24 @@ public static class JsonUnitTests
         private string? ActualJson { get; set; }
         #endregion
 
+        #region JsonSerializeTest<T, TFactoryArg> Methods
+        /// <summary>
+        ///     Creates the source object to be serialized to JSON during the act step.
+        /// </summary>
+        /// <param name="factoryArg">The argument passed to the factory to create the source object.</param>
+        /// <returns>The source object to serialize, or <see langword="null"/> if the factory produces no result.</returns>
+        protected abstract T? CreateSource(TFactoryArg? factoryArg);
+        #endregion
+
         #region XUnitTest Methods
         /// <summary>
         ///     Arranges the test by creating the source object using the factory expression.
         /// </summary>
         protected override void Arrange()
         {
-            var sourceFactoryFunc = this.SourceFactoryExpression.Compile();
-            var source = sourceFactoryFunc(this.SourceFactoryArgument);
+            // var sourceFactoryFunc = this.SourceFactoryExpression.Compile();
+            // var source = sourceFactoryFunc(this.SourceFactoryArgument);
+            var source = this.CreateSource(this.SourceFactoryArgument);
             this.Source = source;
 
             this.WriteLine($"Source: {this.Source.SafeToString()}");
