@@ -50,6 +50,77 @@ public static class JsonUnitTests
         ///     Defaults to <see cref="DefaultJsonSerializerOptions"/> if not explicitly provided.
         /// </value>
         public JsonSerializerOptions JsonSerializerOptions { get; init; } = DefaultJsonSerializerOptions;
+
+        /// <summary>
+        ///     Gets the expected exception type thrown during serialization or deserialization.
+        ///     When <see langword="null"/> the test follows the happy path.
+        /// </summary>
+        public Type? ExpectedExceptionType { get; init; }
+
+        /// <summary>
+        ///     Gets an optional substring expected to appear in the exception message.
+        ///     Only evaluated when <see cref="ExpectedExceptionType"/> is non-<see langword="null"/>.
+        /// </summary>
+        public string? ExpectedExceptionMessage { get; init; }
+        #endregion
+
+        #region Calculated Properties
+        /// <summary>
+        ///     Gets the actual exception type captured during the act step, or <see langword="null"/> if no exception was thrown.
+        /// </summary>
+        protected Type? ActualExceptionType { get; private set; }
+
+        /// <summary>
+        ///     Gets the actual exception message captured during the act step, or <see langword="null"/> if no exception was thrown.
+        /// </summary>
+        protected string? ActualExceptionMessage { get; private set; }
+        #endregion
+
+        #region Exception-Path Properties
+        /// <summary>
+        ///     Gets a value indicating whether the test expects an exception to be thrown.
+        /// </summary>
+        protected bool IsExceptionExpected => this.ExpectedExceptionType != null;
+        #endregion
+
+        #region Exception-Path Methods
+        /// <summary>
+        ///     Asserts that the captured exception matches <see cref="ExpectedExceptionType"/> and,
+        ///     when <see cref="ExpectedExceptionMessage"/> is non-<see langword="null"/>, that the message contains the expected substring.
+        /// </summary>
+        protected void AssertException()
+        {
+            this.ActualExceptionType.Should().NotBeNull();
+            this.ActualExceptionType.Should().Be(this.ExpectedExceptionType);
+
+            if (this.ExpectedExceptionMessage != null)
+            {
+                this.ActualExceptionMessage.Should().Contain(this.ExpectedExceptionMessage);
+            }
+        }
+
+        /// <summary>
+        ///     Captures the exception type and message from <paramref name="exception"/> and writes them to the test output.
+        /// </summary>
+        /// <param name="exception">The exception caught during the act step.</param>
+        protected void CaptureException(Exception exception)
+        {
+            this.ActualExceptionType = exception.GetType();
+            this.ActualExceptionMessage = exception.Message;
+
+            this.WriteException("Actual", this.ActualExceptionType, this.ActualExceptionMessage);
+        }
+
+        /// <summary>
+        ///     Writes the expected or actual exception information to the test output in a consistent format.
+        /// </summary>
+        /// <param name="expectedOrActual">A string indicating whether the exception is expected or actual.</param>
+        /// <param name="exceptionType">The type of the exception.</param>
+        /// <param name="exceptionMessage">The message of the exception.</param>
+        protected void WriteException(string expectedOrActual, Type? exceptionType, string? exceptionMessage)
+        {
+            this.WriteLine($"{expectedOrActual} Exception: [{exceptionType.SafeToName()}] {exceptionMessage.SafeToString()}");
+        }
         #endregion
     }
 
@@ -93,8 +164,18 @@ public static class JsonUnitTests
         /// <summary>
         ///     Asserts that <see cref="Actual"/> is equivalent to <see cref="Expected"/>,
         ///     optionally excluding members specified by <see cref="XUnitTestBase.ExcludeMembers"/>.
+        ///     When <see cref="JsonConverterTestBase{T}.ExpectedExceptionType"/> is set, asserts the captured exception instead.
         /// </summary>
-        protected override void Assert() => this.AssertBeEquivalentTo(this.Actual, this.Expected);
+        protected override void Assert()
+        {
+            if (this.IsExceptionExpected)
+            {
+                this.AssertException();
+                return;
+            }
+
+            this.AssertBeEquivalentTo(this.Actual, this.Expected);
+        }
         #endregion
     }
 
@@ -122,7 +203,15 @@ public static class JsonUnitTests
 
             this.WriteLine($"Source JSON:\n{this.SourceJson.SafeToString().RemoveWhitespace()}");
             this.WriteLine();
-            this.WriteLine($"Expected: {this.Expected.SafeToString()}");
+
+            if (this.IsExceptionExpected)
+            {
+                this.WriteException("Expected", this.ExpectedExceptionType, this.ExpectedExceptionMessage);
+            }
+            else
+            {
+                this.WriteLine($"Expected: {this.Expected.SafeToString()}");
+            }
         }
 
         /// <summary>
@@ -130,9 +219,16 @@ public static class JsonUnitTests
         /// </summary>
         protected override void Act()
         {
-            this.Actual = JsonSerializer.Deserialize<T>(this.SourceJson!, this.JsonSerializerOptions);
-            this.WriteLine();
-            this.WriteLine($"Actual:   {this.Actual.SafeToString()}");
+            try
+            {
+                this.Actual = JsonSerializer.Deserialize<T>(this.SourceJson!, this.JsonSerializerOptions);
+                this.WriteLine();
+                this.WriteLine($"Actual:   {this.Actual.SafeToString()}");
+            }
+            catch (Exception exception) when (this.IsExceptionExpected)
+            {
+                this.CaptureException(exception);
+            }
         }
         #endregion
     }
@@ -154,7 +250,15 @@ public static class JsonUnitTests
             var expected = this.CreateExpected(this.ExpectedFactoryArgument);
             this.Expected = expected;
 
-            this.WriteLine($"Expected: {this.Expected.SafeToString()}");
+            if (this.IsExceptionExpected)
+            {
+                this.WriteException("Expected", this.ExpectedExceptionType, this.ExpectedExceptionMessage);
+            }
+            else
+            {
+                this.WriteLine($"Expected: {this.Expected.SafeToString()}");
+            }
+
             this.WriteLine();
         }
 
@@ -164,9 +268,16 @@ public static class JsonUnitTests
         /// </summary>
         protected override void Act()
         {
-            var json = JsonSerializer.Serialize(this.Expected, this.JsonSerializerOptions);
-            this.Actual = JsonSerializer.Deserialize<T>(json, this.JsonSerializerOptions);
-            this.WriteLine($"Actual:   {this.Actual.SafeToString()}");
+            try
+            {
+                var json = JsonSerializer.Serialize(this.Expected, this.JsonSerializerOptions);
+                this.Actual = JsonSerializer.Deserialize<T>(json, this.JsonSerializerOptions);
+                this.WriteLine($"Actual:   {this.Actual.SafeToString()}");
+            }
+            catch (Exception exception) when (this.IsExceptionExpected)
+            {
+                this.CaptureException(exception);
+            }
         }
         #endregion
     }
@@ -218,14 +329,21 @@ public static class JsonUnitTests
         /// </summary>
         protected override void Arrange()
         {
-            // var sourceFactoryFunc = this.SourceFactoryExpression.Compile();
-            // var source = sourceFactoryFunc(this.SourceFactoryArgument);
             var source = this.CreateSource(this.SourceFactoryArgument);
             this.Source = source;
 
             this.WriteLine($"Source: {this.Source.SafeToString()}");
             this.WriteLine();
-            this.WriteLine($"Expected JSON:\n{this.ExpectedJson.SafeToString().RemoveWhitespace()}");
+
+            if (this.IsExceptionExpected)
+            {
+                this.WriteException("Expected", this.ExpectedExceptionType, this.ExpectedExceptionMessage);
+            }
+            else
+            {
+                this.WriteLine($"Expected JSON:\n{this.ExpectedJson.SafeToString().RemoveWhitespace()}");
+            }
+
             this.WriteLine();
         }
 
@@ -234,15 +352,29 @@ public static class JsonUnitTests
         /// </summary>
         protected override void Act()
         {
-            this.ActualJson = JsonSerializer.Serialize(this.Source, this.JsonSerializerOptions);
-            this.WriteLine($"Actual JSON:\n{this.ActualJson.SafeToString().RemoveWhitespace()}");
+            try
+            {
+                this.ActualJson = JsonSerializer.Serialize(this.Source, this.JsonSerializerOptions);
+                this.WriteLine($"Actual JSON:\n{this.ActualJson.SafeToString().RemoveWhitespace()}");
+            }
+            catch (Exception exception) when (this.IsExceptionExpected)
+            {
+                this.CaptureException(exception);
+            }
         }
 
         /// <summary>
         ///     Asserts that the actual serialized JSON matches the expected JSON, comparing without whitespace.
+        ///     When <see cref="JsonConverterTestBase{T}.ExpectedExceptionType"/> is set, asserts the captured exception instead.
         /// </summary>
         protected override void Assert()
         {
+            if (this.IsExceptionExpected)
+            {
+                this.AssertException();
+                return;
+            }
+
             var actualJsonMinusWhitespace = this.ActualJson.RemoveWhitespace();
             var expectedJsonMinusWhitespace = this.ExpectedJson.RemoveWhitespace();
 
