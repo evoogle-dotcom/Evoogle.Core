@@ -14,7 +14,7 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
     #region Test Classes
     public class GetNullabilityInfoTest : XUnitTest
     {
-        #region User Supplied Properties        
+        #region User Supplied Properties
         public Type Type { get; init; } = null!;
         public string FieldName { get; init; } = null!;
         public MemberNullableInfo Expected { get; init; } = null!;
@@ -47,7 +47,7 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
     public class IsStaticTest : XUnitTest
     {
-        #region User Supplied Properties        
+        #region User Supplied Properties
         public Type Type { get; init; } = null!;
         public string FieldName { get; init; } = null!;
         public bool Expected { get; init; }
@@ -109,6 +109,14 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 
+#nullable disable
+    public class UnknownSample
+    {
+        public string UnknownReference;
+        public List<string> UnknownCollectionWithUnknownReferenceElements;
+    }
+#nullable restore
+
     public class Widget
     {
         public string Field = string.Empty;
@@ -129,7 +137,7 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(string),
-                IsNullable = true,
+                Nullability = MemberNullability.Nullable,
                 CollectionChain = []
             }
         },
@@ -142,7 +150,7 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(string),
-                IsNullable = false,
+                Nullability = MemberNullability.NonNullable,
                 CollectionChain = []
             }
         },
@@ -155,7 +163,7 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(int?),
-                IsNullable = true,
+                Nullability = MemberNullability.Nullable,
                 CollectionChain = []
             }
         },
@@ -168,7 +176,7 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(int),
-                IsNullable = false,
+                Nullability = MemberNullability.NonNullable,
                 CollectionChain = []
             }
         },
@@ -181,14 +189,14 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<string?>),
-                IsNullable = true,
+                Nullability = MemberNullability.Nullable,
                 CollectionChain = [
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<string?>),
                         ElementType = typeof(string),
-                        IsCollectionNullable = true,
-                        IsElementNullable = true
+                        CollectionNullability = MemberNullability.Nullable,
+                        ElementNullability = MemberNullability.Nullable
                     }
                 ]
             }
@@ -202,14 +210,14 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<string>),
-                IsNullable = true,
+                Nullability = MemberNullability.Nullable,
                 CollectionChain = [
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<string>),
                         ElementType = typeof(string),
-                        IsCollectionNullable = true,
-                        IsElementNullable = false
+                        CollectionNullability = MemberNullability.Nullable,
+                        ElementNullability = MemberNullability.NonNullable
                     }
                 ]
             }
@@ -223,14 +231,14 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<string?>),
-                IsNullable = false,
+                Nullability = MemberNullability.NonNullable,
                 CollectionChain = [
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<string?>),
                         ElementType = typeof(string),
-                        IsCollectionNullable = false,
-                        IsElementNullable = true
+                        CollectionNullability = MemberNullability.NonNullable,
+                        ElementNullability = MemberNullability.Nullable
                     }
                 ]
             }
@@ -244,14 +252,14 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<string>),
-                IsNullable = false,
+                Nullability = MemberNullability.NonNullable,
                 CollectionChain = [
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<string>),
                         ElementType = typeof(string),
-                        IsCollectionNullable = false,
-                        IsElementNullable = false
+                        CollectionNullability = MemberNullability.NonNullable,
+                        ElementNullability = MemberNullability.NonNullable
                     }
                 ]
             }
@@ -265,14 +273,14 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<int?>),
-                IsNullable = true,
+                Nullability = MemberNullability.Nullable,
                 CollectionChain = [
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<int?>),
                         ElementType = typeof(int?),
-                        IsCollectionNullable = true,
-                        IsElementNullable = true
+                        CollectionNullability = MemberNullability.Nullable,
+                        ElementNullability = MemberNullability.Nullable
                     }
                 ]
             }
@@ -286,14 +294,14 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<int>),
-                IsNullable = true,
+                Nullability = MemberNullability.Nullable,
                 CollectionChain = [
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<int>),
                         ElementType = typeof(int),
-                        IsCollectionNullable = true,
-                        IsElementNullable = false
+                        CollectionNullability = MemberNullability.Nullable,
+                        ElementNullability = MemberNullability.NonNullable
                     }
                 ]
             }
@@ -307,14 +315,14 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<int?>),
-                IsNullable = false,
+                Nullability = MemberNullability.NonNullable,
                 CollectionChain = [
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<int?>),
                         ElementType = typeof(int?),
-                        IsCollectionNullable = false,
-                        IsElementNullable = true
+                        CollectionNullability = MemberNullability.NonNullable,
+                        ElementNullability = MemberNullability.Nullable
                     }
                 ]
             }
@@ -328,14 +336,14 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<int>),
-                IsNullable = false,
+                Nullability = MemberNullability.NonNullable,
                 CollectionChain = [
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<int>),
                         ElementType = typeof(int),
-                        IsCollectionNullable = false,
-                        IsElementNullable = false
+                        CollectionNullability = MemberNullability.NonNullable,
+                        ElementNullability = MemberNullability.NonNullable
                     }
                 ]
             }
@@ -349,21 +357,21 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<List<string?>?>),
-                IsNullable = true,
+                Nullability = MemberNullability.Nullable,
                 CollectionChain = [
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<List<string?>?>),
                         ElementType = typeof(List<string?>),
-                        IsCollectionNullable = true,
-                        IsElementNullable = true
+                        CollectionNullability = MemberNullability.Nullable,
+                        ElementNullability = MemberNullability.Nullable
                     },
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<string?>),
                         ElementType = typeof(string),
-                        IsCollectionNullable = true,
-                        IsElementNullable = true
+                        CollectionNullability = MemberNullability.Nullable,
+                        ElementNullability = MemberNullability.Nullable
                     }
                 ]
             }
@@ -377,28 +385,28 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<List<List<string?>?>?>),
-                IsNullable = true,
+                Nullability = MemberNullability.Nullable,
                 CollectionChain = [
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<List<List<string?>?>?>),
                         ElementType = typeof(List<List<string?>?>),
-                        IsCollectionNullable = true,
-                        IsElementNullable = true
+                        CollectionNullability = MemberNullability.Nullable,
+                        ElementNullability = MemberNullability.Nullable
                     },
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<List<string?>?>),
                         ElementType = typeof(List<string?>),
-                        IsCollectionNullable = true,
-                        IsElementNullable = true
+                        CollectionNullability = MemberNullability.Nullable,
+                        ElementNullability = MemberNullability.Nullable
                     },
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<string?>),
                         ElementType = typeof(string),
-                        IsCollectionNullable = true,
-                        IsElementNullable = true
+                        CollectionNullability = MemberNullability.Nullable,
+                        ElementNullability = MemberNullability.Nullable
                     }
                 ]
             }
@@ -412,21 +420,21 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<List<int?>?>),
-                IsNullable = true,
+                Nullability = MemberNullability.Nullable,
                 CollectionChain = [
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<List<int?>?>),
                         ElementType = typeof(List<int?>),
-                        IsCollectionNullable = true,
-                        IsElementNullable = true
+                        CollectionNullability = MemberNullability.Nullable,
+                        ElementNullability = MemberNullability.Nullable
                     },
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<int?>),
                         ElementType = typeof(int?),
-                        IsCollectionNullable = true,
-                        IsElementNullable = true
+                        CollectionNullability = MemberNullability.Nullable,
+                        ElementNullability = MemberNullability.Nullable
                     }
                 ]
             }
@@ -440,28 +448,62 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<List<List<int?>?>?>),
-                IsNullable = true,
+                Nullability = MemberNullability.Nullable,
                 CollectionChain = [
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<List<List<int?>?>?>),
                         ElementType = typeof(List<List<int?>?>),
-                        IsCollectionNullable = true,
-                        IsElementNullable = true
+                        CollectionNullability = MemberNullability.Nullable,
+                        ElementNullability = MemberNullability.Nullable
                     },
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<List<int?>?>),
                         ElementType = typeof(List<int?>),
-                        IsCollectionNullable = true,
-                        IsElementNullable = true
+                        CollectionNullability = MemberNullability.Nullable,
+                        ElementNullability = MemberNullability.Nullable
                     },
                     new MemberNullableInfo.CollectionInfo
                     {
                         CollectionType = typeof(List<int?>),
                         ElementType = typeof(int?),
-                        IsCollectionNullable = true,
-                        IsElementNullable = true
+                        CollectionNullability = MemberNullability.Nullable,
+                        ElementNullability = MemberNullability.Nullable
+                    }
+                ]
+            }
+        },
+
+        new GetNullabilityInfoTest
+        {
+            Name = "With Unknown Reference",
+            Type = typeof(UnknownSample),
+            FieldName = nameof(UnknownSample.UnknownReference),
+            Expected = new MemberNullableInfo
+            {
+                MemberType = typeof(string),
+                Nullability = MemberNullability.Unknown,
+                CollectionChain = []
+            }
+        },
+
+        new GetNullabilityInfoTest
+        {
+            Name = "With Unknown Collection With Unknown Reference Elements",
+            Type = typeof(UnknownSample),
+            FieldName = nameof(UnknownSample.UnknownCollectionWithUnknownReferenceElements),
+            Expected = new MemberNullableInfo
+            {
+                MemberType = typeof(List<string>),
+                Nullability = MemberNullability.Unknown,
+                CollectionChain = [
+                    new MemberNullableInfo.CollectionInfo
+                    {
+                        CollectionType = typeof(List<string>),
+                        CollectionNullability = MemberNullability.Unknown,
+                        ElementType = typeof(string),
+                        ElementNullability = MemberNullability.Unknown
                     }
                 ]
             }

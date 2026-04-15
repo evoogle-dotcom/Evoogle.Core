@@ -24,11 +24,11 @@ public sealed record MemberNullableInfo
         /// <summary>The element type within the collection.</summary>
         public Type ElementType { get; init; } = null!;
 
-        /// <summary>Indicates whether the collection itself is nullable.</summary>
-        public bool IsCollectionNullable { get; init; }
+        /// <summary>Indicates the nullability of the collection itself.</summary>
+        public MemberNullability CollectionNullability { get; init; }
 
-        /// <summary>Indicates whether the element type within the collection is nullable.</summary>
-        public bool IsElementNullable { get; init; }
+        /// <summary>Indicates the nullability of the element type within the collection.</summary>
+        public MemberNullability ElementNullability { get; init; }
     }
     #endregion
 
@@ -36,8 +36,8 @@ public sealed record MemberNullableInfo
     /// <summary>The type of the member being inspected.</summary>
     public Type MemberType { get; init; } = null!;
 
-    /// <summary>True if the member itself is nullable.</summary>
-    public bool IsNullable { get; init; }
+    /// <summary>The nullability of the member itself.</summary>
+    public MemberNullability Nullability { get; init; }
 
     /// <summary>
     ///     Recursive chain of collection types (if applicable), each layer describing its type and nullability.

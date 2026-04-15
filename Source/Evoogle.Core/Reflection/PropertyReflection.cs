@@ -36,27 +36,27 @@ public static class PropertyReflection
         var currentType = propertyType;
         var currentNullability = nullabilityInfo;
 
-        var isPropertyNullable = currentNullability.ReadState == NullabilityState.Nullable;
+        var propertyNullability = ToMemberNullability(currentNullability.ReadState);
 
         // Handle collections and possible collections within collections (IEnumerable<T>, arrays, etc.)
         while (TypeReflection.IsEnumerableOfT(currentType, out var elementType))
         {
-            var collectionNullable = currentNullability.ReadState == NullabilityState.Nullable;
+            var collectionNullability = ToMemberNullability(currentNullability.ReadState);
 
             var elementNullability = currentType.IsArray
                 ? currentNullability.ElementType
                 : currentNullability.GenericTypeArguments.FirstOrDefault();
 
-            var elementNullable = elementType.IsValueType
-                ? Nullable.GetUnderlyingType(elementType) != null
-                : elementNullability?.ReadState == NullabilityState.Nullable;
+            var elementMemberNullability = elementType.IsValueType
+                ? (Nullable.GetUnderlyingType(elementType) != null ? MemberNullability.Nullable : MemberNullability.NonNullable)
+                : ToMemberNullability(elementNullability?.ReadState ?? NullabilityState.Unknown);
 
             collectionChain.Add(new MemberNullableInfo.CollectionInfo
             {
                 CollectionType = currentType,
-                IsCollectionNullable = collectionNullable,
+                CollectionNullability = collectionNullability,
                 ElementType = elementType,
-                IsElementNullable = elementNullable
+                ElementNullability = elementMemberNullability
             });
 
             if (elementNullability is null)
@@ -71,10 +71,17 @@ public static class PropertyReflection
         return new MemberNullableInfo
         {
             MemberType = propertyType,
-            IsNullable = isPropertyNullable,
+            Nullability = propertyNullability,
             CollectionChain = collectionChain
         };
     }
+
+    private static MemberNullability ToMemberNullability(NullabilityState state) => state switch
+    {
+        NullabilityState.Nullable => MemberNullability.Nullable,
+        NullabilityState.NotNull => MemberNullability.NonNullable,
+        _ => MemberNullability.Unknown,
+    };
 
     /// <summary>
     ///     Predicate if property is static or an instance property.
