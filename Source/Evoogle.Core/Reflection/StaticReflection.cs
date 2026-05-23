@@ -89,9 +89,52 @@ public static class StaticReflection
     /// </param>
     /// <returns>The name of the member.</returns>
     public static string GetMemberName<T>(this T _, Expression<Action<T>> expression, bool throwOnUnsupported = true) => GetMemberName(expression.Body, throwOnUnsupported);
-    #endregion
 
-    #region Implementation Methods
+    /// <summary>
+    ///     Gets the ordered chain of member names from root to leaf represented by a dot-navigated expression.
+    /// </summary>
+    /// <typeparam name="T">The root type.</typeparam>
+    /// <typeparam name="TResult">The return type of the final member.</typeparam>
+    /// <param name="expression">A lambda expression consisting only of chained member access (e.g. <c>x => x.Address.City</c>).</param>
+    /// <returns>An ordered array of member names from root to leaf, e.g. <c>["Address", "City"]</c>.</returns>
+    /// <exception cref="ArgumentException">
+    ///     Thrown when the expression body contains anything other than chained member access on the lambda parameter.
+    /// </exception>
+    public static string[] GetMemberPath<T, TResult>(Expression<Func<T, TResult>> expression)
+    {
+        ArgumentNullException.ThrowIfNull(expression);
+
+        var names = new Stack<string>();
+        var node = expression.Body;
+
+        while (node is MemberExpression member)
+        {
+            names.Push(member.Member.Name);
+            node = member.Expression;
+        }
+
+        if (node is not ParameterExpression)
+        {
+            throw new ArgumentException
+            (
+                $"Expression must consist only of chained member access on the lambda parameter (e.g. x => x.A.B.C). " +
+                $"Unsupported node type: {node?.GetType().Name ?? "null"}.",
+                nameof(expression)
+            );
+        }
+
+        if (names.Count == 0)
+        {
+            throw new ArgumentException
+            (
+                "Expression must contain at least one member access (e.g. x => x.Property).",
+                nameof(expression)
+            );
+        }
+
+        return [.. names];
+    }
+
     /// <summary>
     ///     Core logic that extracts the member name from an expression tree.
     /// </summary>

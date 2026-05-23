@@ -77,6 +77,62 @@ public class StaticReflectionTests(ITestOutputHelper output) : XUnitTests(output
         public const string BinaryWithProperty = "BinaryWithProperty";
         public const string UnsupportedLoop = "UnsupportedLoop";
     }
+
+    public class GetMemberPathTest : XUnitTest
+    {
+        public string[] Expected { get; init; } = null!;
+        public string[] Actual { get; init; } = null!;
+
+        protected override void Arrange()
+        {
+            this.WriteLine($"Expected = [{string.Join(", ", this.Expected)}]");
+            this.WriteLine($"Actual   = [{string.Join(", ", this.Actual)}]");
+        }
+
+        protected override void Assert() => this.Actual.Should().Equal(this.Expected);
+    }
+
+    public class GetMemberPathExceptionTest : XUnitTest
+    {
+        public string CaseName { get; init; } = null!;
+        public Type ExpectedExceptionType { get; init; } = null!;
+        private Exception? _actualException;
+
+        protected override void Arrange()
+        {
+            this.WriteLine($"Case                  = {this.CaseName}");
+            this.WriteLine($"ExpectedExceptionType = {this.ExpectedExceptionType.Name}");
+        }
+
+        protected override void Act()
+        {
+            try
+            {
+                _ = this.CaseName switch
+                {
+                    nameof(NullExpression) => StaticReflection.GetMemberPath<Widget, string>(null!),
+                    nameof(MethodCall) => StaticReflection.GetMemberPath<Widget, string>(x => x.Method()),
+                    nameof(StaticMember) => StaticReflection.GetMemberPath<Widget, string>(_ => Widget.StaticProperty),
+                    _ => throw new InvalidOperationException($"Unknown case: {this.CaseName}")
+                };
+            }
+            catch (ArgumentException ex)
+            {
+                _actualException = ex;
+                this.WriteLine($"Caught {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+        protected override void Assert()
+        {
+            _actualException.Should().NotBeNull();
+            _actualException.Should().BeOfType(this.ExpectedExceptionType);
+        }
+
+        public const string NullExpression = "NullExpression";
+        public const string MethodCall = "MethodCall";
+        public const string StaticMember = "StaticMember";
+    }
     #endregion
 
     #region Test Data
@@ -111,6 +167,23 @@ public class StaticReflectionTests(ITestOutputHelper output) : XUnitTests(output
         public string Field = string.Empty;
 
         public static string StaticField = string.Empty;
+    }
+
+    public class Person
+    {
+        public int Id { get; set; }
+        public Address HomeAddress { get; set; } = new();
+
+        public class Address
+        {
+            public string City { get; set; } = string.Empty;
+            public Contact PrimaryContact { get; set; } = new();
+
+            public class Contact
+            {
+                public string Phone { get; set; } = string.Empty;
+            }
+        }
     }
     #endregion
 
@@ -249,6 +322,50 @@ public class StaticReflectionTests(ITestOutputHelper output) : XUnitTests(output
             Expected = "Unsupported_LoopExpression"
         }
     ];
+
+    public static TheoryDataRow<IXUnitTest>[] GetMemberPathTheoryData =>
+    [
+        new GetMemberPathTest
+        {
+            Name = "With Single Segment",
+            Expected = ["Id"],
+            Actual = StaticReflection.GetMemberPath<Person, int>(x => x.Id)
+        },
+        new GetMemberPathTest
+        {
+            Name = "With Two Segments",
+            Expected = ["HomeAddress", "City"],
+            Actual = StaticReflection.GetMemberPath<Person, string>(x => x.HomeAddress.City)
+        },
+        new GetMemberPathTest
+        {
+            Name = "With Three Segments",
+            Expected = ["HomeAddress", "PrimaryContact", "Phone"],
+            Actual = StaticReflection.GetMemberPath<Person, string>(x => x.HomeAddress.PrimaryContact.Phone)
+        },
+    ];
+
+    public static TheoryDataRow<IXUnitTest>[] GetMemberPathExceptionTheoryData =>
+    [
+        new GetMemberPathExceptionTest
+        {
+            Name = "With Null Expression Throws ArgumentNullException",
+            CaseName = GetMemberPathExceptionTest.NullExpression,
+            ExpectedExceptionType = typeof(ArgumentNullException)
+        },
+        new GetMemberPathExceptionTest
+        {
+            Name = "With Method Call Expression Throws ArgumentException",
+            CaseName = GetMemberPathExceptionTest.MethodCall,
+            ExpectedExceptionType = typeof(ArgumentException)
+        },
+        new GetMemberPathExceptionTest
+        {
+            Name = "With Static Member Access Throws ArgumentException",
+            CaseName = GetMemberPathExceptionTest.StaticMember,
+            ExpectedExceptionType = typeof(ArgumentException)
+        },
+    ];
     #endregion
 
     #region Test Methods
@@ -260,4 +377,12 @@ public class StaticReflectionTests(ITestOutputHelper output) : XUnitTests(output
     [Theory]
     [MemberData(nameof(GetMemberNameEdgeCaseTheoryData))]
     public void GetMemberNameEdgeCases(IXUnitTest test) => test.Execute(this);
+
+    [Theory]
+    [MemberData(nameof(GetMemberPathTheoryData))]
+    public void GetMemberPath(IXUnitTest test) => test.Execute(this);
+
+    [Theory]
+    [MemberData(nameof(GetMemberPathExceptionTheoryData))]
+    public void GetMemberPathExceptions(IXUnitTest test) => test.Execute(this);
 }
