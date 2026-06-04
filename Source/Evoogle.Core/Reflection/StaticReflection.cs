@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024-2025 Evoogle.com
+// Copyright (c) 2024-2025 Evoogle.com
 // SPDX-License-Identifier: MIT
 //
 // This file is licensed under the MIT License.
@@ -105,12 +105,12 @@ public static class StaticReflection
         ArgumentNullException.ThrowIfNull(expression);
 
         var names = new Stack<string>();
-        var node = expression.Body;
+        var node = UnwrapConversion(expression.Body);
 
         while (node is MemberExpression member)
         {
             names.Push(member.Member.Name);
-            node = member.Expression;
+            node = UnwrapConversion(member.Expression);
         }
 
         if (node is not ParameterExpression)
@@ -133,6 +133,22 @@ public static class StaticReflection
         }
 
         return [.. names];
+    }
+
+    /// <summary>
+    ///     Removes compiler-inserted conversion nodes so object-returning lambdas over value types are still treated
+    ///     as simple member-access expressions.
+    /// </summary>
+    /// <param name="expression">Expression tree node to normalize.</param>
+    /// <returns>The operand for conversion expressions; otherwise, the original expression.</returns>
+    private static Expression? UnwrapConversion(Expression? expression)
+    {
+        while (expression is UnaryExpression { NodeType: ExpressionType.Convert or ExpressionType.ConvertChecked } unaryExpression)
+        {
+            expression = unaryExpression.Operand;
+        }
+
+        return expression;
     }
 
     /// <summary>

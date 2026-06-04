@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024-2025 Evoogle.com
+// Copyright (c) 2024-2025 Evoogle.com
 // SPDX-License-Identifier: MIT
 //
 // This file is licensed under the MIT License.
@@ -333,6 +333,12 @@ public class StaticReflectionTests(ITestOutputHelper output) : XUnitTests(output
         },
         new GetMemberPathTest
         {
+            Name = "With Single Value Type Segment Boxed To Object",
+            Expected = ["Id"],
+            Actual = StaticReflection.GetMemberPath<Person, object?>(x => x.Id)
+        },
+        new GetMemberPathTest
+        {
             Name = "With Two Segments",
             Expected = ["HomeAddress", "City"],
             Actual = StaticReflection.GetMemberPath<Person, string>(x => x.HomeAddress.City)
@@ -342,6 +348,12 @@ public class StaticReflectionTests(ITestOutputHelper output) : XUnitTests(output
             Name = "With Three Segments",
             Expected = ["HomeAddress", "PrimaryContact", "Phone"],
             Actual = StaticReflection.GetMemberPath<Person, string>(x => x.HomeAddress.PrimaryContact.Phone)
+        },
+        new GetMemberPathTest
+        {
+            Name = "With Three Segments Boxed To Object",
+            Expected = ["HomeAddress", "PrimaryContact", "Phone"],
+            Actual = StaticReflection.GetMemberPath<Person, object?>(x => x.HomeAddress.PrimaryContact.Phone)
         },
     ];
 
