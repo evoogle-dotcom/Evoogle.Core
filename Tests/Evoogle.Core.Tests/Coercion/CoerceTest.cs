@@ -35,7 +35,7 @@ public class CoerceTest : XUnitTest
     protected static string TypeAsString<T>()
     {
         var type = typeof(T);
-        return TypeAsString(type)!;
+        return TypeAsString(type);
     }
 
     protected static string ValueAsString<TValue>(TValue? value)

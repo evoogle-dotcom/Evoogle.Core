@@ -75,7 +75,7 @@ public class CoerceTests(ITestOutputHelper output) : XUnitTests(output)
     public const string TestByteArrayString = "KhgwVAwVRFY=";
 
     public static readonly Type TestType = typeof(CoerceTests);
-    public static readonly string TestTypeString = TypeReflection.GetCompactQualifiedName(TestType)!;
+    public static readonly string TestTypeString = TypeReflection.GetCompactQualifiedName(TestType);
 
     public const int TestColorSet1RedOrdinal = 1;
     public const int TestColorSet1GreenOrdinal = 2;

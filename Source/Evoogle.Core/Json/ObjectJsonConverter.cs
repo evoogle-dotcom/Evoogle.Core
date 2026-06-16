@@ -67,7 +67,7 @@ public sealed class ObjectJsonConverter : JsonConverter<object>
             throw new JsonException($"{nameof(ObjectJsonConverter)} encountered an empty '$type' discriminator.");
         }
 
-        var targetType = Type.GetType(typeName!, throwOnError: false);
+        var targetType = Type.GetType(typeName, throwOnError: false);
         if (targetType is null)
         {
             throw new JsonException($"{nameof(ObjectJsonConverter)} could not resolve type '{typeName}'.");

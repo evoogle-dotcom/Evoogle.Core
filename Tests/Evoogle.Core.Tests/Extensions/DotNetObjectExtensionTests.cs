@@ -20,7 +20,7 @@ public class DotNetObjectExtensionTests(ITestOutputHelper output) : XUnitTests(o
         public string? EmtpyText { get; init; }
         private string? Actual { get; set; }
 
-        protected override void Act() => this.Actual = this.Source!.SafeToString(this.NullText!, this.EmtpyText!);
+        protected override void Act() => this.Actual = this.Source.SafeToString(this.NullText, this.EmtpyText);
 
         protected override void Assert() => this.Actual.Should().Be(this.Expected);
     }

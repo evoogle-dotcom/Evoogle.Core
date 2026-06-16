@@ -425,7 +425,7 @@ public partial class TypeCoercion
         var inputUnderlying = Convert.ChangeType(input, Enum.GetUnderlyingType(inputType)) ?? throw new InvalidOperationException($"Unable to convert input {{Value={input.SafeToString()}}} of type {{Type={inputType.Name}}} to underlying type of enumeration {{Type={typeof(TOutput).Name}}}.");
         var outputUnderlying = Convert.ChangeType(inputUnderlying, Enum.GetUnderlyingType(outputType)) ?? throw new InvalidOperationException($"Unable to convert input {{Value={inputUnderlying.SafeToString()}}} of type {{Type={Enum.GetUnderlyingType(inputType).Name}}} to underlying type of enumeration {{Type={typeof(TOutput).Name}}}.");
 
-        var outputByOrdinal = (TOutput)Enum.ToObject(outputType, outputUnderlying!);
+        var outputByOrdinal = (TOutput)Enum.ToObject(outputType, outputUnderlying);
         return outputByOrdinal;
     }
 

@@ -57,7 +57,7 @@ public class StaticReflectionTests(ITestOutputHelper output) : XUnitTests(output
                 Expression.Add
                 (
                     Expression.Property(Expression.Parameter(typeof(Widget), "w"), nameof(Widget.Property)),
-                    Expression.Constant("test"), typeof(string).GetMethod("Concat", [typeof(string), typeof(string)])!
+                    Expression.Constant("test"), typeof(string).GetMethod("Concat", [typeof(string), typeof(string)])
                 ),
                 nameof(UnsupportedLoop) => (Expression)Expression.Loop(Expression.Empty()),
                 _ => throw new InvalidOperationException("Unknown case.")

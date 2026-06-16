@@ -39,7 +39,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
 
         protected override void Act()
         {
-            this.Actual = this.Original!.EmptyIfNull();
+            this.Actual = this.Original.EmptyIfNull();
 
             var actualJson = this.Actual.SafeToJson();
             this.WriteLine($"Actual IEnumerable<{typeof(T).Name}> as JSON");
@@ -82,7 +82,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
 
         protected override void Act()
         {
-            this.Actual = this.Original!.IsNullOrEmpty();
+            this.Actual = this.Original.IsNullOrEmpty();
 
             this.WriteLine($"Actual IsNullOrEmpty: {this.Actual}");
             this.WriteLine();
@@ -125,7 +125,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
 
         protected override void Act()
         {
-            this.Actual = this.Original!.SafeCast<TTo>();
+            this.Actual = this.Original.SafeCast<TTo>();
 
             var actualJson = this.Actual.SafeToJson();
             this.WriteLine($"Actual IEnumerable<{typeof(TTo).Name}> as JSON");
@@ -170,7 +170,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
 
         protected override void Act()
         {
-            this.Actual = this.Original!.SafeToArray();
+            this.Actual = this.Original.SafeToArray();
 
             var actualJson = this.Actual.SafeToJson();
             this.WriteLine($"Actual {typeof(T).Name} [] as JSON");
@@ -215,7 +215,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
 
         protected override void Act()
         {
-            this.Actual = this.Original!.SafeToList();
+            this.Actual = this.Original.SafeToList();
 
             var actualJson = this.Actual.SafeToJson();
             this.WriteLine($"Actual List<{typeof(T).Name}> as JSON");
@@ -260,7 +260,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
 
         protected override void Act()
         {
-            this.Actual = this.Original!.SafeToReadOnlyCollection();
+            this.Actual = this.Original.SafeToReadOnlyCollection();
 
             var actualJson = this.Actual.SafeToJson();
             this.WriteLine($"Actual IReadOnlyCollection<{typeof(T).Name}> as JSON");
@@ -305,7 +305,7 @@ public class DotNetEnumerableExtensionTests(ITestOutputHelper output) : XUnitTes
 
         protected override void Act()
         {
-            this.Actual = this.Original!.SafeToReadOnlyList();
+            this.Actual = this.Original.SafeToReadOnlyList();
 
             var actualJson = this.Actual.SafeToJson();
             this.WriteLine($"Actual IReadOnlyList<{typeof(T).Name}> as JSON");

@@ -36,7 +36,7 @@ public class DotNetStringExtensionTests(ITestOutputHelper output) : XUnitTests(o
 
         protected override void Act()
         {
-            this.Actual = this.Source!.Mask(this.MaskChar, this.UnmaskedLeftCount, this.UnmaskedRightCount, this.MinMaskedCount);
+            this.Actual = this.Source.Mask(this.MaskChar, this.UnmaskedLeftCount, this.UnmaskedRightCount, this.MinMaskedCount);
             this.WriteLine($"Actual:   {this.Actual.SafeToString()}");
         }
 
@@ -49,7 +49,7 @@ public class DotNetStringExtensionTests(ITestOutputHelper output) : XUnitTests(o
         public string? Expected { get; init; }
         private string? Actual { get; set; }
 
-        protected override void Act() => this.Actual = this.Source!.RemoveWhitespace();
+        protected override void Act() => this.Actual = this.Source.RemoveWhitespace();
 
         protected override void Assert() => this.Actual.Should().Be(this.Expected);
     }
