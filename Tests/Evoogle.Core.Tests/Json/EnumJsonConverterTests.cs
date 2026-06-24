@@ -3,6 +3,7 @@
 //
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
+using System.Runtime.Serialization;
 using System.Text.Json;
 
 using Evoogle.Extensions;
@@ -132,12 +133,40 @@ public class EnumJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
         Blue
     }
 
+    public enum WireColor
+    {
+        Transparent,
+
+        [EnumMember(Value = "BRIGHT_RED")]
+        Red,
+
+        Green,
+
+        [EnumMember(Value = "OCEAN_BLUE")]
+        Blue
+    }
+
     [Flags]
     public enum Permissions
     {
         None = 0,
         Read = 1,
         Write = 2,
+        Execute = 4
+    }
+
+    [Flags]
+    public enum WirePermissions
+    {
+        None = 0,
+
+        [EnumMember(Value = "CAN_READ")]
+        Read = 1,
+
+        [EnumMember(Value = "CAN_WRITE")]
+        Write = 2,
+
+        [EnumMember(Value = "CAN_EXECUTE")]
         Execute = 4
     }
 
@@ -173,6 +202,24 @@ public class EnumJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
             Name = "Regular Enum Should Deserialize From String Name - Blue",
             SourceJson = @"""Blue""",
             ExpectedEnum = Color.Blue
+        },
+        new JsonDeserializeTest<WireColor>
+        {
+            Name = "Regular Enum Should Deserialize From EnumMember Value - BRIGHT_RED",
+            SourceJson = @"""BRIGHT_RED""",
+            ExpectedEnum = WireColor.Red
+        },
+        new JsonDeserializeTest<WireColor>
+        {
+            Name = "Regular Enum Should Deserialize From EnumMember Value (Case Insensitive) - bright_red",
+            SourceJson = @"""bright_red""",
+            ExpectedEnum = WireColor.Red
+        },
+        new JsonDeserializeTest<WireColor>
+        {
+            Name = "Regular Enum Should Deserialize From String Name When EnumMember Exists - Red",
+            SourceJson = @"""Red""",
+            ExpectedEnum = WireColor.Red
         },
 
         // Regular Enum Should Deserialize From Null Literal
@@ -242,6 +289,12 @@ public class EnumJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
             SourceJson = @"""read, write, execute""",
             ExpectedEnum = Permissions.Read | Permissions.Write | Permissions.Execute
         },
+        new JsonDeserializeTest<WirePermissions>
+        {
+            Name = "Flags Enum Should Deserialize From Comma Separated EnumMember Values - CAN_READ, CAN_WRITE",
+            SourceJson = @"""CAN_READ, CAN_WRITE""",
+            ExpectedEnum = WirePermissions.Read | WirePermissions.Write
+        },
 
         // Flags Enum Should Deserialize From Null Literal
         new JsonDeserializeTest<Permissions>
@@ -301,6 +354,12 @@ public class EnumJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
             SourceEnum = Color.Blue,
             ExpectedJson = @"""Blue"""
         },
+        new JsonSerializeTest<WireColor>
+        {
+            Name = "Regular Enum Should Serialize To EnumMember Value - WireColor.Red",
+            SourceEnum = WireColor.Red,
+            ExpectedJson = @"""BRIGHT_RED"""
+        },
 
         // Flags Enum Should Serialize To Comma Separated String Names
         new JsonSerializeTest<Permissions>
@@ -320,6 +379,12 @@ public class EnumJsonConverterTests(ITestOutputHelper output) : XUnitTests(outpu
             Name = "Flags Enum Should Serialize To Comma Separated String Names - Permissions.Read | Permissions.Write | Permissions.Execute",
             SourceEnum = Permissions.Read | Permissions.Write | Permissions.Execute,
             ExpectedJson = @"""Read, Write, Execute"""
+        },
+        new JsonSerializeTest<WirePermissions>
+        {
+            Name = "Flags Enum Should Serialize To Comma Separated EnumMember Values - WirePermissions.Read | WirePermissions.Write",
+            SourceEnum = WirePermissions.Read | WirePermissions.Write,
+            ExpectedJson = @"""CAN_READ, CAN_WRITE"""
         },
     ];
     #endregion
