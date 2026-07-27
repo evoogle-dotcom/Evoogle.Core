@@ -21,7 +21,7 @@ public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
     [DynamicLinqType]
     public class TestExtensible : ExtensibleBase
     {
-        public static TestExtensible Create() => new TestExtensible();
+        public static TestExtensible Create() => new();
 
         public static void AttachExtension(TestExtensible testExtensible, string? name) =>
 #pragma warning disable CS8634 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'class' constraint.

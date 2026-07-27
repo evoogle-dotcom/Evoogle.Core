@@ -52,4 +52,3 @@ public interface ITypeCoercionDefinition<TInput, TOutput> : ITypeCoercionDefinit
     TOutput Coerce(TInput input, TypeCoercionContext context);
     #endregion
 }
-

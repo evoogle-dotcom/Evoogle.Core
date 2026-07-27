@@ -13,7 +13,7 @@ namespace Evoogle.Coercion;
 ///    Implements type coercion methods for converting between different data types.
 /// </summary>
 /// <remarks>
-///     If the input value is <c>null</c>, the method returns <c>null</c>.  
+///     If the input value is <c>null</c>, the method returns <c>null</c>.
 ///     If coercion fails for a non-null value, a <see cref="TypeCoercionException"/> is thrown.
 /// </remarks>
 public partial class TypeCoercion

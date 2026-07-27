@@ -16,7 +16,7 @@ public class TypeCoercionDefinitionFunc<TInput, TOutput>(Func<TInput, TypeCoerci
     : ITypeCoercionDefinition<TInput, TOutput>
 {
     #region ITypeCoercionDefinition Properties
-    /// <summary>Gets the input type for this coercion definition.</summary>    
+    /// <summary>Gets the input type for this coercion definition.</summary>
     public Type InputType => typeof(TInput);
 
     /// <summary>Gets the output type for this coercion definition.</summary>
@@ -33,7 +33,7 @@ public class TypeCoercionDefinitionFunc<TInput, TOutput>(Func<TInput, TypeCoerci
     /// </summary>
     /// <param name="input">The input value to coerce.</param>
     /// <param name="context">The context for coercion.</param>
-    /// <returns>The coerced value.</returns>    
+    /// <returns>The coerced value.</returns>
     public object Coerce(object input, TypeCoercionContext context) => this.CoerceFunc((TInput)input, context)!;
     #endregion
 
@@ -43,7 +43,7 @@ public class TypeCoercionDefinitionFunc<TInput, TOutput>(Func<TInput, TypeCoerci
     /// </summary>
     /// <param name="input">The input value to coerce.</param>
     /// <param name="context">The context for coercion.</param>
-    /// <returns>The coerced value.</returns>    
+    /// <returns>The coerced value.</returns>
     public TOutput Coerce(TInput input, TypeCoercionContext context) => this.CoerceFunc(input, context);
     #endregion
 }

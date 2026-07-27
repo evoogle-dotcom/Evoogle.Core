@@ -179,4 +179,3 @@ public abstract class CoerceTest<TInput, TOutput> : CoerceTest
     }
     #endregion
 }
-
