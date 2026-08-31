@@ -18,7 +18,8 @@ This repository hosts the **Evoogle** projects, maintained by [Evoogle](https://
 * **Extensions**: A set of helpful extension methods for core .NET types.
 * **Json**: A utility library and set of extensions that simplify working with the `System.Text.Json` library.
 * **Logging**: A flexible and extensible logging utility that enables developers to log messages to multiple destinations simultaneously, making it ideal for both runtime applications and diagnostics during development or testing.
-* **NTree**: An N-ary tree data structure implementation.
+* **NTree**: An N-ary tree implementation with read-only structural interfaces,
+  optional named nodes, interface-driven traversal, and a mutable node base class.
 * **Reflection**: Utility classes to streamline working with .NET reflection APIs.
 
 ## Evoogle.XUnit

@@ -13,6 +13,6 @@ public enum TraversalStrategy
     /// <summary>Traverse using breadth-first order.</summary>
     BreadthFirst,
 
-    /// <summary>Traverse using depth-first (post-order) order.</summary>
+    /// <summary>Traverse using depth-first preorder.</summary>
     DepthFirst
 }

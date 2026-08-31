@@ -53,7 +53,7 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
             var tree = treeFactoryFunc();
 
             // Create breadth first enumerator
-            var enumerator = tree.CreateBreadFirstEnumerator();
+            var enumerator = tree.CreateBreadthFirstEnumerator();
             var nameCollection = new List<string>();
 
             // Mutate the tree
@@ -123,7 +123,7 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
             var child = childFactoryFunc();
 
             // Create breadth first enumerator
-            var enumerator = tree.CreateBreadFirstEnumerator();
+            var enumerator = tree.CreateBreadthFirstEnumerator();
             var nameCollection = new List<string>();
 
             // Mutate the tree
@@ -796,7 +796,7 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         {
             Name = "BFS Depth=0 Children=0",
             TreeFactoryExpression = () => TestNode.CreateTree(0, 0),
-            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadFirstEnumerator(a),
+            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadthFirstEnumerator(a),
             ExpectedTraversal = "1"
         },
 
@@ -804,7 +804,7 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         {
             Name = "BFS Depth=1 Children=1",
             TreeFactoryExpression = () => TestNode.CreateTree(1, 1),
-            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadFirstEnumerator(a),
+            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadthFirstEnumerator(a),
             ExpectedTraversal = "1|11"
         },
 
@@ -812,7 +812,7 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         {
             Name = "BFS Depth=1 Children=2",
             TreeFactoryExpression = () => TestNode.CreateTree(1, 2),
-            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadFirstEnumerator(a),
+            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadthFirstEnumerator(a),
             ExpectedTraversal = "1|11|12"
         },
 
@@ -820,7 +820,7 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         {
             Name = "BFS Depth=1 Children=3",
             TreeFactoryExpression = () => TestNode.CreateTree(1, 3),
-            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadFirstEnumerator(a),
+            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadthFirstEnumerator(a),
             ExpectedTraversal = "1|11|12|13"
         },
 
@@ -828,7 +828,7 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         {
             Name = "BFS Depth=2 Children=1",
             TreeFactoryExpression = () => TestNode.CreateTree(2, 1),
-            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadFirstEnumerator(a),
+            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadthFirstEnumerator(a),
             ExpectedTraversal = "1|11|111"
         },
 
@@ -836,7 +836,7 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         {
             Name = "BFS Depth=2 Children=2",
             TreeFactoryExpression = () => TestNode.CreateTree(2, 2),
-            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadFirstEnumerator(a),
+            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadthFirstEnumerator(a),
             ExpectedTraversal = "1|11|12|111|112|121|122"
         },
 
@@ -844,7 +844,7 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         {
             Name = "BFS Depth=2 Children=3",
             TreeFactoryExpression = () => TestNode.CreateTree(2, 3),
-            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadFirstEnumerator(a),
+            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadthFirstEnumerator(a),
             ExpectedTraversal = "1|11|12|13|111|112|113|121|122|123|131|132|133"
         },
 
@@ -852,7 +852,7 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         {
             Name = "BFS Depth=3 Children=1",
             TreeFactoryExpression = () => TestNode.CreateTree(3, 1),
-            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadFirstEnumerator(a),
+            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadthFirstEnumerator(a),
             ExpectedTraversal = "1|11|111|1111"
         },
 
@@ -860,7 +860,7 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         {
             Name = "BFS Depth=3 Children=2",
             TreeFactoryExpression = () => TestNode.CreateTree(3, 2),
-            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadFirstEnumerator(a),
+            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadthFirstEnumerator(a),
             ExpectedTraversal = "1|11|12|111|112|121|122|1111|1112|1121|1122|1211|1212|1221|1222"
         },
 
@@ -868,7 +868,7 @@ public class NodeTests(ITestOutputHelper output) : XUnitTests(output)
         {
             Name = "BFS Depth=3 Children=3",
             TreeFactoryExpression = () => TestNode.CreateTree(3, 3),
-            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadFirstEnumerator(a),
+            EnumeratorFactoryExpression = (a) => TestNode.CreateBreadthFirstEnumerator(a),
             ExpectedTraversal = "1|11|12|13|111|112|113|121|122|123|131|132|133|1111|1112|1113|1121|1122|1123|1131|1132|1133|1211|1212|1213|1221|1222|1223|1231|1232|1233|1311|1312|1313|1321|1322|1323|1331|1332|1333"
         },
 

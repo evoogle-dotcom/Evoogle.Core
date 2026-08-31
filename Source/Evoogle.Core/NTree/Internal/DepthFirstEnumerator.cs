@@ -11,8 +11,8 @@ namespace Evoogle.NTree.Internal;
 ///     This API supports the Evoogle.Core infrastructure and is not intended to be used directly from your code.
 ///     This API may change or be removed in future releases.
 /// </summary>
-internal class DepthFirstEnumerator<TNode>(TNode node) : IEnumerator<TNode>
-    where TNode : Node<TNode>
+internal sealed class DepthFirstEnumerator<TNode>(TNode node) : IEnumerator<TNode>
+    where TNode : class, INode<TNode>
 {
     #region Properties
     private TNode Initial { get; } = node;
@@ -38,7 +38,7 @@ internal class DepthFirstEnumerator<TNode>(TNode node) : IEnumerator<TNode>
 
     #region IEnumerator Methods
     /// <summary>
-    ///     Advances the enumerator to the next node in depth-first order.
+    ///     Advances the enumerator to the next node in depth-first preorder.
     /// </summary>
     /// <returns><see langword="true"/> if the enumerator was successfully advanced to the next node; <see langword="false"/> if the enumerator has passed the end of the collection.</returns>
     public bool MoveNext()

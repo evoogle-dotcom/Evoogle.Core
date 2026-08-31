@@ -28,7 +28,8 @@ public class TestNode : Node<TestNode>
     #endregion
 
     #region Test Methods
-    public static IEnumerator<TestNode> CreateBreadFirstEnumerator(TestNode testNode) => testNode.CreateBreadFirstEnumerator();
+    public static IEnumerator<TestNode> CreateBreadthFirstEnumerator(TestNode testNode)
+        => testNode.CreateBreadthFirstEnumerator();
 
     public static IEnumerator<TestNode> CreateDepthFirstEnumerator(TestNode testNode) => testNode.CreateDepthFirstEnumerator();
 

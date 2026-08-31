@@ -10,7 +10,7 @@ namespace Evoogle.NTree;
 /// </summary>
 /// <typeparam name="TNode">The concrete node type in the 1-N tree.</typeparam>
 public interface INodeVisitor<TNode>
-    where TNode : Node<TNode>
+    where TNode : class, INode<TNode>
 {
     #region Methods
     /// <summary>

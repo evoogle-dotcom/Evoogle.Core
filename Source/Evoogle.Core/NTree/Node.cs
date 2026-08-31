@@ -4,17 +4,16 @@
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
 using Evoogle.Extensions;
-using Evoogle.NTree.Internal;
 
 namespace Evoogle.NTree;
 
 /// <summary>
-///     Abstracts a node within a 1-N tree.
+///     Provides a mutable, named implementation of a node within a 1-N tree.
 /// </summary>
 /// <typeparam name="TNode">
-///     Type of each node within the 1-n tree.
+///     Type of each node within the 1-N tree.
 /// </typeparam>
-public abstract class Node<TNode> : INode<TNode>
+public abstract class Node<TNode> : INamedNode<TNode>
     where TNode : Node<TNode>
 {
     #region Events
@@ -29,9 +28,6 @@ public abstract class Node<TNode> : INode<TNode>
     #endregion
 
     #region INode<TNode> Properties
-    /// <inheritdoc />
-    public abstract string Name { get; }
-
     /// <inheritdoc />
     public TNode Root { get; private set; }
 
@@ -49,6 +45,11 @@ public abstract class Node<TNode> : INode<TNode>
 
     /// <inheritdoc />
     public TNode? PreviousSibling { get; private set; }
+    #endregion
+
+    #region INamedNode<TNode> Properties
+    /// <inheritdoc />
+    public abstract string Name { get; }
     #endregion
 
     #region Computed Properties
@@ -322,306 +323,6 @@ public abstract class Node<TNode> : INode<TNode>
 
         var message = $"Can not remove child node {{Name={child.Name} ParentName={child.Parent.SafeToString()}}} as it is not a child of parent node {{{parent.Name}}}.";
         throw new InvalidOperationException(message);
-    }
-    #endregion
-
-    #region Enumerator Methods
-    /// <summary>
-    ///     Create a breadth-first enumerator for a 1-N tree starting at this node.
-    /// </summary>
-    /// <returns>
-    ///     Newly created breadth-first enumerator for a 1-N tree starting at this node.
-    /// </returns>
-    public IEnumerator<TNode> CreateBreadFirstEnumerator() => new BreadthFirstEnumerator<TNode>((TNode)this);
-
-    /// <summary>
-    ///     Create a depth-first (post order) enumerator for a 1-N tree starting at this node.
-    /// </summary>
-    /// <returns>
-    ///     Newly created depth-first (post order) enumerator for a 1-N tree starting at this node.
-    /// </returns>
-    public IEnumerator<TNode> CreateDepthFirstEnumerator() => new DepthFirstEnumerator<TNode>((TNode)this);
-    #endregion
-
-    #region Traversal Methods
-    /// <summary>
-    ///     Enumerates the immediate child nodes of this node.
-    /// </summary>
-    /// <returns>Sequence of direct children in left-to-right order.</returns>
-    public IEnumerable<TNode> Children()
-    {
-        var child = this.FirstChild;
-        while (child != null)
-        {
-            yield return child;
-            child = child.NextSibling;
-        }
-    }
-
-    /// <summary>
-    ///     Enumerates all descendant nodes (excluding this node) using the specified traversal strategy.
-    /// </summary>
-    /// <param name="enumerator">
-    ///     Enumerator that defines the traversal strategy (e.g., breadth-first, depth-first).
-    /// </param>
-    /// <returns>Sequence of all descendant nodes.</returns>
-    public IEnumerable<TNode> Descendants(IEnumerator<TNode> enumerator)
-    {
-        using (enumerator)
-        {
-            while (enumerator.MoveNext())
-            {
-                var current = enumerator.Current;
-                if (!ReferenceEquals(current, this))
-                {
-                    yield return current;
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    ///     Enumerates all descendant nodes (excluding this node) using the specified traversal strategy.
-    /// </summary>
-    /// <param name="strategy">
-    ///     Optional traversal strategy to use (defaults to <see cref="TraversalStrategy.BreadthFirst"/>).
-    /// </param>
-    /// <returns>Sequence of all descendant nodes.</returns>
-    public IEnumerable<TNode> Descendants(TraversalStrategy strategy = TraversalStrategy.BreadthFirst) =>
-        strategy switch
-        {
-            TraversalStrategy.BreadthFirst => this.Descendants(this.CreateBreadFirstEnumerator()),
-            TraversalStrategy.DepthFirst => this.Descendants(this.CreateDepthFirstEnumerator()),
-            _ => throw new ArgumentOutOfRangeException(nameof(strategy))
-        };
-
-    /// <summary>
-    ///     Enumerates the path from the root node down to this node.
-    /// </summary>
-    /// <returns>
-    ///     Sequence of nodes starting from the root down through each parent, ending with this node.
-    /// </returns>
-    public IEnumerable<TNode> GetPathFromRoot()
-    {
-        var stack = new Stack<TNode>();
-        var current = (TNode)this;
-
-        while (current != null)
-        {
-            stack.Push(current);
-            current = current.Parent;
-        }
-
-        while (stack.Count > 0)
-        {
-            yield return stack.Pop();
-        }
-    }
-
-    /// <summary>
-    ///     Returns a string representation of the path from the root node to this node.
-    /// </summary>
-    /// <param name="delimiter">
-    ///     Delimiter used to separate node names in the resulting path string.
-    ///     Defaults to <c>"-&gt;"</c>.
-    /// </param>
-    /// <returns>
-    ///     A single string representing the sequence of node names from the root to this node,
-    ///     joined by the specified delimiter.
-    /// </returns>
-    /// <example>
-    ///     For a node with path <c>1 → 11 → 111</c> and the default delimiter,
-    ///     the result would be <c>"1-&gt;11-&gt;111"</c>.
-    /// </example>
-    public string GetPathString(string delimiter = "->") => string.Join(delimiter, this.GetPathFromRoot().Select(n => n.Name));
-
-    /// <summary>
-    ///     Enumerates the path from this node up to the root node.
-    /// </summary>
-    /// <returns>
-    ///     Sequence of nodes starting from this node up through its ancestors, ending at the root.
-    /// </returns>
-    public IEnumerable<TNode> GetPathToRoot()
-    {
-        var current = (TNode)this;
-        while (current != null)
-        {
-            yield return current;
-            current = current.Parent;
-        }
-    }
-
-    /// <summary>
-    ///     Determines whether this node is a descendant of the specified ancestor node.
-    /// </summary>
-    /// <param name="potentialAncestor">Node to test against.</param>
-    /// <returns>
-    ///     True if this node is a descendant of <paramref name="potentialAncestor"/>, otherwise false.
-    /// </returns>
-    public bool IsDescendantOf(TNode potentialAncestor)
-    {
-        var current = this.Parent;
-        while (current != null)
-        {
-            if (ReferenceEquals(current, potentialAncestor))
-            {
-                return true;
-            }
-
-            current = current.Parent;
-        }
-        return false;
-    }
-
-    /// <summary>
-    ///     Enumerates this node and all its descendant nodes using the specified traversal strategy.
-    /// </summary>
-    /// <param name="enumerator">
-    ///     Enumerator that defines the traversal strategy (e.g., breadth-first, depth-first).
-    /// </param>
-    /// <returns>Sequence including this node followed by all its descendants.</returns>
-    public IEnumerable<TNode> SelfAndDescendants(IEnumerator<TNode> enumerator)
-    {
-        using (enumerator)
-        {
-            while (enumerator.MoveNext())
-            {
-                yield return enumerator.Current;
-            }
-        }
-    }
-
-    /// <summary>
-    ///     Enumerates this node and all descendant nodes using the specified traversal strategy.
-    /// </summary>
-    /// <param name="strategy">
-    ///     Optional traversal strategy to use (defaults to <see cref="TraversalStrategy.BreadthFirst"/>).
-    /// </param>
-    /// <returns>Sequence including this node followed by all its descendants.</returns>
-    public IEnumerable<TNode> SelfAndDescendants(TraversalStrategy strategy = TraversalStrategy.BreadthFirst) =>
-        strategy switch
-        {
-            TraversalStrategy.BreadthFirst => this.SelfAndDescendants(this.CreateBreadFirstEnumerator()),
-            TraversalStrategy.DepthFirst => this.SelfAndDescendants(this.CreateDepthFirstEnumerator()),
-            _ => throw new ArgumentOutOfRangeException(nameof(strategy))
-        };
-
-    /// <summary>
-    ///     Traverse with the given enumerator and visiting each node this 1-N tree starting at this node.
-    ///     Traverse will stop when the visit function returns false, otherwise traversal will continue.
-    /// </summary>
-    /// <param name="enumerator">Enumerator for this 1-N tree starting at this node.</param>
-    /// <param name="visitorFunction">
-    ///     Visitor function that visits the current node in the traversal.
-    ///     Traversal will continue as long as the visitor function returns true, will stop if the visitor function returns false.
-    /// </param>
-    public void Traverse(IEnumerator<TNode> enumerator, Func<TNode, bool> visitorFunction)
-    {
-        while (enumerator.MoveNext())
-        {
-            var current = enumerator.Current;
-
-            var visitResult = visitorFunction(current);
-            if (!visitResult)
-            {
-                return;
-            }
-        }
-    }
-
-    /// <summary>
-    ///     Traverses this node and its descendants using the specified traversal strategy and visitor function.
-    /// </summary>
-    /// <param name="strategy">
-    ///     The traversal strategy to use, such as <see cref="TraversalStrategy.BreadthFirst"/> or <see cref="TraversalStrategy.DepthFirst"/>.
-    /// </param>
-    /// <param name="visitorFunction">
-    ///     A delegate that is called for each visited node. Return <c>true</c> to continue traversal; return <c>false</c> to stop early.
-    /// </param>
-    /// <exception cref="ArgumentNullException">
-    ///     Thrown if <paramref name="visitorFunction"/> is <c>null</c>.
-    /// </exception>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     Thrown if <paramref name="strategy"/> is not a valid <see cref="TraversalStrategy"/> value.
-    /// </exception>
-    /// <remarks>
-    ///     Traversal includes this node and all of its descendants, and proceeds according to the specified strategy.
-    ///     The traversal stops immediately if the <paramref name="visitorFunction"/> returns <c>false</c>.
-    /// </remarks>
-    public void Traverse(TraversalStrategy strategy, Func<TNode, bool> visitorFunction)
-    {
-        if (visitorFunction is null)
-        {
-            throw new ArgumentNullException(nameof(visitorFunction));
-        }
-
-        var enumerator = strategy switch
-        {
-            TraversalStrategy.BreadthFirst => this.CreateBreadFirstEnumerator(),
-            TraversalStrategy.DepthFirst => this.CreateDepthFirstEnumerator(),
-            _ => throw new ArgumentOutOfRangeException(nameof(strategy))
-        };
-
-        this.Traverse(enumerator, visitorFunction);
-    }
-
-    /// <summary>
-    ///     Traverse with the given enumerator and visiting each node this 1-N tree starting at this node.
-    ///     Traverse will stop when the visitor object returns done, otherwise traversal will continue.
-    /// </summary>
-    /// <param name="enumerator">Enumerator for this 1-N tree starting at this node.</param>
-    /// <param name="visitor">
-    ///     Visitor object that visits the current node in the traversal.
-    ///     Traversal will continue as long as the visitor object returns continue, will stop if the visitor function returns done.
-    /// </param>
-    public void Traverse(IEnumerator<TNode> enumerator, INodeVisitor<TNode> visitor)
-    {
-        while (enumerator.MoveNext())
-        {
-            var current = enumerator.Current;
-
-            var visitResult = visitor.Visit(current);
-            if (visitResult == VisitResult.Done)
-            {
-                return;
-            }
-        }
-    }
-
-    /// <summary>
-    ///     Traverses this node and its descendants using the specified traversal strategy and visitor object.
-    /// </summary>
-    /// <param name="strategy">
-    ///     The traversal strategy to use, such as <see cref="TraversalStrategy.BreadthFirst"/> or <see cref="TraversalStrategy.DepthFirst"/>.
-    /// </param>
-    /// <param name="visitor">
-    ///     An object implementing <see cref="INodeVisitor{TNode}"/> that determines how each node is processed and whether traversal should continue.
-    /// </param>
-    /// <exception cref="ArgumentNullException">
-    ///     Thrown if <paramref name="visitor"/> is <c>null</c>.
-    /// </exception>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     Thrown if <paramref name="strategy"/> is not a valid <see cref="TraversalStrategy"/> value.
-    /// </exception>
-    /// <remarks>
-    ///     The traversal includes this node and all of its descendants, following the specified strategy.
-    ///     If the <paramref name="visitor"/>'s <see cref="INodeVisitor{TNode}.Visit"/> method returns <see cref="VisitResult.Done"/>, traversal stops immediately.
-    /// </remarks>
-    public void Traverse(TraversalStrategy strategy, INodeVisitor<TNode> visitor)
-    {
-        if (visitor is null)
-        {
-            throw new ArgumentNullException(nameof(visitor));
-        }
-
-        var enumerator = strategy switch
-        {
-            TraversalStrategy.BreadthFirst => this.CreateBreadFirstEnumerator(),
-            TraversalStrategy.DepthFirst => this.CreateDepthFirstEnumerator(),
-            _ => throw new ArgumentOutOfRangeException(nameof(strategy))
-        };
-
-        this.Traverse(enumerator, visitor);
     }
     #endregion
 
