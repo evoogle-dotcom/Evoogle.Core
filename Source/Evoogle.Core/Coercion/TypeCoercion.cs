@@ -4,6 +4,7 @@
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
 using System.Diagnostics.CodeAnalysis;
+using System.Collections.Frozen;
 
 using Evoogle.Reflection;
 
@@ -19,14 +20,14 @@ namespace Evoogle.Coercion;
 public partial class TypeCoercion
 {
     #region Fields
-    private readonly Dictionary<Tuple<Type, Type>, ITypeCoercionDefinition> _definitions = [];
+    private readonly FrozenDictionary<Tuple<Type, Type>, ITypeCoercionDefinition> _definitions;
     #endregion
 
     #region Constructors
     /// <summary>
     ///    Initializes a new instance of the <see cref="TypeCoercion"/> class and adds built-in type coercion definitions.
     /// </summary>
-    public TypeCoercion() => this.AddBuiltInDefinitions();
+    public TypeCoercion() => _definitions = _builtInDefinitions.ToFrozenDictionary(CreateDefinitionKey);
     #endregion
 
     #region TypeCoercion Methods
@@ -144,20 +145,6 @@ public partial class TypeCoercion
     #endregion
 
     #region Implementation Methods
-    private void AddBuiltInDefinitions()
-    {
-        foreach (var definition in _builtInDefinitions)
-        {
-            this.AddDefinition(definition);
-        }
-    }
-
-    private void AddDefinition(ITypeCoercionDefinition definition)
-    {
-        var key = CreateDefinitionKey(definition);
-        _definitions.Add(key, definition);
-    }
-
     private static Tuple<Type, Type> CreateDefinitionKey(ITypeCoercionDefinition definition)
     {
         var inputType = definition.InputType;

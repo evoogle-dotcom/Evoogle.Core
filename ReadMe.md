@@ -13,8 +13,9 @@ This repository hosts the **Evoogle** projects, maintained by [Evoogle](https://
 
 * **Cloneable**: A deep cloning framework with the following built-in implementation:
   * JSON-based cloning via serialization/deserialization of the source object.
-* **Coercion**: A library for implicit type coercion.
-* **Extension**: A dynamic extension framework.
+* **Coercion**: A library for implicit type coercion. `TypeCoercionContextBuilder` creates immutable contexts backed by frozen lookup maps; the built-in coercion definitions are frozen for concurrent lookup.
+* **Extension**: A dynamic extension framework with separate read-only and mutable interfaces.
+  `ExtensibleBase` can publish a deterministic insertion-ordered frozen snapshot and permanently reject mutation while retaining lock-free lookup.
 * **Extensions**: A set of helpful extension methods for core .NET types.
 * **Json**: A utility library and set of extensions that simplify working with the `System.Text.Json` library.
 * **Logging**: A flexible and extensible logging utility that enables developers to log messages to multiple destinations simultaneously, making it ideal for both runtime applications and diagnostics during development or testing.

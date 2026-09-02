@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Evoogle.Extension;
 
 /// <summary>
-///     Extension methods for the <see cref="IExtensible"/> abstraction.
+///     Extension methods for extensible abstractions.
 /// </summary>
 public static class ExtensibleExtensions
 {
@@ -32,7 +32,7 @@ public static class ExtensibleExtensions
     /// <typeparam name="TExtension">The type of the extension to check.</typeparam>
     /// <param name="extensible">The extensible object.</param>
     /// <returns>True if the extension is attached; otherwise, false.</returns>
-    public static bool ContainsExtension<TExtension>(this IExtensible extensible)
+    public static bool ContainsExtension<TExtension>(this IReadOnlyExtensible extensible)
         where TExtension : class =>
         // Return true if extension is already attached, false otherwise.
         extensible.TryGetExtension<TExtension>(out var _);
@@ -45,6 +45,8 @@ public static class ExtensibleExtensions
     public static void CreateExtension<TExtension>(this IExtensible extensible)
         where TExtension : class, new()
     {
+        EnsureExtensionsMutable(extensible);
+
         // If the extension already exists, then do nothing.
         if (extensible.ContainsExtension<TExtension>())
         {
@@ -78,6 +80,8 @@ public static class ExtensibleExtensions
     public static TExtension GetOrAttachExtension<TExtension>(this IExtensible extensible)
         where TExtension : class, new()
     {
+        EnsureExtensionsMutable(extensible);
+
         // If extension is already attached, then return the attached extension.
         if (extensible.TryGetExtension<TExtension>(out var extension))
         {
@@ -97,7 +101,11 @@ public static class ExtensibleExtensions
     /// <param name="extensible">The extensible object.</param>
     /// <param name="modifyExtensionAction">The action to modify the extension instance.</param>
     public static void ModifyExtension<TExtension>(this IExtensible extensible, Action<TExtension> modifyExtensionAction)
-        where TExtension : class, new() => modifyExtensionAction(extensible.GetOrAttachExtension<TExtension>());
+        where TExtension : class, new()
+    {
+        EnsureExtensionsMutable(extensible);
+        modifyExtensionAction(extensible.GetOrAttachExtension<TExtension>());
+    }
 
     /// <summary>
     ///     Tries to retrieve the attached extension object of the specified extension type.
@@ -106,7 +114,7 @@ public static class ExtensibleExtensions
     /// <param name="extensible">The extensible object to retrieve the extension from.</param>
     /// <param name="extension">When this method returns, contains the attached extension object if found; otherwise, null.</param>
     /// <returns>True if the extension is found; otherwise, false.</returns>
-    public static bool TryGetExtension<TExtension>(this IExtensible extensible, [NotNullWhen(true)] out TExtension? extension)
+    public static bool TryGetExtension<TExtension>(this IReadOnlyExtensible extensible, [NotNullWhen(true)] out TExtension? extension)
         where TExtension : class
     {
         var extensionType = typeof(TExtension);
@@ -118,6 +126,17 @@ public static class ExtensibleExtensions
 
         extension = null;
         return false;
+    }
+    #endregion
+
+    #region Implementation Methods
+    private static void EnsureExtensionsMutable(IExtensible extensible)
+    {
+        ArgumentNullException.ThrowIfNull(extensible);
+        if (extensible is ExtensibleBase extensibleBase)
+        {
+            extensibleBase.EnsureExtensionsMutable();
+        }
     }
     #endregion
 }

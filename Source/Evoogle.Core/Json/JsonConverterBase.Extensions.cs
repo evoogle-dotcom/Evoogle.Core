@@ -250,7 +250,7 @@ public abstract partial class JsonConverterBase<T>
     protected static void WriteExtensions
     (
         Utf8JsonWriter writer,
-        OrderedDictionary<Type, object> extensions,
+        IReadOnlyDictionary<Type, object> extensions,
         IWriteContext context
     )
     {
@@ -285,7 +285,7 @@ public abstract partial class JsonConverterBase<T>
     (
         Utf8JsonWriter writer,
         string propertyName,
-        ExtensibleBase extensibleBase,
+        IReadOnlyExtensible extensibleBase,
         IWriteContext context
     )
     {

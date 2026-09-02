@@ -16,7 +16,6 @@ namespace Evoogle.Extension;
 
 public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
 {
-
     #region Test Classes
     [DynamicLinqType]
     public class TestExtensible : ExtensibleBase
@@ -36,11 +35,98 @@ public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
 #pragma warning restore CS8634 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'class' constraint.
             testExtensible.DetachExtension<TestExtension>();
         }
+
+        public void Freeze() => this.FreezeExtensions();
     }
 
-    public class TestExtension(string name)
+    public class TestExtension
+    {
+        public TestExtension()
+            : this("default")
+        {
+        }
+
+        public TestExtension(string name) => this.Name = name;
+
+        public string Name { get; set; }
+    }
+
+    public class SecondTestExtension(string name)
     {
         public string Name { get; set; } = name;
+    }
+
+    public class FrozenExtensibleTest : XUnitTest
+    {
+        private TestExtensible? Extensible { get; set; }
+
+        private IReadOnlyList<Type>? ExtensionTypes { get; set; }
+
+        private bool? EmptyExtensionsWasNonNull { get; set; }
+
+        private bool? ConcurrentLookupSucceeded { get; set; }
+
+        private List<Exception> MutationExceptions { get; } = [];
+
+        protected override void Arrange()
+        {
+            this.Extensible = new TestExtensible();
+            this.EmptyExtensionsWasNonNull = this.Extensible.Extensions is not null &&
+                this.Extensible.ExtensionCount == 0;
+            this.Extensible.AttachExtension(typeof(TestExtension), new TestExtension("first"));
+            this.Extensible.AttachExtension(typeof(SecondTestExtension), new SecondTestExtension("second"));
+            this.Extensible.Freeze();
+        }
+
+        protected override void Act()
+        {
+            this.ExtensionTypes = [.. this.Extensible!.Extensions.Keys];
+            this.ConcurrentLookupSucceeded = Task.WhenAll
+            (
+                Enumerable.Range(0, 64).Select
+                (
+                    _ => Task.Run
+                    (
+                        () => Enumerable.Range(0, 1000).All
+                        (
+                            _ => this.Extensible.TryGetExtension<TestExtension>(out var extension) &&
+                                extension.Name == "first"
+                        )
+                    )
+                )
+            ).GetAwaiter().GetResult().All(result => result);
+
+            Capture(() => this.Extensible.AttachExtension(typeof(Uri), new Uri("https://example.com")));
+            Capture(() => this.Extensible.DetachExtension<TestExtension>());
+            Capture(() => this.Extensible.CreateExtension<TestExtension>());
+            Capture(() => this.Extensible.GetOrAttachExtension<TestExtension>());
+            Capture(() => this.Extensible.ModifyExtension<TestExtension>(extension => extension.Name = "changed"));
+
+            void Capture(Action action)
+            {
+                try
+                {
+                    action();
+                }
+                catch (Exception exception)
+                {
+                    this.MutationExceptions.Add(exception);
+                }
+            }
+        }
+
+        protected override void Assert()
+        {
+            this.EmptyExtensionsWasNonNull.Should().BeTrue();
+            this.Extensible!.Extensions.Should().NotBeNull();
+            this.Extensible.ExtensionCount.Should().Be(2);
+            this.ExtensionTypes.Should().Equal(typeof(TestExtension), typeof(SecondTestExtension));
+            this.ConcurrentLookupSucceeded.Should().BeTrue();
+            this.MutationExceptions.Should().HaveCount(5)
+                .And.OnlyContain(exception => exception is InvalidOperationException);
+            this.Extensible.TryGetExtension<TestExtension>(out var extension).Should().BeTrue();
+            extension!.Name.Should().Be("first");
+        }
     }
 
     public class ExtensibleMutateTest : XUnitTest
@@ -168,11 +254,23 @@ public class ExtensibleTests(ITestOutputHelper output) : XUnitTests(output)
             ExpectedArgumentNullExceptionThrown = true
         },
     ];
+
+    public static TheoryDataRow<IXUnitTest>[] FrozenExtensibleTheoryData =>
+    [
+        new FrozenExtensibleTest
+        {
+            Name = "Frozen Extensions Preserve Order And Support Concurrent Reads"
+        }
+    ];
     #endregion
 
     #region Test Methods
     [Theory]
     [MemberData(nameof(TryGetExtensionTheoryData))]
     public void TryGetExtension(IXUnitTest test) => test.Execute(this);
+
+    [Theory]
+    [MemberData(nameof(FrozenExtensibleTheoryData))]
+    public void FrozenExtensible(IXUnitTest test) => test.Execute(this);
     #endregion
 }

@@ -121,63 +121,65 @@ public class CoerceTests(ITestOutputHelper output) : XUnitTests(output)
     #region Test Methods
     public static TypeCoercionContext CreateTestDateTimeContextWithFormat()
     {
-        var context = new TypeCoercionContext()
-        {
-            FormatMapping = new Dictionary<Type, string> { { typeof(DateTime), FullDateTimeFormat } },
-            DateTimeStylesMapping = new Dictionary<Type, DateTimeStyles> { { typeof(DateTime), DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal } },
-        };
-        return context;
+        return new TypeCoercionContextBuilder()
+            .ClearFormats()
+            .ClearDateTimeStyles()
+            .SetFormat(typeof(DateTime), FullDateTimeFormat)
+            .SetDateTimeStyles(
+                typeof(DateTime),
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal)
+            .Build();
     }
 
     public static TypeCoercionContext CreateTestDateTimeContextWithFormatAndFormatProvider()
     {
-        var context = new TypeCoercionContext()
-        {
-            FormatMapping = new Dictionary<Type, string> { { typeof(DateTime), FullDateTimeFormat } },
-            FormatProviderMapping = new Dictionary<Type, IFormatProvider> { { typeof(DateTime), SpanishMexicoCulture } },
-            DateTimeStylesMapping = new Dictionary<Type, DateTimeStyles> { { typeof(DateTime), DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal } },
-        };
-        return context;
+        return new TypeCoercionContextBuilder()
+            .ClearFormats()
+            .ClearDateTimeStyles()
+            .SetFormat(typeof(DateTime), FullDateTimeFormat)
+            .SetFormatProvider(typeof(DateTime), SpanishMexicoCulture)
+            .SetDateTimeStyles(
+                typeof(DateTime),
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal)
+            .Build();
     }
 
     public static TypeCoercionContext CreateTestDateTimeOffsetContextWithFormat()
     {
-        var context = new TypeCoercionContext()
-        {
-            FormatMapping = new Dictionary<Type, string> { { typeof(DateTimeOffset), FullDateTimeFormat } },
-            DateTimeStylesMapping = new Dictionary<Type, DateTimeStyles> { { typeof(DateTimeOffset), DateTimeStyles.AssumeUniversal } },
-        };
-        return context;
+        return new TypeCoercionContextBuilder()
+            .ClearFormats()
+            .ClearDateTimeStyles()
+            .SetFormat(typeof(DateTimeOffset), FullDateTimeFormat)
+            .SetDateTimeStyles(typeof(DateTimeOffset), DateTimeStyles.AssumeUniversal)
+            .Build();
     }
 
     public static TypeCoercionContext CreateTestDateTimeOffsetContextWithFormatAndFormatProvider()
     {
-        var context = new TypeCoercionContext()
-        {
-            FormatMapping = new Dictionary<Type, string> { { typeof(DateTimeOffset), FullDateTimeFormat } },
-            FormatProviderMapping = new Dictionary<Type, IFormatProvider> { { typeof(DateTimeOffset), SpanishMexicoCulture } },
-            DateTimeStylesMapping = new Dictionary<Type, DateTimeStyles> { { typeof(DateTimeOffset), DateTimeStyles.AssumeUniversal } },
-        };
-        return context;
+        return new TypeCoercionContextBuilder()
+            .ClearFormats()
+            .ClearDateTimeStyles()
+            .SetFormat(typeof(DateTimeOffset), FullDateTimeFormat)
+            .SetFormatProvider(typeof(DateTimeOffset), SpanishMexicoCulture)
+            .SetDateTimeStyles(typeof(DateTimeOffset), DateTimeStyles.AssumeUniversal)
+            .Build();
     }
 
     public static TypeCoercionContext CreateTestTimeSpanContextWithFormat()
     {
-        var context = new TypeCoercionContext()
-        {
-            FormatMapping = new Dictionary<Type, string> { { typeof(TimeSpan), GeneralShortTimeSpanFormat } },
-        };
-        return context;
+        return new TypeCoercionContextBuilder()
+            .ClearFormats()
+            .SetFormat(typeof(TimeSpan), GeneralShortTimeSpanFormat)
+            .Build();
     }
 
     public static TypeCoercionContext CreateTestTimeSpanContextWithFormatAndFormatProvider()
     {
-        var context = new TypeCoercionContext()
-        {
-            FormatMapping = new Dictionary<Type, string> { { typeof(TimeSpan), GeneralShortTimeSpanFormat } },
-            FormatProviderMapping = new Dictionary<Type, IFormatProvider> { { typeof(TimeSpan), FrenchFranceCulture } },
-        };
-        return context;
+        return new TypeCoercionContextBuilder()
+            .ClearFormats()
+            .SetFormat(typeof(TimeSpan), GeneralShortTimeSpanFormat)
+            .SetFormatProvider(typeof(TimeSpan), FrenchFranceCulture)
+            .Build();
     }
     #endregion
 }
