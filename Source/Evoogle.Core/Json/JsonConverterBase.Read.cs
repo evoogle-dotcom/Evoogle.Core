@@ -175,6 +175,9 @@ public abstract partial class JsonConverterBase<T>
     /// <param name="reader">The JSON reader.</param>
     /// <param name="context">The read context.</param>
     /// <param name="handlers">A dictionary mapping property names to their corresponding handlers.</param>
+    /// <param name="nullPropertyNames">
+    ///     The JSON property names whose null values should be dispatched to their handlers.
+    /// </param>
     /// <exception cref="JsonException">Thrown when the JSON is not valid.</exception>
     /// <remarks>
     ///     This method reads a JSON object from the provided <see cref="Utf8JsonReader"/> and processes its properties using the specified handlers.
@@ -188,7 +191,8 @@ public abstract partial class JsonConverterBase<T>
     (
         ref Utf8JsonReader reader,
         TContext context,
-        Dictionary<string, JsonReaderHandler<TContext>> handlers
+        Dictionary<string, JsonReaderHandler<TContext>> handlers,
+        params string[] nullPropertyNames
     )
         where TContext : IReadContext
     {
@@ -228,8 +232,15 @@ public abstract partial class JsonConverterBase<T>
             // Handle null property values.
             if (reader.TokenType == JsonTokenType.Null)
             {
+                if (nullPropertyNames is not null
+                    && Array.IndexOf(nullPropertyNames, propertyName) >= 0
+                    && handlers.TryGetValue(propertyName, out var nullHandler))
+                {
+                    nullHandler(ref reader, context);
+                    continue;
+                }
+
                 // Log the skipped null property and continue to the next property.
-                // This prevents null properties from causing issues in the deserialization process.
                 context.OnReadOfNullProperty(propertyName);
                 continue;
             }
