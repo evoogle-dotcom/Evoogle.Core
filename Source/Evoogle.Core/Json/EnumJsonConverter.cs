@@ -3,10 +3,10 @@
 //
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
-using System.Reflection;
-using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+
+using Evoogle.Json.Internal;
 
 namespace Evoogle.Json;
 
@@ -18,22 +18,6 @@ namespace Evoogle.Json;
 public class EnumJsonConverter<TEnum> : JsonConverter<TEnum>
     where TEnum : struct, Enum
 {
-    #region Fields
-    /// <summary>
-    ///     Indicates whether the enum type is decorated with the [Flags] attribute, allowing it to represent a combination of values.
-    /// </summary>
-    private static readonly bool _hasFlags = typeof(TEnum).GetCustomAttributes(typeof(FlagsAttribute), false).Length > 0;
-
-    /// <summary>
-    ///     An array of all valid enum names for the specified enum type, used to validate input during deserialization.
-    /// </summary>
-    private static readonly string[] _enumNames = Enum.GetNames<TEnum>();
-
-    private static readonly Dictionary<string, string> _enumNamesByJsonName = CreateEnumNamesByJsonName();
-
-    private static readonly Dictionary<string, string> _jsonNamesByEnumName = CreateJsonNamesByEnumName();
-    #endregion
-
     #region JsonConverter Methods
     /// <summary>
     ///     Deserializes a JSON string into the corresponding enum value.
@@ -50,41 +34,18 @@ public class EnumJsonConverter<TEnum> : JsonConverter<TEnum>
             return default;
         }
 
-        if (_hasFlags)
+        if (EnumJsonConversion<TEnum>.TryParse(value, out var enumeration, out var failure))
         {
-            // Splits the string into parts for [Flags] enums, trimming whitespace from each.
-            var parts = value.Split(',').Select(p => p.Trim()).ToArray();
-            if (parts.All(TryGetEnumName))
-            {
-                // If all parts match valid enum names, parses the combined string into an enum value.
-                var enumNames = parts.Select(static part => _enumNamesByJsonName[part]);
-                return this.ParseString(string.Join(", ", enumNames));
-            }
-            else
-            {
-                // Throws an exception if any part of the input is not a valid enum name.
-                throw new JsonException($"Invalid enum value '{value}' for [Flags] enum {{Type={this.Type.Name}}}");
-            }
+            return enumeration;
         }
-        else
+
+        throw failure switch
         {
-            // For non-[Flags] enums, checks that the value does not contain commas.
-            if (value.Contains(','))
-            {
-                throw new JsonException($"Comma is not allowed for non-[Flags] enum {{Type={this.Type.Name}}}");
-            }
-            // Validates that the input matches a valid enum name (case-insensitive).
-            if (TryGetEnumName(value))
-            {
-                // Parses the string into an enum value if it matches a valid name.
-                return this.ParseString(_enumNamesByJsonName[value]);
-            }
-            else
-            {
-                // Throws an exception if the input does not match any valid enum name.
-                throw new JsonException($"Invalid enum value '{value}' for enum {{Type={this.Type.Name}}}");
-            }
-        }
+            EnumJsonParseFailure.InvalidFlagsValue => new JsonException($"Invalid enum value '{value}' for [Flags] enum {{Type={this.Type.Name}}}"),
+            EnumJsonParseFailure.CommaInNonFlagsValue => new JsonException($"Comma is not allowed for non-[Flags] enum {{Type={this.Type.Name}}}"),
+            EnumJsonParseFailure.ParseFailure => new JsonException($"Unable to parse enum value '{value}' for enum {{Type={this.Type.Name}}}"),
+            _ => new JsonException($"Invalid enum value '{value}' for enum {{Type={this.Type.Name}}}")
+        };
     }
 
     /// <summary>
@@ -93,74 +54,7 @@ public class EnumJsonConverter<TEnum> : JsonConverter<TEnum>
     /// <param name="writer">The UTF-8 JSON writer to output the string.</param>
     /// <param name="value">The enum value to serialize.</param>
     /// <param name="options">Options for the JSON serializer.</param>
-    public override void Write(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options) => writer.WriteStringValue(FormatValue(value));
-    #endregion
-
-    #region Implementation Methods
-    private static Dictionary<string, string> CreateEnumNamesByJsonName()
-    {
-        var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var enumName in _enumNames)
-        {
-            result[enumName] = enumName;
-
-            var jsonName = GetJsonName(enumName);
-            if (!string.IsNullOrWhiteSpace(jsonName))
-            {
-                result[jsonName] = enumName;
-            }
-        }
-
-        return result;
-    }
-
-    private static Dictionary<string, string> CreateJsonNamesByEnumName()
-    {
-        var result = new Dictionary<string, string>(StringComparer.Ordinal);
-
-        foreach (var enumName in _enumNames)
-        {
-            result[enumName] = GetJsonName(enumName) ?? enumName;
-        }
-
-        return result;
-    }
-
-    private static string FormatValue(TEnum value)
-    {
-        var enumText = value.ToString();
-        if (!_hasFlags || !enumText.Contains(','))
-        {
-            return FormatSingleName(enumText);
-        }
-
-        var parts = enumText.Split(',').Select(static part => FormatSingleName(part.Trim()));
-        return string.Join(", ", parts);
-    }
-
-    private static string FormatSingleName(string enumName)
-    {
-        return _jsonNamesByEnumName.TryGetValue(enumName, out var jsonName) ? jsonName : enumName;
-    }
-
-    private static string? GetJsonName(string enumName)
-    {
-        var member = typeof(TEnum).GetMember(enumName).FirstOrDefault();
-        var attribute = member?.GetCustomAttribute<EnumMemberAttribute>();
-        return string.IsNullOrWhiteSpace(attribute?.Value) ? null : attribute.Value;
-    }
-
-    private static bool TryGetEnumName(string jsonName) => _enumNamesByJsonName.ContainsKey(jsonName);
-
-    private TEnum ParseString(string value)
-    {
-        if (Enum.TryParse<TEnum>(value, true, out var enumeration))
-        {
-            return enumeration;
-        }
-
-        throw new JsonException($"Unable to parse enum value '{value}' for enum {{Type={this.Type.Name}}}");
-    }
+    public override void Write(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options)
+        => writer.WriteStringValue(EnumJsonConversion<TEnum>.Format(value));
     #endregion
 }
