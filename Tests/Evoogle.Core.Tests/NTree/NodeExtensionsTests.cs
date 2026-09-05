@@ -221,15 +221,15 @@ public class NodeExtensionsTests(ITestOutputHelper output) : XUnitTests(output)
                     _ = NodeExtensions.Children<TestInterfaceNode>(null!);
                     break;
                 case ArgumentValidationTestCase.NullDescendantsEnumerator:
-                    _ = root.Descendants((IEnumerator<TestInterfaceNode>)null!);
+                    _ = root.Descendants(null!);
                     break;
                 case ArgumentValidationTestCase.NullSelfAndDescendantsEnumerator:
-                    _ = root.SelfAndDescendants((IEnumerator<TestInterfaceNode>)null!);
+                    _ = root.SelfAndDescendants(null!);
                     break;
                 case ArgumentValidationTestCase.NullDelegateEnumerator:
                     root.Traverse
                     (
-                        (IEnumerator<TestInterfaceNode>)null!,
+                        null!,
                         static _ => true
                     );
                     break;
@@ -248,7 +248,7 @@ public class NodeExtensionsTests(ITestOutputHelper output) : XUnitTests(output)
                     );
                     break;
                 case ArgumentValidationTestCase.NullNameSelector:
-                    _ = root.GetPathString((Func<TestInterfaceNode, string>)null!);
+                    _ = root.GetPathString(null!);
                     break;
                 case ArgumentValidationTestCase.NullPotentialAncestor:
                     _ = root.IsDescendantOf(null!);

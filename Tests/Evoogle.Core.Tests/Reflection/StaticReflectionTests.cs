@@ -51,8 +51,8 @@ public class StaticReflectionTests(ITestOutputHelper output) : XUnitTests(output
         {
             var expression = this.CaseName switch
             {
-                nameof(ConstantInt) => (Expression)Expression.Constant(42, typeof(int)),
-                nameof(ConstantNull) => (Expression)Expression.Constant(null, typeof(object)),
+                nameof(ConstantInt) => Expression.Constant(42, typeof(int)),
+                nameof(ConstantNull) => Expression.Constant(null, typeof(object)),
                 nameof(BinaryWithProperty) =>
                 Expression.Add
                 (
