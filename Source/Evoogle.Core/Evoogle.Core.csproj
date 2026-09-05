@@ -1,8 +1,24 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <RootNamespace>Evoogle</RootNamespace>
+    <PackageId>Evoogle.Core</PackageId>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <Authors>Evoogle</Authors>
+    <Description>Foundational .NET libraries and components.</Description>
+    <PackageTags>evoogle;extensions;coercion;json;logging;reflection</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReadmeFile>ReadMe.md</PackageReadmeFile>
+    <DebugType>portable</DebugType>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>
+      $(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb
+    </AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\ReadMe.md" Pack="true" PackagePath="\" Link="ReadMe.md" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />

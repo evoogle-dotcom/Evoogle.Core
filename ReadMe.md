@@ -30,3 +30,44 @@ This repository hosts the **Evoogle** projects, maintained by [Evoogle](https://
 * *Arrange*
 * *Act*
 * *Assert*
+
+## Local NuGet Packages
+
+`Evoogle.Core` and `Evoogle.XUnit` packages are built into a machine-local NuGet folder feed.
+They are not uploaded to GitHub Packages or another cloud registry, and each developer builds
+their own packages.
+
+### One-Time Feed Setup
+
+Run the following commands in PowerShell once for each developer account:
+
+```powershell
+$feedPath = Join-Path $env:LOCALAPPDATA 'Evoogle\NuGetFeed'
+New-Item -ItemType Directory -Path $feedPath -Force
+dotnet nuget add source $feedPath --name EvoogleLocal
+```
+
+The source is registered in the user-level NuGet configuration. It contains no credentials and
+is not stored in this repository. The feed is available only on that development machine unless
+another machine independently builds a package or a shared feed is introduced later.
+
+### Building a Local Package
+
+From the repository root, run:
+
+```powershell
+.\scripts\Pack-EvoogleCore.ps1
+```
+
+The script runs the Release test suite, then packs both `Evoogle.Core` and `Evoogle.XUnit` into
+`%LOCALAPPDATA%\Evoogle\NuGetFeed` with the same unique `0.1.0-local.<UTC timestamp>` version.
+This avoids stale-package results from NuGet's global package cache. Use the exact version
+printed by the script when adding either package to a consumer.
+
+### Source-Level Debugging
+
+Each local package includes a portable PDB alongside its DLL. The PDB retains paths to the source
+checkout used to build the package, so Visual Studio can open that local source when stepping into
+Core or XUnit without downloading it from a symbol server. Keep the checkout available and rebuild
+the packages after changing source. If Visual Studio skips a library frame, confirm that its symbols
+loaded in the Modules window, then disable Just My Code for that debugging session.
