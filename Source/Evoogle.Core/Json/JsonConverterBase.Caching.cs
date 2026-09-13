@@ -16,9 +16,13 @@ namespace Evoogle.Json;
 public abstract partial class JsonConverterBase<T>
 {
     #region Types
-    private static class Cache<TPropertyNames, TReadHandlers>
+    private static class PropertyNamesCache<TPropertyNames>
     {
         public static readonly ConcurrentDictionary<JsonNamingPolicy, TPropertyNames> PropertyNames = new();
+    }
+
+    private static class ReadHandlersCache<TReadHandlers>
+    {
         public static readonly ConcurrentDictionary<JsonNamingPolicy, TReadHandlers> ReadHandlers = new();
     }
     #endregion
@@ -48,8 +52,8 @@ public abstract partial class JsonConverterBase<T>
         where TReadData : new()
     {
         var policy = options.GetPropertyNamingPolicy();
-        var names = Cache<TPropertyNames, TReadHandlers>.PropertyNames.GetOrAdd(policy, buildPropertyNames);
-        var handlers = Cache<TPropertyNames, TReadHandlers>.ReadHandlers.GetOrAdd(policy, _ => buildReadHandlers(names));
+        var names = GetPropertyNames(options, buildPropertyNames);
+        var handlers = ReadHandlersCache<TReadHandlers>.ReadHandlers.GetOrAdd(policy, _ => buildReadHandlers(names));
         var readData = new TReadData();
         return new DefaultReadContext<TPropertyNames, TReadData, TReadHandlers>(logger, options, policy, names, handlers, readData);
     }
@@ -73,8 +77,29 @@ public abstract partial class JsonConverterBase<T>
     )
     {
         var policy = options.GetPropertyNamingPolicy();
-        var names = Cache<TPropertyNames, object>.PropertyNames.GetOrAdd(policy, buildPropertyNames);
+        var names = GetPropertyNames(options, buildPropertyNames);
         return new DefaultWriteContext<TPropertyNames>(logger, options, policy, names);
+    }
+
+    /// <summary>
+    ///     Gets or creates cached property names for the specified JSON serializer options.
+    /// </summary>
+    /// <typeparam name="TPropertyNames">The type representing property names.</typeparam>
+    /// <param name="options">The JSON serializer options.</param>
+    /// <param name="buildPropertyNames">A function to build property names for a given naming policy.</param>
+    /// <returns>The cached or newly created property names instance.</returns>
+    /// <remarks>
+    ///     This method uses caching to avoid redundant construction of property names.
+    /// </remarks>
+    protected static TPropertyNames GetPropertyNames<TPropertyNames>
+    (
+        JsonSerializerOptions options,
+        Func<JsonNamingPolicy, TPropertyNames> buildPropertyNames
+    )
+    {
+        var policy = options.GetPropertyNamingPolicy();
+        var names = PropertyNamesCache<TPropertyNames>.PropertyNames.GetOrAdd(policy, buildPropertyNames);
+        return names;
     }
     #endregion
 }
