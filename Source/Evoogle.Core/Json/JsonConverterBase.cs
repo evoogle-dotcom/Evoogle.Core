@@ -23,7 +23,7 @@ namespace Evoogle.Json;
 ///     Responsibilities:
 ///     - Centralizes Read/Write lifecycles and logging.
 ///     - Delegates context-specific logic to <see cref="CreateReadContext"/> / <see cref="CreateWriteContext"/>.
-///     - Exposes helpers (<see cref="ReadJsonArray{TContext}"/>, <see cref="ReadJsonObject{TContext}"/>) for token-safe reading of arrays and objects.
+///     - Exposes helpers (<c>ReadJsonArray</c>, <c>ReadJsonObject</c>) for token-safe reading of arrays and objects.
 /// </remarks>
 public abstract partial class JsonConverterBase<T>(ILogger? logger) : JsonConverter<T>, IHasLogger
 {

@@ -53,7 +53,12 @@ public abstract partial class JsonConverterBase<T>
     {
         var policy = options.GetPropertyNamingPolicy();
         var names = GetPropertyNames(options, buildPropertyNames);
-        var handlers = ReadHandlersCache<TReadHandlers>.ReadHandlers.GetOrAdd(policy, _ => buildReadHandlers(names));
+        var handlers = ReadHandlersCache<TReadHandlers>.ReadHandlers.GetOrAdd
+        (
+            policy,
+            static (_, state) => state.buildReadHandlers(state.names),
+            (buildReadHandlers, names)
+        );
         var readData = new TReadData();
         return new DefaultReadContext<TPropertyNames, TReadData, TReadHandlers>(logger, options, policy, names, handlers, readData);
     }

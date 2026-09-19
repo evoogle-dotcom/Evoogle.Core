@@ -29,7 +29,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            writer.WriteNumber,
+            static (writer, value) => writer.WriteNumberValue(value),
             equalityComparer
         );
     }
@@ -52,7 +52,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            writer.WriteNumber,
+            static (writer, value) => writer.WriteNumberValue(value),
             equalityComparer
         );
     }
@@ -75,7 +75,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            writer.WriteNumber,
+            static (writer, value) => writer.WriteNumberValue(value),
             equalityComparer
         );
     }
@@ -98,7 +98,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            writer.WriteNumber,
+            static (writer, value) => writer.WriteNumberValue(value),
             equalityComparer
         );
     }
@@ -121,7 +121,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            writer.WriteNumber,
+            static (writer, value) => writer.WriteNumberValue(value),
             equalityComparer
         );
     }
@@ -144,7 +144,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            writer.WriteNumber,
+            static (writer, value) => writer.WriteNumberValue(value),
             equalityComparer
         );
     }
@@ -167,7 +167,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            writer.WriteNumber,
+            static (writer, value) => writer.WriteNumberValue(value),
             equalityComparer
         );
     }
@@ -190,7 +190,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            writer.WriteNumber,
+            static (writer, value) => writer.WriteNumberValue(value),
             equalityComparer
         );
     }
@@ -213,7 +213,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            writer.WriteNumber,
+            static (writer, value) => writer.WriteNumberValue(value),
             equalityComparer
         );
     }
@@ -236,7 +236,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            writer.WriteNumber,
+            static (writer, value) => writer.WriteNumberValue(value),
             equalityComparer
         );
     }

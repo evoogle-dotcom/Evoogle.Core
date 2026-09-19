@@ -35,10 +35,8 @@ public static partial class Utf8JsonWriterExtensions
         (
             cultureInfo,
             options,
-            (v) =>
-            {
-                converter.Write(writer, v, options);
-            }
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options)
         );
     }
 
@@ -69,10 +67,8 @@ public static partial class Utf8JsonWriterExtensions
         (
             value,
             options,
-            (v) =>
-            {
-                converter.Write(writer, v, options);
-            },
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options),
             equalityComparer
         );
     }
@@ -104,10 +100,8 @@ public static partial class Utf8JsonWriterExtensions
         (
             value,
             options,
-            (v) =>
-            {
-                converter.Write(writer, v, options);
-            },
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options),
             equalityComparer
         );
     }
@@ -133,10 +127,8 @@ public static partial class Utf8JsonWriterExtensions
         (
             type,
             options,
-            (v) =>
-            {
-                converter.Write(writer, v, options);
-            }
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options)
         );
     }
 
@@ -165,10 +157,8 @@ public static partial class Utf8JsonWriterExtensions
         (
             value,
             options,
-            (v) =>
-            {
-                converter.Write(writer, v, options);
-            },
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options),
             equalityComparer
         );
     }
@@ -198,10 +188,8 @@ public static partial class Utf8JsonWriterExtensions
         (
             value,
             options,
-            (v) =>
-            {
-                converter.Write(writer, v, options);
-            },
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options),
             equalityComparer
         );
     }
@@ -232,11 +220,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             cultureInfo,
             options,
-            (n, v) =>
-            {
-                writer.WritePropertyName(n);
-                converter.Write(writer, v, options);
-            }
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options)
         );
     }
 
@@ -270,11 +255,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            (n, v) =>
-            {
-                writer.WritePropertyName(n);
-                converter.Write(writer, v, options);
-            },
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options),
             equalityComparer
         );
     }
@@ -309,11 +291,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            (n, v) =>
-            {
-                writer.WritePropertyName(n);
-                converter.Write(writer, v, options);
-            },
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options),
             equalityComparer
         );
     }
@@ -342,11 +321,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             type,
             options,
-            (n, v) =>
-            {
-                writer.WritePropertyName(n);
-                converter.Write(writer, v, options);
-            }
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options)
         );
     }
 
@@ -378,11 +354,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            (n, v) =>
-            {
-                writer.WritePropertyName(n);
-                converter.Write(writer, v, options);
-            },
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options),
             equalityComparer
         );
     }
@@ -415,11 +388,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            (n, v) =>
-            {
-                writer.WritePropertyName(n);
-                converter.Write(writer, v, options);
-            },
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options),
             equalityComparer
         );
     }

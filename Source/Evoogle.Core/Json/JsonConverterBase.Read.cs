@@ -3,6 +3,9 @@
 //
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
+using System.Collections;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.Json;
 
 using Evoogle.Extensions;
@@ -25,6 +28,78 @@ public abstract partial class JsonConverterBase<T>
     /// <param name="reader">The JSON reader positioned at the start of the value to consume.</param>
     /// <param name="context">The read context.</param>
     protected delegate void JsonReaderHandler<TContext>(ref Utf8JsonReader reader, TContext context);
+
+    /// <summary>
+    ///     Holds property handlers and UTF-8 names for known-property dispatch without allocations.
+    /// </summary>
+    /// <typeparam name="TContext">The concrete read context type.</typeparam>
+    protected sealed class JsonReaderHandlerTable<TContext> : IEnumerable
+        where TContext : IReadContext
+    {
+        private readonly List<
+            (string Name, byte[] Utf8Name, JsonReaderHandler<TContext> Handler, bool DispatchNull)
+        > _entries = [];
+
+        IEnumerator IEnumerable.GetEnumerator() => _entries.GetEnumerator();
+
+        /// <summary>Adds a handler for a property whose null value is skipped.</summary>
+        /// <param name="name">The serialized property name.</param>
+        /// <param name="handler">The value handler.</param>
+        public void Add(string name, JsonReaderHandler<TContext> handler)
+            => this.Add(name, handler, dispatchNull: false);
+
+        /// <summary>Adds a handler for a property with an explicit null-dispatch policy.</summary>
+        /// <param name="name">The serialized property name.</param>
+        /// <param name="handler">The value handler.</param>
+        /// <param name="dispatchNull">Whether to dispatch a JSON null value.</param>
+        public void Add(string name, JsonReaderHandler<TContext> handler, bool dispatchNull)
+        {
+            foreach (var (nameEntry, utf8NameEntry, handlerEntry, dispatchNullEntry) in _entries)
+            {
+                if (StringComparer.Ordinal.Equals(nameEntry, name))
+                {
+                    throw new ArgumentException
+                    (
+                        $"A handler for property '{name}' already exists.",
+                        nameof(name)
+                    );
+                }
+            }
+
+            _entries.Add((name, Encoding.UTF8.GetBytes(name), handler, dispatchNull));
+        }
+
+        /// <summary>Finds a handler for the reader's current property-name token.</summary>
+        /// <param name="reader">The reader positioned on a property name.</param>
+        /// <param name="name">The decoded property name when found.</param>
+        /// <param name="handler">The matching handler when found.</param>
+        /// <param name="dispatchNull">Whether a null value should be dispatched.</param>
+        /// <returns>Whether a matching handler was found.</returns>
+        public bool TryGet
+        (
+            ref Utf8JsonReader reader,
+            out string? name,
+            out JsonReaderHandler<TContext>? handler,
+            out bool dispatchNull
+        )
+        {
+            foreach (var (nameEntry, utf8NameEntry, handlerEntry, dispatchNullEntry) in CollectionsMarshal.AsSpan(_entries))
+            {
+                if (reader.ValueTextEquals(utf8NameEntry))
+                {
+                    name = nameEntry;
+                    handler = handlerEntry;
+                    dispatchNull = dispatchNullEntry;
+                    return true;
+                }
+            }
+
+            name = null;
+            handler = null;
+            dispatchNull = false;
+            return false;
+        }
+    }
     #endregion
 
     #region Deserialize Methods
@@ -137,8 +212,32 @@ public abstract partial class JsonConverterBase<T>
             throw new JsonException("Expected start of an array.");
         }
 
-        var index = -1;
         var handler = arrayElementHandlerAccessor(context);
+        ReadJsonArray(ref reader, context, handler);
+    }
+
+    /// <summary>
+    ///     Reads a JSON array using the specified handler for every non-null element.
+    /// </summary>
+    /// <typeparam name="TContext">The concrete read context type.</typeparam>
+    /// <param name="reader">The reader positioned on the start of the array.</param>
+    /// <param name="context">The read context.</param>
+    /// <param name="arrayElementHandler">The handler that consumes each non-null element.</param>
+    /// <exception cref="JsonException">Thrown if the reader is not on the start of an array.</exception>
+    protected static void ReadJsonArray<TContext>
+    (
+        ref Utf8JsonReader reader,
+        TContext context,
+        JsonReaderHandler<TContext> arrayElementHandler
+    )
+        where TContext : IReadContext
+    {
+        if (reader.TokenType != JsonTokenType.StartArray)
+        {
+            throw new JsonException("Expected start of an array.");
+        }
+
+        var index = -1;
         while (reader.Read())
         {
             // Check for end of the array.
@@ -163,7 +262,7 @@ public abstract partial class JsonConverterBase<T>
             }
 
             // Handle the current array element using the provided handler.
-            handler(ref reader, context);
+            arrayElementHandler(ref reader, context);
         }
     }
 
@@ -256,6 +355,79 @@ public abstract partial class JsonConverterBase<T>
             {
                 // Log a warning for the skipped property.
                 // This helps in identifying properties that are not handled by the deserialization logic.
+                context.OnReadOfUnknownProperty(propertyName);
+                reader.Skip();
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Reads a JSON object using cached UTF-8 property names and their handlers.
+    /// </summary>
+    /// <typeparam name="TContext">The concrete read context type.</typeparam>
+    /// <param name="reader">The reader positioned on the start of an object.</param>
+    /// <param name="context">The read context.</param>
+    /// <param name="handlers">The cached property handler table.</param>
+    /// <exception cref="JsonException">Thrown when the JSON object is malformed.</exception>
+    protected static void ReadJsonObject<TContext>
+    (
+        ref Utf8JsonReader reader,
+        TContext context,
+        JsonReaderHandlerTable<TContext> handlers
+    )
+        where TContext : IReadContext
+    {
+        if (reader.TokenType != JsonTokenType.StartObject)
+        {
+            throw new JsonException("Expected start of an object.");
+        }
+
+        while (reader.Read())
+        {
+            if (reader.TokenType == JsonTokenType.EndObject)
+            {
+                break;
+            }
+
+            if (reader.TokenType != JsonTokenType.PropertyName)
+            {
+                throw new JsonException("Expected object property name.");
+            }
+
+            var isKnown = handlers.TryGet
+            (
+                ref reader,
+                out var propertyName,
+                out var handler,
+                out var dispatchNull
+            );
+
+            propertyName ??= reader.GetString()!;
+            if (!reader.Read())
+            {
+                throw new JsonException($"Failed to read value for property '{propertyName}'.");
+            }
+
+            if (reader.TokenType == JsonTokenType.Null)
+            {
+                if (isKnown && dispatchNull)
+                {
+                    handler!(ref reader, context);
+                }
+                else
+                {
+                    context.OnReadOfNullProperty(propertyName);
+                }
+
+                continue;
+            }
+
+            if (isKnown)
+            {
+                handler!(ref reader, context);
+            }
+            else
+            {
                 context.OnReadOfUnknownProperty(propertyName);
                 reader.Skip();
             }

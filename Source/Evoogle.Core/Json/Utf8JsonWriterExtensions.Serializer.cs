@@ -36,10 +36,8 @@ public static partial class Utf8JsonWriterExtensions
         (
             value,
             options,
-            (v) =>
-            {
-                JsonSerializer.Serialize(writer, v, options);
-            },
+            options,
+            static (writer, value, options) => JsonSerializer.Serialize(writer, value, options),
             equalityComparer
         );
     }
@@ -69,10 +67,8 @@ public static partial class Utf8JsonWriterExtensions
         (
             nullableValue,
             options,
-            (nv) =>
-            {
-                JsonSerializer.Serialize(writer, nv, options);
-            },
+            options,
+            static (writer, value, options) => JsonSerializer.Serialize(writer, value, options),
             equalityComparer
         );
     }
@@ -98,10 +94,8 @@ public static partial class Utf8JsonWriterExtensions
         (
             obj,
             options,
-            (o) =>
-            {
-                JsonSerializer.Serialize(writer, o, options);
-            }
+            options,
+            static (writer, value, options) => JsonSerializer.Serialize(writer, value, options)
         );
     }
     #endregion
@@ -135,11 +129,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            (n, v) =>
-            {
-                writer.WritePropertyName(n);
-                JsonSerializer.Serialize(writer, v, options);
-            },
+            options,
+            static (writer, value, options) => JsonSerializer.Serialize(writer, value, options),
             equalityComparer
         );
     }
@@ -172,11 +163,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             nullableValue,
             options,
-            (n, nv) =>
-            {
-                writer.WritePropertyName(n);
-                JsonSerializer.Serialize(writer, nv, options);
-            },
+            options,
+            static (writer, value, options) => JsonSerializer.Serialize(writer, value, options),
             equalityComparer
         );
     }
@@ -205,11 +193,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             obj,
             options,
-            (n, o) =>
-            {
-                writer.WritePropertyName(n);
-                JsonSerializer.Serialize(writer, o, options);
-            }
+            options,
+            static (writer, value, options) => JsonSerializer.Serialize(writer, value, options)
         );
     }
     #endregion

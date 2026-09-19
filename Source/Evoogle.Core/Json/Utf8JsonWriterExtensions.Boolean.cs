@@ -29,7 +29,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            writer.WriteBoolean,
+            static (writer, value) => writer.WriteBooleanValue(value),
             equalityComparer
         );
     }
@@ -52,7 +52,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            writer.WriteBoolean,
+            static (writer, value) => writer.WriteBooleanValue(value),
             equalityComparer
         );
     }

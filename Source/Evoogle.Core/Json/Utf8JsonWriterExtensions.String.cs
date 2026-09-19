@@ -33,7 +33,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            (n, dt) => writer.WriteString(n, dt.ToString(format, formatProvider ?? CultureInfo.InvariantCulture)),
+            (format, formatProvider),
+            static (writer, value, state) => writer.WriteStringValue(value.ToString(state.format, state.formatProvider ?? CultureInfo.InvariantCulture)),
             equalityComparer
         );
     }
@@ -59,7 +60,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            (n, dt) => writer.WriteString(n, dt.ToString(format, formatProvider ?? CultureInfo.InvariantCulture)),
+            (format, formatProvider),
+            static (writer, value, state) => writer.WriteStringValue(value.ToString(state.format, state.formatProvider ?? CultureInfo.InvariantCulture)),
             equalityComparer
         );
     }
@@ -85,7 +87,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            (n, dto) => writer.WriteString(n, dto.ToString(format, formatProvider ?? CultureInfo.InvariantCulture)),
+            (format, formatProvider),
+            static (writer, value, state) => writer.WriteStringValue(value.ToString(state.format, state.formatProvider ?? CultureInfo.InvariantCulture)),
             equalityComparer
         );
     }
@@ -111,7 +114,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            (n, dto) => writer.WriteString(n, dto.ToString(format, formatProvider ?? CultureInfo.InvariantCulture)),
+            (format, formatProvider),
+            static (writer, value, state) => writer.WriteStringValue(value.ToString(state.format, state.formatProvider ?? CultureInfo.InvariantCulture)),
             equalityComparer
         );
     }
@@ -136,7 +140,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            (n, enumeration) => writer.WriteString(n, enumeration.ToString()),
+            static (writer, value) => writer.WriteStringValue(value.ToString()),
             equalityComparer
         );
     }
@@ -162,7 +166,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            (n, enumeration) => writer.WriteString(n, enumeration.ToString()),
+            static (writer, value) => writer.WriteStringValue(value.ToString()),
             equalityComparer
         );
     }
@@ -185,7 +189,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            writer.WriteString,
+            static (writer, value) => writer.WriteStringValue(value),
             equalityComparer
         );
     }
@@ -209,7 +213,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            writer.WriteString,
+            static (writer, value) => writer.WriteStringValue(value),
             equalityComparer
         );
     }
@@ -229,7 +233,7 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            writer.WriteString
+            static (writer, value) => writer.WriteStringValue(value)
         );
     }
 
@@ -253,7 +257,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            (n, ts) => writer.WriteString(n, ts.ToString(format, formatProvider ?? CultureInfo.InvariantCulture)),
+            (format, formatProvider),
+            static (writer, value, state) => writer.WriteStringValue(value.ToString(state.format, state.formatProvider ?? CultureInfo.InvariantCulture)),
             equalityComparer
         );
     }
@@ -279,7 +284,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            (n, ts) => writer.WriteString(n, ts.ToString(format, formatProvider ?? CultureInfo.InvariantCulture)),
+            (format, formatProvider),
+            static (writer, value, state) => writer.WriteStringValue(value.ToString(state.format, state.formatProvider ?? CultureInfo.InvariantCulture)),
             equalityComparer
         );
     }
@@ -303,11 +309,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            (n, ulid) =>
-            {
-                writer.WritePropertyName(n);
-                JsonSerializer.Serialize(writer, ulid, options);
-            },
+            options,
+            static (writer, value, options) => JsonSerializer.Serialize(writer, value, options),
             equalityComparer
         );
     }
@@ -331,11 +334,8 @@ public static partial class Utf8JsonWriterExtensions
             propertyName,
             value,
             options,
-            (n, ulid) =>
-            {
-                writer.WritePropertyName(n);
-                JsonSerializer.Serialize(writer, ulid, options);
-            },
+            options,
+            static (writer, value, options) => JsonSerializer.Serialize(writer, value, options),
             equalityComparer
         );
     }
