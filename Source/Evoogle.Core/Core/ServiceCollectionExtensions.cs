@@ -10,10 +10,7 @@ using Evoogle.Reflection;
 
 using Microsoft.Extensions.DependencyInjection;
 
-#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Evoogle;
-
-#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
 ///     Extension methods for the <see cref="IServiceCollection"/> that help in configuration of dependency injection.
