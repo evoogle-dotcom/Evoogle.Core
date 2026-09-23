@@ -101,7 +101,9 @@ internal static class MemberAccessCompiler
         }
         catch (Exception exception)
         {
-            throw new MemberAccessException($"Could not compile access to member '{accessor.MemberInfo.Name}'.", exception);
+            throw new MemberAccessException(
+                $"Could not compile access to member '{accessor.MemberInfo.Name}'.",
+                exception);
         }
     }
     #endregion
@@ -129,7 +131,7 @@ internal static class MemberAccessCompiler
         var parameters = parameterTypes
             .Select(static (type, index) => Expression.Parameter(type, $"argument{index}"))
             .ToArray();
-        var isByRef = parameters.Length > 0 && parameters[0].Type.IsByRef;
+        var isByRef = parameters.Length > 0 && parameters[0].IsByRef;
         var isRuntimeTypedGetter =
             isGetter &&
             isCoercing &&
@@ -157,7 +159,8 @@ internal static class MemberAccessCompiler
 
             if (!isGetter && (targetType.IsValueType || declaringType.IsValueType) && !isByRef)
             {
-                throw new MemberAccessException($"Setter for value-type member '{member.Name}' requires a by-reference target.");
+                throw new MemberAccessException(
+                    $"Setter for value-type member '{member.Name}' requires a by-reference target.");
             }
 
             target = targetType == typeof(object)
@@ -214,12 +217,11 @@ internal static class MemberAccessCompiler
             {
                 if (!valueType.IsAssignableFrom(memberType))
                 {
-                    throw new MemberAccessException($"Getter for '{member.Name}' cannot return '{valueType}' without coercion.");
+                    throw new MemberAccessException(
+                        $"Getter for '{member.Name}' cannot return '{valueType}' without coercion.");
                 }
 
-                body = memberType == valueType
-                    ? memberAccess
-                    : Expression.Convert(memberAccess, valueType);
+                body = memberType == valueType ? memberAccess : Expression.Convert(memberAccess, valueType);
             }
         }
         else
@@ -230,21 +232,30 @@ internal static class MemberAccessCompiler
                 body = Expression.Assign
                 (
                     memberAccess,
-                    Coerce
-                    (
-                        value,
-                        valueType,
-                        memberType,
-                        parameters[serviceIndex + 1],
-                        parameters[serviceIndex + 2]
-                    )
+                    valueType == typeof(object)
+                        ? CoerceObject
+                        (
+                            value,
+                            memberType,
+                            parameters[serviceIndex + 1],
+                            parameters[serviceIndex + 2]
+                        )
+                        : Coerce
+                        (
+                            value,
+                            valueType,
+                            memberType,
+                            parameters[serviceIndex + 1],
+                            parameters[serviceIndex + 2]
+                        )
                 );
             }
             else
             {
                 if (!memberType.IsAssignableFrom(valueType) && valueType != typeof(object))
                 {
-                    throw new MemberAccessException($"Setter for '{member.Name}' cannot accept '{valueType}' without coercion.");
+                    throw new MemberAccessException(
+                        $"Setter for '{member.Name}' cannot accept '{valueType}' without coercion.");
                 }
 
                 body = Expression.Assign(memberAccess, memberType == valueType
@@ -282,6 +293,31 @@ internal static class MemberAccessCompiler
             value,
             resolvedContext
         );
+    }
+
+    private static UnaryExpression CoerceObject
+    (
+        Expression value,
+        Type outputType,
+        ParameterExpression coercion,
+        ParameterExpression context
+    )
+    {
+        var resolvedContext = Expression.Coalesce
+        (
+            context,
+            Expression.Field(null, _defaultCoercionContextField)
+        );
+        var coercedValue = Expression.Call
+        (
+            coercion,
+            _nonGenericCoerceMethod,
+            value,
+            Expression.Constant(outputType),
+            resolvedContext
+        );
+
+        return Expression.Convert(coercedValue, outputType);
     }
     #endregion
 }
