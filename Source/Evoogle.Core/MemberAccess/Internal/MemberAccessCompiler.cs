@@ -40,17 +40,43 @@ internal static class MemberAccessCompiler
         Type DelegateType,
         AccessOperation Operation
     );
+
+    private sealed class CompiledDelegateCacheEntry
+    {
+        private readonly MemberAccessor _accessor;
+        private readonly Type _delegateType;
+        private readonly AccessOperation _operation;
+        private readonly Lazy<Delegate> _compiledDelegate;
+
+        public CompiledDelegateCacheEntry(CacheKey key, MemberAccessor accessor)
+        {
+            _accessor = accessor;
+            _delegateType = key.DelegateType;
+            _operation = key.Operation;
+            _compiledDelegate = new Lazy<Delegate>(this.Compile, LazyThreadSafetyMode.ExecutionAndPublication);
+        }
+
+        public Delegate CompiledDelegate => _compiledDelegate.Value;
+
+        private Delegate Compile() => MemberAccessCompiler.Compile(_accessor, _delegateType, _operation);
+    }
     #endregion
 
     #region Fields
-    private static readonly ConcurrentDictionary<CacheKey, Lazy<Delegate>> _cache = new();
+    private static readonly ConcurrentDictionary<CacheKey, CompiledDelegateCacheEntry> _cache = new();
 
     private static readonly MethodInfo _coerceMethod = typeof(TypeCoercion)
         .GetMethods(BindingFlags.Public | BindingFlags.Instance)
-        .Single(method => method.Name == nameof(TypeCoercion.Coerce) && method.IsGenericMethodDefinition && method.GetParameters().Length == 2);
+        .Single(static method =>
+            method.Name == nameof(TypeCoercion.Coerce) &&
+            method.IsGenericMethodDefinition &&
+            method.GetParameters().Length == 2);
 
     private static readonly MethodInfo _nonGenericCoerceMethod = typeof(TypeCoercion)
         .GetMethod(nameof(TypeCoercion.Coerce), [typeof(object), typeof(Type), typeof(TypeCoercionContext)])!;
+
+    private static readonly FieldInfo _defaultCoercionContextField = typeof(TypeCoercionContext)
+        .GetField(nameof(TypeCoercionContext.Default), BindingFlags.Public | BindingFlags.Static)!;
     #endregion
 
     #region Methods
@@ -58,15 +84,16 @@ internal static class MemberAccessCompiler
         where TDelegate : Delegate
     {
         var key = new CacheKey(accessor.MemberInfo, typeof(TDelegate), operation);
-        var lazy = _cache.GetOrAdd(key, _ => new Lazy<Delegate>
+        var entry = _cache.GetOrAdd
         (
-            () => Compile(accessor, typeof(TDelegate), operation),
-            LazyThreadSafetyMode.ExecutionAndPublication
-        ));
+            key,
+            static (cacheKey, state) => new CompiledDelegateCacheEntry(cacheKey, state),
+            accessor
+        );
 
         try
         {
-            return (TDelegate)lazy.Value;
+            return (TDelegate)entry.CompiledDelegate;
         }
         catch (MemberAccessException)
         {
@@ -80,7 +107,12 @@ internal static class MemberAccessCompiler
     #endregion
 
     #region Implementation Methods
-    private static Delegate Compile(MemberAccessor accessor, Type delegateType, AccessOperation operation)
+    private static Delegate Compile
+    (
+        MemberAccessor accessor,
+        Type delegateType,
+        AccessOperation operation
+    )
     {
         var member = accessor.MemberInfo;
         var isGetter = operation is AccessOperation.Get or AccessOperation.CoercingGet;
@@ -91,14 +123,18 @@ internal static class MemberAccessCompiler
 
         var invoke = delegateType.GetMethod("Invoke")!;
         var parameterTypes = invoke.GetParameters()
-            .Select(parameter => parameter.ParameterType)
+            .Select(static parameter => parameter.ParameterType)
             .ToArray();
         var isCoercing = operation is AccessOperation.CoercingGet or AccessOperation.CoercingSet;
         var parameters = parameterTypes
-            .Select((type, index) => Expression.Parameter(type, $"argument{index}"))
+            .Select(static (type, index) => Expression.Parameter(type, $"argument{index}"))
             .ToArray();
         var isByRef = parameters.Length > 0 && parameters[0].Type.IsByRef;
-        var isRuntimeTypedGetter = isGetter && isCoercing && invoke.ReturnType == typeof(object) && parameterTypes[accessor.IsStatic ? 0 : 1] == typeof(Type);
+        var isRuntimeTypedGetter =
+            isGetter &&
+            isCoercing &&
+            invoke.ReturnType == typeof(object) &&
+            parameterTypes[accessor.IsStatic ? 0 : 1] == typeof(Type);
         var valueType = isGetter ? invoke.ReturnType : parameterTypes[accessor.IsStatic ? 0 : 1];
         var memberType = accessor.MemberType;
 
@@ -108,7 +144,13 @@ internal static class MemberAccessCompiler
         {
             var targetType = isByRef ? parameterTypes[0].GetElementType()! : parameterTypes[0];
             var declaringType = accessor.DeclaringType;
-            if (isByRef && targetType != declaringType || !isByRef && !declaringType.IsAssignableFrom(targetType) && targetType != typeof(object))
+            if
+            (
+                isByRef && targetType != declaringType ||
+                !isByRef &&
+                !declaringType.IsAssignableFrom(targetType) &&
+                targetType != typeof(object)
+            )
             {
                 throw new MemberAccessException($"Target type '{targetType}' cannot access member '{member.Name}'.");
             }
@@ -120,7 +162,9 @@ internal static class MemberAccessCompiler
 
             target = targetType == typeof(object)
                 ? Expression.Convert(parameters[0], declaringType)
-                : targetType == declaringType || isByRef ? parameters[0] : Expression.Convert(parameters[0], declaringType);
+                : targetType == declaringType || isByRef
+                    ? parameters[0]
+                    : Expression.Convert(parameters[0], declaringType);
         }
 
         Expression memberAccess = member switch
@@ -137,7 +181,11 @@ internal static class MemberAccessCompiler
             {
                 var requestedType = parameters[serviceIndex];
                 var coercion = parameters[serviceIndex + 1];
-                var context = Expression.Coalesce(parameters[serviceIndex + 2], Expression.Constant(TypeCoercionContext.Default));
+                var context = Expression.Coalesce
+                (
+                    parameters[serviceIndex + 2],
+                    Expression.Field(null, _defaultCoercionContextField)
+                );
                 var boxedValue = memberType == typeof(object)
                     ? memberAccess
                     : Expression.Convert(memberAccess, typeof(object));
@@ -179,7 +227,18 @@ internal static class MemberAccessCompiler
             var value = parameters[serviceIndex];
             if (isCoercing)
             {
-                body = Expression.Assign(memberAccess, Coerce(value, valueType, memberType, parameters[serviceIndex + 1], parameters[serviceIndex + 2]));
+                body = Expression.Assign
+                (
+                    memberAccess,
+                    Coerce
+                    (
+                        value,
+                        valueType,
+                        memberType,
+                        parameters[serviceIndex + 1],
+                        parameters[serviceIndex + 2]
+                    )
+                );
             }
             else
             {
@@ -209,7 +268,11 @@ internal static class MemberAccessCompiler
         ParameterExpression context
     )
     {
-        var resolvedContext = Expression.Coalesce(context, Expression.Constant(TypeCoercionContext.Default));
+        var resolvedContext = Expression.Coalesce
+        (
+            context,
+            Expression.Field(null, _defaultCoercionContextField)
+        );
         var method = _coerceMethod.MakeGenericMethod(inputType, outputType);
 
         return Expression.Call

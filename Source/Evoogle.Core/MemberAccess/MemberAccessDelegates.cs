@@ -12,7 +12,11 @@ namespace Evoogle.MemberAccess;
 /// <typeparam name="TValue">The supplied value type.</typeparam>
 /// <param name="target">The instance to modify.</param>
 /// <param name="value">The value to assign.</param>
-public delegate void MemberSetterByRef<TObject, in TValue>(ref TObject target, TValue value) where TObject : struct;
+public delegate void MemberSetterByRef<TObject, in TValue>
+(
+    ref TObject target,
+    TValue value
+) where TObject : struct;
 
 /// <summary>Sets a member on a value type, coercing the supplied value when needed.</summary>
 /// <typeparam name="TObject">The value type declaring the member.</typeparam>

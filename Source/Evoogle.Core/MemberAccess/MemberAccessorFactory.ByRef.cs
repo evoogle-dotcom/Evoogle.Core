@@ -38,7 +38,7 @@ public static partial class MemberAccessorFactory
     /// <param name="setter">The setter when successful.</param>
     /// <returns>Whether creation succeeded.</returns>
     public static bool TryCreateSetterByRef<TObject, TValue>(MemberInfo? memberInfo, out MemberSetterByRef<TObject, TValue>? setter) where TObject : struct
-        => TryCreate(() => CreateSetterByRef<TObject, TValue>(memberInfo!), out setter);
+        => TryCreate(memberInfo, static member => CreateSetterByRef<TObject, TValue>(member!), out setter);
 
     /// <summary>Attempts to create a coercing struct setter.</summary>
     /// <typeparam name="TObject">The struct type.</typeparam>
@@ -47,6 +47,6 @@ public static partial class MemberAccessorFactory
     /// <param name="setter">The setter when successful.</param>
     /// <returns>Whether creation succeeded.</returns>
     public static bool TryCreateCoercingSetterByRef<TObject, TValue>(MemberInfo? memberInfo, out CoercingMemberSetterByRef<TObject, TValue>? setter) where TObject : struct
-        => TryCreate(() => CreateCoercingSetterByRef<TObject, TValue>(memberInfo!), out setter);
+        => TryCreate(memberInfo, static member => CreateCoercingSetterByRef<TObject, TValue>(member!), out setter);
     #endregion
 }

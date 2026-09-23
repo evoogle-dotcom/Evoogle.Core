@@ -17,7 +17,8 @@ namespace Evoogle.MemberAccess;
 /// </summary>
 /// <remarks>
 ///     Delegates are compiled on first use and shared with <see cref="MemberAccessorFactory"/>.
-///     A member can support only reading or only writing. Struct mutation requires a by-reference setter.
+///     A member can support only reading or only writing. Struct mutation requires a
+///     by-reference setter.
 /// </remarks>
 public sealed class MemberAccessor
 {
@@ -28,31 +29,90 @@ public sealed class MemberAccessor
         string MemberName,
         BindingFlags BindingFlags
     );
+
+    private readonly record struct TryLookupState
+    (
+        Type? DeclaringType,
+        string? MemberName,
+        BindingFlags BindingFlags
+    );
+
+    private sealed class AccessorCacheEntry
+    {
+        private readonly MemberInfo _memberInfo;
+        private readonly Lazy<MemberAccessor> _accessor;
+
+        public AccessorCacheEntry(MemberInfo memberInfo)
+        {
+            _memberInfo = memberInfo;
+            _accessor = new Lazy<MemberAccessor>
+            (
+                this.CreateAccessor,
+                LazyThreadSafetyMode.ExecutionAndPublication
+            );
+        }
+
+        public MemberAccessor Accessor => _accessor.Value;
+
+        private MemberAccessor CreateAccessor() => CreateCore(_memberInfo);
+    }
+
+    private sealed class PropertyLookupCacheEntry
+    {
+        private readonly LookupKey _lookup;
+        private readonly Lazy<PropertyInfo?> _propertyInfo;
+
+        public PropertyLookupCacheEntry(LookupKey lookup)
+        {
+            _lookup = lookup;
+            _propertyInfo = new Lazy<PropertyInfo?>
+            (
+                this.FindProperty,
+                LazyThreadSafetyMode.ExecutionAndPublication
+            );
+        }
+
+        public PropertyInfo? PropertyInfo => _propertyInfo.Value;
+
+        private PropertyInfo? FindProperty() => _lookup.DeclaringType.GetProperty(_lookup.MemberName, _lookup.BindingFlags);
+    }
+
+    private sealed class FieldLookupCacheEntry
+    {
+        private readonly LookupKey _lookup;
+        private readonly Lazy<FieldInfo?> _fieldInfo;
+
+        public FieldLookupCacheEntry(LookupKey lookup)
+        {
+            _lookup = lookup;
+            _fieldInfo = new Lazy<FieldInfo?>
+            (
+                this.FindField,
+                LazyThreadSafetyMode.ExecutionAndPublication
+            );
+        }
+
+        public FieldInfo? FieldInfo => _fieldInfo.Value;
+
+        private FieldInfo? FindField() => _lookup.DeclaringType.GetField(_lookup.MemberName, _lookup.BindingFlags);
+    }
     #endregion
 
     #region Fields
     private const BindingFlags _defaultFlags = BindingFlags.Public | BindingFlags.Instance;
 
-    private static readonly ConcurrentDictionary<MemberInfo, Lazy<MemberAccessor>> _accessors = new();
-
-    private static readonly ConcurrentDictionary<LookupKey, Lazy<PropertyInfo?>> _properties = new();
-
-    private static readonly ConcurrentDictionary<LookupKey, Lazy<FieldInfo?>> _fields = new();
+    private static readonly ConcurrentDictionary<MemberInfo, AccessorCacheEntry> _accessors = new();
+    private static readonly ConcurrentDictionary<LookupKey, PropertyLookupCacheEntry> _properties = new();
+    private static readonly ConcurrentDictionary<LookupKey, FieldLookupCacheEntry> _fields = new();
 
     private Func<object, object?>? _getter;
-
-    private Func<object, Type, TypeCoercion, TypeCoercionContext?, object?>? _coercingGetter;
-
-    private Action<object, object?>? _setter;
-
-    private Action<object, object?, TypeCoercion, TypeCoercionContext?>? _coercingSetter;
-
     private Func<object?>? _staticGetter;
-
+    private Func<object, Type, TypeCoercion, TypeCoercionContext?, object?>? _coercingGetter;
     private Func<Type, TypeCoercion, TypeCoercionContext?, object?>? _coercingStaticGetter;
 
+    private Action<object, object?>? _setter;
     private Action<object?>? _staticSetter;
-
+    private Action<object, object?, TypeCoercion, TypeCoercionContext?>? _coercingSetter;
     private Action<object?, TypeCoercion, TypeCoercionContext?>? _coercingStaticSetter;
     #endregion
 
@@ -112,12 +172,8 @@ public sealed class MemberAccessor
     {
         ArgumentNullException.ThrowIfNull(memberInfo);
 
-        var lazy = _accessors.GetOrAdd(memberInfo, static member => new Lazy<MemberAccessor>
-        (
-            () => CreateCore(member),
-            LazyThreadSafetyMode.ExecutionAndPublication
-        ));
-        return lazy.Value;
+        var entry = _accessors.GetOrAdd(memberInfo, static member => new AccessorCacheEntry(member));
+        return entry.Accessor;
     }
 
     /// <summary>Looks up a property and creates its accessor.</summary>
@@ -179,7 +235,7 @@ public sealed class MemberAccessor
     /// <param name="accessor">The created accessor when successful.</param>
     /// <returns>Whether creation succeeded.</returns>
     public static bool TryCreate(MemberInfo? memberInfo, out MemberAccessor? accessor)
-        => TryCreateCore(() => Create(memberInfo!), out accessor);
+        => TryCreateCore(memberInfo, static member => Create(member!), out accessor);
 
     /// <summary>Attempts to look up and create a property accessor.</summary>
     /// <param name="declaringType">The type to search.</param>
@@ -193,7 +249,17 @@ public sealed class MemberAccessor
         string? memberName,
         out MemberAccessor? accessor,
         BindingFlags bindingFlags = _defaultFlags
-    ) => TryCreateCore(() => CreateProperty(declaringType!, memberName!, bindingFlags), out accessor);
+    ) => TryCreateCore
+    (
+        new TryLookupState(declaringType, memberName, bindingFlags),
+        static state => CreateProperty
+        (
+            state.DeclaringType!,
+            state.MemberName!,
+            state.BindingFlags
+        ),
+        out accessor
+    );
 
     /// <summary>Attempts to look up and create a field accessor.</summary>
     /// <param name="declaringType">The type to search.</param>
@@ -207,127 +273,17 @@ public sealed class MemberAccessor
         string? memberName,
         out MemberAccessor? accessor,
         BindingFlags bindingFlags = _defaultFlags
-    ) => TryCreateCore(() => CreateField(declaringType!, memberName!, bindingFlags), out accessor);
-
-    private static MemberAccessor CreateCore(MemberInfo memberInfo)
-    {
-        var declaringType = memberInfo.DeclaringType ?? throw new MemberAccessException($"Member '{memberInfo.Name}' has no declaring type.");
-        if (declaringType.ContainsGenericParameters)
-        {
-            throw new MemberAccessException($"Member '{memberInfo.Name}' belongs to an open generic type.");
-        }
-
-        return memberInfo switch
-        {
-            PropertyInfo propertyInfo => CreateForProperty(propertyInfo, declaringType),
-            FieldInfo fieldInfo => CreateField(fieldInfo, declaringType),
-
-            _ => throw new MemberAccessException($"Member '{memberInfo.Name}' is neither a property nor a field.")
-        };
-    }
-
-    private static MemberAccessor CreateField(FieldInfo fieldInfo, Type declaringType)
-    {
-        return new MemberAccessor
+    ) => TryCreateCore
+    (
+        new TryLookupState(declaringType, memberName, bindingFlags),
+        static state => CreateField
         (
-            fieldInfo,
-            declaringType,
-            memberType: fieldInfo.FieldType,
-            isStatic: fieldInfo.IsStatic,
-            canRead: true,
-            canWrite: !fieldInfo.IsInitOnly && !fieldInfo.IsLiteral
-        );
-    }
-
-    private static MemberAccessor CreateForProperty(PropertyInfo propertyInfo, Type declaringType)
-    {
-        if (propertyInfo.GetIndexParameters().Length != 0)
-        {
-            throw new MemberAccessException($"Indexer property '{propertyInfo.Name}' is not supported.");
-        }
-
-        var getter = propertyInfo.GetGetMethod(nonPublic: true);
-        var setter = propertyInfo.GetSetMethod(nonPublic: true);
-        var method = getter ?? setter ?? throw new MemberAccessException($"Property '{propertyInfo.Name}' has no getter or setter.");
-        if (getter is not null && setter is not null && getter.IsStatic != setter.IsStatic)
-        {
-            throw new MemberAccessException($"Property '{propertyInfo.Name}' has inconsistent accessor methods.");
-        }
-
-        var isInitOnly = setter?.ReturnParameter.GetRequiredCustomModifiers().Contains(typeof(IsExternalInit)) == true;
-
-        return new MemberAccessor
-        (
-            propertyInfo,
-            declaringType,
-            memberType: propertyInfo.PropertyType,
-            isStatic: method.IsStatic,
-            canRead: getter is not null,
-            canWrite: setter is not null && !isInitOnly
-        );
-    }
-
-    private static PropertyInfo? FindProperty(LookupKey key)
-    {
-        var lazy = _properties.GetOrAdd(key, static lookup => new Lazy<PropertyInfo?>
-        (
-            () => lookup.DeclaringType.GetProperty(lookup.MemberName, lookup.BindingFlags),
-            LazyThreadSafetyMode.ExecutionAndPublication
-        ));
-        try
-        {
-            var propertyInfo = lazy.Value;
-            if (propertyInfo is null)
-            {
-                _properties.TryRemove(key, out _);
-            }
-
-            return propertyInfo;
-        }
-        catch (Exception)
-        {
-            _properties.TryRemove(key, out _);
-            throw;
-        }
-    }
-
-    private static FieldInfo? FindField(LookupKey key)
-    {
-        var lazy = _fields.GetOrAdd(key, static lookup => new Lazy<FieldInfo?>
-        (
-            () => lookup.DeclaringType.GetField(lookup.MemberName, lookup.BindingFlags),
-            LazyThreadSafetyMode.ExecutionAndPublication
-        ));
-        try
-        {
-            var fieldInfo = lazy.Value;
-            if (fieldInfo is null)
-            {
-                _fields.TryRemove(key, out _);
-            }
-
-            return fieldInfo;
-        }
-        catch (Exception)
-        {
-            _fields.TryRemove(key, out _);
-            throw;
-        }
-    }
-
-    private static bool TryCreateCore(Func<MemberAccessor> create, out MemberAccessor? accessor)
-    {
-        try
-        {
-            accessor = create();
-            return true;
-        }
-        catch (Exception)
-        {
-            accessor = null;
-            return false;
-        }
-    }
+            state.DeclaringType!,
+            state.MemberName!,
+            state.BindingFlags
+        ),
+        out accessor
+    );
     #endregion
 
     #region Get Methods
@@ -347,7 +303,7 @@ public sealed class MemberAccessor
     {
         ArgumentNullException.ThrowIfNull(target);
 
-        return this.Invoke(() =>
+        try
         {
             this.RequireInstance();
             if (valueType is not null && coercion is not null)
@@ -358,7 +314,11 @@ public sealed class MemberAccessor
             var getter = this.GetObjectGetter();
             var value = getter(target);
             return ConvertResult(value, valueType, coercion, context);
-        });
+        }
+        catch (Exception exception)
+        {
+            throw new MemberAccessException($"Could not access member '{this.MemberInfo.Name}'.", exception);
+        }
     }
 
     /// <summary>Reads an instance member using the requested generic types.</summary>
@@ -377,13 +337,22 @@ public sealed class MemberAccessor
     {
         ArgumentNullException.ThrowIfNull(target);
 
-        return this.Invoke(() =>
+        try
         {
             this.RequireInstance();
-            return coercion is null
-                ? MemberAccessCompiler.Get<Func<TObject, TValue?>>(this, AccessOperation.Get)(target)
-                : MemberAccessCompiler.Get<Func<TObject, TypeCoercion, TypeCoercionContext?, TValue?>>(this, AccessOperation.CoercingGet)(target, coercion, context);
-        });
+            if (coercion is null)
+            {
+                var getter = MemberAccessCompiler.Get<Func<TObject, TValue?>>(this, AccessOperation.Get);
+                return getter(target);
+            }
+
+            var coercingGetter = MemberAccessCompiler.Get<Func<TObject, TypeCoercion, TypeCoercionContext?, TValue?>>(this, AccessOperation.CoercingGet);
+            return coercingGetter(target, coercion, context);
+        }
+        catch (Exception exception)
+        {
+            throw new MemberAccessException($"Could not access member '{this.MemberInfo.Name}'.", exception);
+        }
     }
 
     /// <summary>Reads a static member, optionally converting its value.</summary>
@@ -396,21 +365,26 @@ public sealed class MemberAccessor
         Type? valueType = null,
         TypeCoercion? coercion = null,
         TypeCoercionContext? context = null
-    ) => this.Invoke(() =>
+    )
     {
-        this.RequireStatic();
-        if (valueType is not null && coercion is not null)
+        try
         {
-            var getter = this.GetCoercingStaticObjectGetter();
-            return getter(valueType, coercion, context);
-        }
-        else
-        {
+            this.RequireStatic();
+            if (valueType is not null && coercion is not null)
+            {
+                var coercingGetter = this.GetCoercingStaticObjectGetter();
+                return coercingGetter(valueType, coercion, context);
+            }
+
             var getter = this.GetStaticObjectGetter();
             var value = getter();
             return ConvertResult(value, valueType, coercion, context);
         }
-    });
+        catch (Exception exception)
+        {
+            throw new MemberAccessException($"Could not access member '{this.MemberInfo.Name}'.", exception);
+        }
+    }
 
     /// <summary>Reads a static member using a requested generic result type.</summary>
     /// <typeparam name="TValue">The requested result type.</typeparam>
@@ -421,20 +395,25 @@ public sealed class MemberAccessor
     (
         TypeCoercion? coercion = null,
         TypeCoercionContext? context = null
-    ) => this.Invoke(() =>
+    )
     {
-        this.RequireStatic();
-        if (coercion is null)
+        try
         {
-            var getter = MemberAccessCompiler.Get<Func<TValue?>>(this, AccessOperation.Get);
-            return getter();
+            this.RequireStatic();
+            if (coercion is null)
+            {
+                var getter = MemberAccessCompiler.Get<Func<TValue?>>(this, AccessOperation.Get);
+                return getter();
+            }
+
+            var coercingGetter = MemberAccessCompiler.Get<Func<TypeCoercion, TypeCoercionContext?, TValue?>>(this, AccessOperation.CoercingGet);
+            return coercingGetter(coercion, context);
         }
-        else
+        catch (Exception exception)
         {
-            var getter = MemberAccessCompiler.Get<Func<TypeCoercion, TypeCoercionContext?, TValue?>>(this, AccessOperation.CoercingGet);
-            return getter(coercion, context);
+            throw new MemberAccessException($"Could not access member '{this.MemberInfo.Name}'.", exception);
         }
-    });
+    }
     #endregion
 
     #region Set Methods
@@ -453,7 +432,7 @@ public sealed class MemberAccessor
     {
         ArgumentNullException.ThrowIfNull(target);
 
-        this.Invoke(() =>
+        try
         {
             this.RequireInstance();
             if (target is ValueType)
@@ -471,7 +450,11 @@ public sealed class MemberAccessor
                 var setter = this.GetCoercingObjectSetter();
                 setter(target, value, coercion, context);
             }
-        });
+        }
+        catch (Exception exception)
+        {
+            throw new MemberAccessException($"Could not access member '{this.MemberInfo.Name}'.", exception);
+        }
     }
 
     /// <summary>Writes an instance member using the requested generic types.</summary>
@@ -491,7 +474,7 @@ public sealed class MemberAccessor
     {
         ArgumentNullException.ThrowIfNull(target);
 
-        this.Invoke(() =>
+        try
         {
             this.RequireInstance();
             if (coercion is null)
@@ -504,7 +487,11 @@ public sealed class MemberAccessor
                 var setter = MemberAccessCompiler.Get<Action<TObject, TValue?, TypeCoercion, TypeCoercionContext?>>(this, AccessOperation.CoercingSet);
                 setter(target, value, coercion, context);
             }
-        });
+        }
+        catch (Exception exception)
+        {
+            throw new MemberAccessException($"Could not access member '{this.MemberInfo.Name}'.", exception);
+        }
     }
 
     /// <summary>Writes a static member, optionally converting the supplied value.</summary>
@@ -516,20 +503,27 @@ public sealed class MemberAccessor
         object? value,
         TypeCoercion? coercion = null,
         TypeCoercionContext? context = null
-    ) => this.Invoke(() =>
+    )
     {
-        this.RequireStatic();
-        if (coercion is null)
+        try
         {
-            var setter = this.GetStaticObjectSetter();
-            setter(value);
+            this.RequireStatic();
+            if (coercion is null)
+            {
+                var setter = this.GetStaticObjectSetter();
+                setter(value);
+            }
+            else
+            {
+                var setter = this.GetCoercingStaticObjectSetter();
+                setter(value, coercion, context);
+            }
         }
-        else
+        catch (Exception exception)
         {
-            var setter = this.GetCoercingStaticObjectSetter();
-            setter(value, coercion, context);
+            throw new MemberAccessException($"Could not access member '{this.MemberInfo.Name}'.", exception);
         }
-    });
+    }
 
     /// <summary>Writes a static member using a generic value type.</summary>
     /// <typeparam name="TValue">The supplied value type.</typeparam>
@@ -541,20 +535,27 @@ public sealed class MemberAccessor
         TValue value,
         TypeCoercion? coercion = null,
         TypeCoercionContext? context = null
-    ) => this.Invoke(() =>
+    )
     {
-        this.RequireStatic();
-        if (coercion is null)
+        try
         {
-            var setter = MemberAccessCompiler.Get<Action<TValue?>>(this, AccessOperation.Set);
-            setter(value);
+            this.RequireStatic();
+            if (coercion is null)
+            {
+                var setter = MemberAccessCompiler.Get<Action<TValue?>>(this, AccessOperation.Set);
+                setter(value);
+            }
+            else
+            {
+                var setter = MemberAccessCompiler.Get<Action<TValue?, TypeCoercion, TypeCoercionContext?>>(this, AccessOperation.CoercingSet);
+                setter(value, coercion, context);
+            }
         }
-        else
+        catch (Exception exception)
         {
-            var setter = MemberAccessCompiler.Get<Action<TValue?, TypeCoercion, TypeCoercionContext?>>(this, AccessOperation.CoercingSet);
-            setter(value, coercion, context);
+            throw new MemberAccessException($"Could not access member '{this.MemberInfo.Name}'.", exception);
         }
-    });
+    }
 
     /// <summary>Writes a struct member without changing a boxed copy.</summary>
     /// <typeparam name="TObject">The struct type.</typeparam>
@@ -714,7 +715,18 @@ public sealed class MemberAccessor
         object? value,
         TypeCoercion? coercion = null,
         TypeCoercionContext? context = null
-    ) => TryInvoke(() => this.SetValue(target!, value, coercion, context));
+    )
+    {
+        try
+        {
+            this.SetValue(target!, value, coercion, context);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
 
     /// <summary>Attempts to write an instance member with generic types.</summary>
     /// <typeparam name="TObject">The target type.</typeparam>
@@ -730,7 +742,18 @@ public sealed class MemberAccessor
         TValue value,
         TypeCoercion? coercion = null,
         TypeCoercionContext? context = null
-    ) => TryInvoke(() => this.SetValue(target, value, coercion, context));
+    )
+    {
+        try
+        {
+            this.SetValue(target, value, coercion, context);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
 
     /// <summary>Attempts to write a static member.</summary>
     /// <param name="value">The value to assign.</param>
@@ -742,7 +765,18 @@ public sealed class MemberAccessor
         object? value,
         TypeCoercion? coercion = null,
         TypeCoercionContext? context = null
-    ) => TryInvoke(() => this.SetStaticValue(value, coercion, context));
+    )
+    {
+        try
+        {
+            this.SetStaticValue(value, coercion, context);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
 
     /// <summary>Attempts to write a static member with a generic value type.</summary>
     /// <typeparam name="TValue">The supplied value type.</typeparam>
@@ -755,7 +789,18 @@ public sealed class MemberAccessor
         TValue value,
         TypeCoercion? coercion = null,
         TypeCoercionContext? context = null
-    ) => TryInvoke(() => this.SetStaticValue(value, coercion, context));
+    )
+    {
+        try
+        {
+            this.SetStaticValue(value, coercion, context);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
 
     /// <summary>Attempts to write a struct member by reference.</summary>
     /// <typeparam name="TObject">The struct type.</typeparam>
@@ -785,51 +830,231 @@ public sealed class MemberAccessor
     }
     #endregion
 
+    #region Factory Implementation Methods
+    private static MemberAccessor CreateCore(MemberInfo memberInfo)
+    {
+        var declaringType = memberInfo.DeclaringType ?? throw new MemberAccessException($"Member '{memberInfo.Name}' has no declaring type.");
+        if (declaringType.ContainsGenericParameters)
+        {
+            throw new MemberAccessException($"Member '{memberInfo.Name}' belongs to an open generic type.");
+        }
+
+        return memberInfo switch
+        {
+            PropertyInfo propertyInfo => CreateForProperty(propertyInfo, declaringType),
+            FieldInfo fieldInfo => CreateField(fieldInfo, declaringType),
+
+            _ => throw new MemberAccessException($"Member '{memberInfo.Name}' is neither a property nor a field.")
+        };
+    }
+
+    private static MemberAccessor CreateField(FieldInfo fieldInfo, Type declaringType)
+    {
+        return new MemberAccessor
+        (
+            fieldInfo,
+            declaringType,
+            memberType: fieldInfo.FieldType,
+            isStatic: fieldInfo.IsStatic,
+            canRead: true,
+            canWrite: !fieldInfo.IsInitOnly && !fieldInfo.IsLiteral
+        );
+    }
+
+    private static MemberAccessor CreateForProperty(PropertyInfo propertyInfo, Type declaringType)
+    {
+        if (propertyInfo.GetIndexParameters().Length != 0)
+        {
+            throw new MemberAccessException($"Indexer property '{propertyInfo.Name}' is not supported.");
+        }
+
+        var getter = propertyInfo.GetGetMethod(nonPublic: true);
+        var setter = propertyInfo.GetSetMethod(nonPublic: true);
+        var method = getter ?? setter ?? throw new MemberAccessException($"Property '{propertyInfo.Name}' has no getter or setter.");
+        if (getter is not null && setter is not null && getter.IsStatic != setter.IsStatic)
+        {
+            throw new MemberAccessException($"Property '{propertyInfo.Name}' has inconsistent accessor methods.");
+        }
+
+        var isInitOnly = setter?.ReturnParameter
+            .GetRequiredCustomModifiers()
+            .Contains(typeof(IsExternalInit)) == true;
+
+        return new MemberAccessor
+        (
+            propertyInfo,
+            declaringType,
+            memberType: propertyInfo.PropertyType,
+            isStatic: method.IsStatic,
+            canRead: getter is not null,
+            canWrite: setter is not null && !isInitOnly
+        );
+    }
+
+    private static PropertyInfo? FindProperty(LookupKey key)
+    {
+        var entry = _properties.GetOrAdd(key, static lookup => new PropertyLookupCacheEntry(lookup));
+
+        try
+        {
+            var propertyInfo = entry.PropertyInfo;
+            if (propertyInfo is null)
+            {
+                _properties.TryRemove(key, out _);
+            }
+
+            return propertyInfo;
+        }
+        catch (Exception)
+        {
+            _properties.TryRemove(key, out _);
+            throw;
+        }
+    }
+
+    private static FieldInfo? FindField(LookupKey key)
+    {
+        var entry = _fields.GetOrAdd(key, static lookup => new FieldLookupCacheEntry(lookup));
+
+        try
+        {
+            var fieldInfo = entry.FieldInfo;
+            if (fieldInfo is null)
+            {
+                _fields.TryRemove(key, out _);
+            }
+
+            return fieldInfo;
+        }
+        catch (Exception)
+        {
+            _fields.TryRemove(key, out _);
+            throw;
+        }
+    }
+
+    private static bool TryCreateCore<TState>
+    (
+        TState state,
+        Func<TState, MemberAccessor> create,
+        out MemberAccessor? accessor
+    )
+    {
+        try
+        {
+            accessor = create(state);
+            return true;
+        }
+        catch (Exception)
+        {
+            accessor = null;
+            return false;
+        }
+    }
+    #endregion
+
+    #region Get Implementation Methods
+    private Func<object, object?> GetObjectGetter()
+    {
+        var getter = Volatile.Read(ref _getter);
+        if (getter is not null)
+        {
+            return getter;
+        }
+
+        var created = MemberAccessCompiler.Get<Func<object, object?>>(this, AccessOperation.Get);
+        return Interlocked.CompareExchange(ref _getter, created, null) ?? created;
+    }
+
+    private Func<object?> GetStaticObjectGetter()
+    {
+        var getter = Volatile.Read(ref _staticGetter);
+        if (getter is not null)
+        {
+            return getter;
+        }
+
+        var created = MemberAccessCompiler.Get<Func<object?>>(this, AccessOperation.Get);
+        return Interlocked.CompareExchange(ref _staticGetter, created, null) ?? created;
+    }
+
+    private Func<object, Type, TypeCoercion, TypeCoercionContext?, object?> GetCoercingObjectGetter()
+    {
+        var getter = Volatile.Read(ref _coercingGetter);
+        if (getter is not null)
+        {
+            return getter;
+        }
+
+        var created = MemberAccessCompiler.Get<Func<object, Type, TypeCoercion, TypeCoercionContext?, object?>>(this, AccessOperation.CoercingGet);
+        return Interlocked.CompareExchange(ref _coercingGetter, created, null) ?? created;
+    }
+
+    private Func<Type, TypeCoercion, TypeCoercionContext?, object?> GetCoercingStaticObjectGetter()
+    {
+        var getter = Volatile.Read(ref _coercingStaticGetter);
+        if (getter is not null)
+        {
+            return getter;
+        }
+
+        var created = MemberAccessCompiler.Get<Func<Type, TypeCoercion, TypeCoercionContext?, object?>>(this, AccessOperation.CoercingGet);
+        return Interlocked.CompareExchange(ref _coercingStaticGetter, created, null) ?? created;
+    }
+    #endregion
+
+    #region Set Implementation Methods
+    private Action<object, object?> GetObjectSetter()
+    {
+        var setter = Volatile.Read(ref _setter);
+        if (setter is not null)
+        {
+            return setter;
+        }
+
+        var created = MemberAccessCompiler.Get<Action<object, object?>>(this, AccessOperation.Set);
+        return Interlocked.CompareExchange(ref _setter, created, null) ?? created;
+    }
+
+    private Action<object?> GetStaticObjectSetter()
+    {
+        var setter = Volatile.Read(ref _staticSetter);
+        if (setter is not null)
+        {
+            return setter;
+        }
+
+        var created = MemberAccessCompiler.Get<Action<object?>>(this, AccessOperation.Set);
+        return Interlocked.CompareExchange(ref _staticSetter, created, null) ?? created;
+    }
+
+    private Action<object, object?, TypeCoercion, TypeCoercionContext?> GetCoercingObjectSetter()
+    {
+        var setter = Volatile.Read(ref _coercingSetter);
+        if (setter is not null)
+        {
+            return setter;
+        }
+
+        var created = MemberAccessCompiler.Get<Action<object, object?, TypeCoercion, TypeCoercionContext?>>(this, AccessOperation.CoercingSet);
+        return Interlocked.CompareExchange(ref _coercingSetter, created, null) ?? created;
+    }
+
+    private Action<object?, TypeCoercion, TypeCoercionContext?>
+        GetCoercingStaticObjectSetter()
+    {
+        var setter = Volatile.Read(ref _coercingStaticSetter);
+        if (setter is not null)
+        {
+            return setter;
+        }
+
+        var created = MemberAccessCompiler.Get<Action<object?, TypeCoercion, TypeCoercionContext?>>(this, AccessOperation.CoercingSet);
+        return Interlocked.CompareExchange(ref _coercingStaticSetter, created, null) ?? created;
+    }
+    #endregion
+
     #region Implementation Methods
-    private Func<object, object?> GetObjectGetter() =>
-        LazyInitializer.EnsureInitialized(ref _getter,
-            () => MemberAccessCompiler.Get<Func<object, object?>>
-                (this, AccessOperation.Get));
-
-    private Func<object, Type, TypeCoercion, TypeCoercionContext?, object?> GetCoercingObjectGetter() =>
-        LazyInitializer.EnsureInitialized(ref _coercingGetter,
-            () => MemberAccessCompiler.Get<
-                Func<object, Type, TypeCoercion, TypeCoercionContext?, object?>>
-                (this, AccessOperation.CoercingGet));
-
-    private Action<object, object?> GetObjectSetter() =>
-        LazyInitializer.EnsureInitialized(ref _setter,
-            () => MemberAccessCompiler.Get<Action<object, object?>>
-                (this, AccessOperation.Set));
-
-    private Action<object, object?, TypeCoercion, TypeCoercionContext?> GetCoercingObjectSetter() =>
-        LazyInitializer.EnsureInitialized(ref _coercingSetter,
-            () => MemberAccessCompiler.Get<
-                Action<object, object?, TypeCoercion, TypeCoercionContext?>>
-                (this, AccessOperation.CoercingSet));
-
-    private Func<object?> GetStaticObjectGetter() =>
-        LazyInitializer.EnsureInitialized(ref _staticGetter,
-            () => MemberAccessCompiler.Get<Func<object?>>
-                (this, AccessOperation.Get));
-
-    private Func<Type, TypeCoercion, TypeCoercionContext?, object?> GetCoercingStaticObjectGetter() =>
-        LazyInitializer.EnsureInitialized(ref _coercingStaticGetter,
-            () => MemberAccessCompiler.Get<
-                Func<Type, TypeCoercion, TypeCoercionContext?, object?>>
-                (this, AccessOperation.CoercingGet));
-
-    private Action<object?> GetStaticObjectSetter() =>
-        LazyInitializer.EnsureInitialized(ref _staticSetter,
-            () => MemberAccessCompiler.Get<Action<object?>>
-                (this, AccessOperation.Set));
-
-    private Action<object?, TypeCoercion, TypeCoercionContext?> GetCoercingStaticObjectSetter() =>
-        LazyInitializer.EnsureInitialized(ref _coercingStaticSetter,
-            () => MemberAccessCompiler.Get<
-                Action<object?, TypeCoercion, TypeCoercionContext?>>
-                (this, AccessOperation.CoercingSet));
-
     private void RequireInstance()
     {
         if (this.IsStatic)
@@ -865,38 +1090,6 @@ public sealed class MemberAccessor
         }
 
         return coercion.Coerce(value, valueType, context ?? TypeCoercionContext.Default);
-    }
-
-    private T Invoke<T>(Func<T> action)
-    {
-        try
-        {
-            return action();
-        }
-        catch (Exception exception)
-        {
-            throw new MemberAccessException($"Could not access member '{this.MemberInfo.Name}'.", exception);
-        }
-    }
-
-    private void Invoke(Action action) => this.Invoke
-    (() =>
-    {
-        action();
-        return true;
-    });
-
-    private static bool TryInvoke(Action action)
-    {
-        try
-        {
-            action();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
     }
     #endregion
 }

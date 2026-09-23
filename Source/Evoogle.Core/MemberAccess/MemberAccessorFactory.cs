@@ -29,8 +29,8 @@ public static partial class MemberAccessorFactory
     /// <summary>Creates an object-based setter.</summary>
     /// <param name="memberInfo">The member to write.</param>
     /// <returns>The cached setter.</returns>
-    public static Action<object, object?> CreateSetter(MemberInfo memberInfo) =>
-        Get<Action<object, object?>>(memberInfo, AccessOperation.Set, isStatic: false);
+    public static Action<object, object?> CreateSetter(MemberInfo memberInfo)
+        => Get<Action<object, object?>>(memberInfo, AccessOperation.Set, isStatic: false);
 
     /// <summary>Creates an object-based setter that converts its input.</summary>
     /// <param name="memberInfo">The member to write.</param>
@@ -51,7 +51,7 @@ public static partial class MemberAccessorFactory
     /// <typeparam name="TValue">The returned value type.</typeparam>
     /// <param name="memberInfo">The member to read.</param>
     /// <returns>The cached coercing getter.</returns>
-    public static Func<TObject, TypeCoercion, TypeCoercionContext?, TValue?>CreateCoercingGetter<TObject, TValue>(MemberInfo memberInfo)
+    public static Func<TObject, TypeCoercion, TypeCoercionContext?, TValue?> CreateCoercingGetter<TObject, TValue>(MemberInfo memberInfo)
         => Get<Func<TObject, TypeCoercion, TypeCoercionContext?, TValue?>>(memberInfo, AccessOperation.CoercingGet, isStatic: false);
 
     /// <summary>Creates a typed instance setter.</summary>
@@ -77,28 +77,28 @@ public static partial class MemberAccessorFactory
     /// <param name="getter">The getter when successful.</param>
     /// <returns>Whether creation succeeded.</returns>
     public static bool TryCreateGetter(MemberInfo? memberInfo, out Func<object, object?>? getter)
-        => TryCreate(() => CreateGetter(memberInfo!), out getter);
+        => TryCreate(memberInfo, static member => CreateGetter(member!), out getter);
 
     /// <summary>Attempts to create an object-based coercing getter.</summary>
     /// <param name="memberInfo">The member to read.</param>
     /// <param name="getter">The getter when successful.</param>
     /// <returns>Whether creation succeeded.</returns>
     public static bool TryCreateCoercingGetter(MemberInfo? memberInfo, out Func<object, Type, TypeCoercion, TypeCoercionContext?, object?>? getter)
-        => TryCreate(() => CreateCoercingGetter(memberInfo!), out getter);
+        => TryCreate(memberInfo, static member => CreateCoercingGetter(member!), out getter);
 
     /// <summary>Attempts to create an object-based setter.</summary>
     /// <param name="memberInfo">The member to write.</param>
     /// <param name="setter">The setter when successful.</param>
     /// <returns>Whether creation succeeded.</returns>
     public static bool TryCreateSetter(MemberInfo? memberInfo, out Action<object, object?>? setter)
-        => TryCreate(() => CreateSetter(memberInfo!), out setter);
+        => TryCreate(memberInfo, static member => CreateSetter(member!), out setter);
 
     /// <summary>Attempts to create an object-based coercing setter.</summary>
     /// <param name="memberInfo">The member to write.</param>
     /// <param name="setter">The setter when successful.</param>
     /// <returns>Whether creation succeeded.</returns>
     public static bool TryCreateCoercingSetter(MemberInfo? memberInfo, out Action<object, object?, TypeCoercion, TypeCoercionContext?>? setter)
-        => TryCreate(() => CreateCoercingSetter(memberInfo!), out setter);
+        => TryCreate(memberInfo, static member => CreateCoercingSetter(member!), out setter);
 
     /// <summary>Attempts to create a typed instance getter.</summary>
     /// <typeparam name="TObject">The target type.</typeparam>
@@ -107,7 +107,7 @@ public static partial class MemberAccessorFactory
     /// <param name="getter">The getter when successful.</param>
     /// <returns>Whether creation succeeded.</returns>
     public static bool TryCreateGetter<TObject, TValue>(MemberInfo? memberInfo, out Func<TObject, TValue?>? getter)
-        => TryCreate(() => CreateGetter<TObject, TValue>(memberInfo!), out getter);
+        => TryCreate(memberInfo, static member => CreateGetter<TObject, TValue>(member!), out getter );
 
     /// <summary>Attempts to create a typed coercing getter.</summary>
     /// <typeparam name="TObject">The target type.</typeparam>
@@ -116,7 +116,7 @@ public static partial class MemberAccessorFactory
     /// <param name="getter">The getter when successful.</param>
     /// <returns>Whether creation succeeded.</returns>
     public static bool TryCreateCoercingGetter<TObject, TValue>(MemberInfo? memberInfo, out Func<TObject, TypeCoercion, TypeCoercionContext?, TValue?>? getter)
-        => TryCreate(() => CreateCoercingGetter<TObject, TValue>(memberInfo!), out getter);
+        => TryCreate(memberInfo, static member => CreateCoercingGetter<TObject, TValue>(member!), out getter);
 
     /// <summary>Attempts to create a typed instance setter.</summary>
     /// <typeparam name="TObject">The target type.</typeparam>
@@ -125,7 +125,7 @@ public static partial class MemberAccessorFactory
     /// <param name="setter">The setter when successful.</param>
     /// <returns>Whether creation succeeded.</returns>
     public static bool TryCreateSetter<TObject, TValue>(MemberInfo? memberInfo, out Action<TObject, TValue?>? setter)
-        => TryCreate(() => CreateSetter<TObject, TValue>(memberInfo!), out setter);
+        => TryCreate(memberInfo, static member => CreateSetter<TObject, TValue>(member!), out setter);
 
     /// <summary>Attempts to create a typed coercing setter.</summary>
     /// <typeparam name="TObject">The target type.</typeparam>
@@ -134,7 +134,7 @@ public static partial class MemberAccessorFactory
     /// <param name="setter">The setter when successful.</param>
     /// <returns>Whether creation succeeded.</returns>
     public static bool TryCreateCoercingSetter<TObject, TValue>(MemberInfo? memberInfo, out Action<TObject, TValue?, TypeCoercion, TypeCoercionContext?>? setter)
-        => TryCreate(() => CreateCoercingSetter<TObject, TValue>(memberInfo!), out setter);
+        => TryCreate(memberInfo, static member => CreateCoercingSetter<TObject, TValue>(member!), out setter);
     #endregion
 
     #region Implementation Methods
@@ -152,12 +152,12 @@ public static partial class MemberAccessorFactory
         return MemberAccessCompiler.Get<TDelegate>(accessor, operation);
     }
 
-    private static bool TryCreate<TDelegate>(Func<TDelegate> create, out TDelegate? accessor)
+    private static bool TryCreate<TState, TDelegate>(TState state, Func<TState, TDelegate> create, out TDelegate? accessor)
         where TDelegate : Delegate
     {
         try
         {
-            accessor = create();
+            accessor = create(state);
             return true;
         }
         catch (Exception)
