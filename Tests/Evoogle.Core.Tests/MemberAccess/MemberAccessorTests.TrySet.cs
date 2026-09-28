@@ -15,10 +15,7 @@ public partial class MemberAccessorTests
         // Required Properties
         new TrySetGenericTest<ScalarsOnly, string>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredName)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for required string property for non-null value",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredName)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for required string property for non-null value",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.RequiredName),
             ClrObject = new ScalarsOnly("Alice", 123, true),
@@ -29,10 +26,7 @@ public partial class MemberAccessorTests
 
         new TrySetGenericTest<ScalarsOnly, string>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredName)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for required string property for null value",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredName)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for required string property for null value",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.RequiredName),
             ClrObject = new ScalarsOnly("Alice", 123, true),
@@ -43,10 +37,7 @@ public partial class MemberAccessorTests
 
         new TrySetGenericTest<ScalarsOnly, long>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredNumber)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for required long property",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredNumber)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for required long property",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.RequiredNumber),
             ClrObject = new ScalarsOnly("Alice", 123, true),
@@ -57,10 +48,7 @@ public partial class MemberAccessorTests
 
         new TrySetGenericTest<ScalarsOnly, bool>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredPredicate)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for required bool property",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredPredicate)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for required bool property",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.RequiredPredicate),
             ClrObject = new ScalarsOnly("Alice", 123, true),
@@ -72,10 +60,7 @@ public partial class MemberAccessorTests
         // Optional Fields
         new TrySetGenericTest<ScalarsOnly, string?>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalName)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for optional string field for non-null value",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalName)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for optional string field for non-null value",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalName),
             ClrObject = new ScalarsOnly("Alice", 123, true) { OptionalName = "Bob" },
@@ -86,10 +71,7 @@ public partial class MemberAccessorTests
 
         new TrySetGenericTest<ScalarsOnly, string?>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalName)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for optional string field for null value",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalName)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for optional string field for null value",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalName),
             ClrObject = new ScalarsOnly("Alice", 123, true) { OptionalName = "Bob" },
@@ -100,10 +82,7 @@ public partial class MemberAccessorTests
 
         new TrySetGenericTest<ScalarsOnly, long?>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalNumber)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for optional long field for non-null value",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalNumber)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for optional long field for non-null value",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalNumber),
             ClrObject = new ScalarsOnly("Alice", 123, true) { OptionalNumber = 42 },
@@ -114,10 +93,7 @@ public partial class MemberAccessorTests
 
         new TrySetGenericTest<ScalarsOnly, long?>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalNumber)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for optional long field for null value",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalNumber)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for optional long field for null value",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalNumber),
             ClrObject = new ScalarsOnly("Alice", 123, true) { OptionalNumber = 42 },
@@ -128,10 +104,7 @@ public partial class MemberAccessorTests
 
         new TrySetGenericTest<ScalarsOnly, bool?>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalPredicate)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for optional bool field for non-null value",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalPredicate)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for optional bool field for non-null value",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalPredicate),
             ClrObject = new ScalarsOnly("Alice", 123, true) { OptionalPredicate = false },
@@ -142,10 +115,7 @@ public partial class MemberAccessorTests
 
         new TrySetGenericTest<ScalarsOnly, bool?>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalPredicate)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for optional bool field for null value",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalPredicate)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for optional bool field for null value",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalPredicate),
             ClrObject = new ScalarsOnly("Alice", 123, true) { OptionalPredicate = false },
@@ -157,10 +127,7 @@ public partial class MemberAccessorTests
         // Required Properties With Coercion
         new TrySetGenericTest<ScalarsOnly, long>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredName)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for required string property for non-null value with coercion from long",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredName)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for required string property for non-null value with coercion from long",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.RequiredName),
             ShouldCoerce = true,
@@ -172,10 +139,7 @@ public partial class MemberAccessorTests
 
         new TrySetGenericTest<ScalarsOnly, long?>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredName)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for required string property for null value with coercion from nullable long",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredName)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for required string property for null value with coercion from nullable long",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.RequiredName),
             ShouldCoerce = true,
@@ -187,10 +151,7 @@ public partial class MemberAccessorTests
 
         new TrySetGenericTest<ScalarsOnly, string>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredNumber)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for required long property with coercion from string",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredNumber)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for required long property with coercion from string",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.RequiredNumber),
             ShouldCoerce = true,
@@ -202,10 +163,7 @@ public partial class MemberAccessorTests
 
         new TrySetGenericTest<ScalarsOnly, string>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredPredicate)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for required bool property with coercion from string",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredPredicate)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for required bool property with coercion from string",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.RequiredPredicate),
             ShouldCoerce = true,
@@ -218,10 +176,7 @@ public partial class MemberAccessorTests
         // Optional Fields With Coercion
         new TrySetGenericTest<ScalarsOnly, Ulid?>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalName)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for optional string field for non-null value with coercion from nullable Ulid",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalName)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for optional string field for non-null value with coercion from nullable Ulid",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalName),
             ShouldCoerce = true,
@@ -233,10 +188,7 @@ public partial class MemberAccessorTests
 
         new TrySetGenericTest<ScalarsOnly, Ulid?>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalName)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for optional string field for null value with coercion from nullable Ulid",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalName)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for optional string field for null value with coercion from nullable Ulid",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalName),
             ShouldCoerce = true,
@@ -248,10 +200,7 @@ public partial class MemberAccessorTests
 
         new TrySetGenericTest<ScalarsOnly, string?>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalNumber)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for optional long field for non-null value with coercion from string",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalNumber)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for optional long field for non-null value with coercion from string",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalNumber),
             ShouldCoerce = true,
@@ -263,10 +212,7 @@ public partial class MemberAccessorTests
 
         new TrySetGenericTest<ScalarsOnly, string?>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalNumber)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for optional long field for null value with coercion from string",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalNumber)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for optional long field for null value with coercion from string",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalNumber),
             ShouldCoerce = true,
@@ -278,10 +224,7 @@ public partial class MemberAccessorTests
 
         new TrySetGenericTest<ScalarsOnly, string?>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalPredicate)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for optional bool field for non-null value with coercion from string",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalPredicate)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for optional bool field for non-null value with coercion from string",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalPredicate),
             ShouldCoerce = true,
@@ -293,10 +236,7 @@ public partial class MemberAccessorTests
 
         new TrySetGenericTest<ScalarsOnly, string?>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalPredicate)} " +
-                $"{nameof(MemberAccessor.TrySetValue)}<TObject,TValue> " +
-                "returns success for optional bool field for null value with coercion from string",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalPredicate)} {nameof(MemberAccessor.TrySetValue)}<TObject,TValue> returns success for optional bool field for null value with coercion from string",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalPredicate),
             ShouldCoerce = true,
@@ -305,6 +245,204 @@ public partial class MemberAccessorTests
             ExpectedTrySetSuccess = true,
             ExpectedTrySetClrObject = new ScalarsOnly("Alice", 123, true) { OptionalPredicate = null },
         },
+        new TrySetGenericTest<NullableValueMembers, long>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.OptionalProperty)} generic set long to nullable long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.OptionalProperty),
+            ClrObject = new NullableValueMembers { OptionalProperty = null },
+            ClrValue = 42L,
+            ShouldCoerce = false,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { OptionalProperty = 42L }
+        },
+        new TrySetGenericTest<NullableValueMembers, long>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.OptionalProperty)} generic set long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.OptionalProperty),
+            ClrObject = new NullableValueMembers { OptionalProperty = null },
+            ClrValue = 42L,
+            ShouldCoerce = true,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { OptionalProperty = 42L }
+        },
+        new TrySetGenericTest<NullableValueMembers, long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.RequiredProperty)} generic set non-null nullable long to long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.RequiredProperty),
+            ClrObject = new NullableValueMembers { RequiredProperty = 10L },
+            ClrValue = 42L,
+            ShouldCoerce = false,
+            ExpectedTrySetSuccess = false,
+            ExpectedTrySetClrObject = new NullableValueMembers { RequiredProperty = 10L }
+        },
+        new TrySetGenericTest<NullableValueMembers, long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.RequiredProperty)} generic set non-null nullable long to long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.RequiredProperty),
+            ClrObject = new NullableValueMembers { RequiredProperty = 10L },
+            ClrValue = 42L,
+            ShouldCoerce = true,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { RequiredProperty = 42L }
+        },
+        new TrySetGenericTest<NullableValueMembers, long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.RequiredProperty)} generic set null nullable long to long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.RequiredProperty),
+            ClrObject = new NullableValueMembers { RequiredProperty = 10L },
+            ClrValue = null,
+            ShouldCoerce = false,
+            ExpectedTrySetSuccess = false,
+            ExpectedTrySetClrObject = new NullableValueMembers { RequiredProperty = 10L }
+        },
+        new TrySetGenericTest<NullableValueMembers, long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.RequiredProperty)} generic set null nullable long to long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.RequiredProperty),
+            ClrObject = new NullableValueMembers { RequiredProperty = 10L },
+            ClrValue = null,
+            ShouldCoerce = true,
+            ExpectedTrySetSuccess = false,
+            ExpectedTrySetClrObject = new NullableValueMembers { RequiredProperty = 10L }
+        },
+        new TrySetGenericTest<NullableValueMembers, long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.OptionalProperty)} generic set non-null nullable long to nullable long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.OptionalProperty),
+            ClrObject = new NullableValueMembers { OptionalProperty = 10L },
+            ClrValue = 42L,
+            ShouldCoerce = false,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { OptionalProperty = 42L }
+        },
+        new TrySetGenericTest<NullableValueMembers, long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.OptionalProperty)} generic set null nullable long to nullable long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.OptionalProperty),
+            ClrObject = new NullableValueMembers { OptionalProperty = 10L },
+            ClrValue = null,
+            ShouldCoerce = false,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { OptionalProperty = null }
+        },
+        new TrySetGenericTest<NullableValueMembers, long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.OptionalProperty)} generic set non-null nullable long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.OptionalProperty),
+            ClrObject = new NullableValueMembers { OptionalProperty = 10L },
+            ClrValue = 42L,
+            ShouldCoerce = true,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { OptionalProperty = 42L }
+        },
+        new TrySetGenericTest<NullableValueMembers, long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.OptionalProperty)} generic set null nullable long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.OptionalProperty),
+            ClrObject = new NullableValueMembers { OptionalProperty = 10L },
+            ClrValue = null,
+            ShouldCoerce = true,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { OptionalProperty = null }
+        },
+        new TrySetGenericTest<NullableValueMembers, long>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.OptionalField)} generic set long to nullable long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.OptionalField),
+            ClrObject = new NullableValueMembers { OptionalField = null },
+            ClrValue = 42L,
+            ShouldCoerce = false,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { OptionalField = 42L }
+        },
+        new TrySetGenericTest<NullableValueMembers, long>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.OptionalField)} generic set long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.OptionalField),
+            ClrObject = new NullableValueMembers { OptionalField = null },
+            ClrValue = 42L,
+            ShouldCoerce = true,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { OptionalField = 42L }
+        },
+        new TrySetGenericTest<NullableValueMembers, long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.RequiredField)} generic set non-null nullable long to long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.RequiredField),
+            ClrObject = new NullableValueMembers { RequiredField = 10L },
+            ClrValue = 42L,
+            ShouldCoerce = false,
+            ExpectedTrySetSuccess = false,
+            ExpectedTrySetClrObject = new NullableValueMembers { RequiredField = 10L }
+        },
+        new TrySetGenericTest<NullableValueMembers, long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.RequiredField)} generic set non-null nullable long to long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.RequiredField),
+            ClrObject = new NullableValueMembers { RequiredField = 10L },
+            ClrValue = 42L,
+            ShouldCoerce = true,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { RequiredField = 42L }
+        },
+        new TrySetGenericTest<NullableValueMembers, long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.RequiredField)} generic set null nullable long to long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.RequiredField),
+            ClrObject = new NullableValueMembers { RequiredField = 10L },
+            ClrValue = null,
+            ShouldCoerce = false,
+            ExpectedTrySetSuccess = false,
+            ExpectedTrySetClrObject = new NullableValueMembers { RequiredField = 10L }
+        },
+        new TrySetGenericTest<NullableValueMembers, long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.RequiredField)} generic set null nullable long to long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.RequiredField),
+            ClrObject = new NullableValueMembers { RequiredField = 10L },
+            ClrValue = null,
+            ShouldCoerce = true,
+            ExpectedTrySetSuccess = false,
+            ExpectedTrySetClrObject = new NullableValueMembers { RequiredField = 10L }
+        },
+        new TrySetGenericTest<NullableValueMembers, long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.OptionalField)} generic set non-null nullable long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.OptionalField),
+            ClrObject = new NullableValueMembers { OptionalField = 10L },
+            ClrValue = 42L,
+            ShouldCoerce = true,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { OptionalField = 42L }
+        },
+        new TrySetGenericTest<NullableValueMembers, long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.OptionalField)} generic set null nullable long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.OptionalField),
+            ClrObject = new NullableValueMembers { OptionalField = 10L },
+            ClrValue = null,
+            ShouldCoerce = true,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { OptionalField = null }
+        },
     ];
 
     public static TheoryDataRow<IXUnitTest>[] TrySetByRefGenericTheoryData =>
@@ -312,10 +450,7 @@ public partial class MemberAccessorTests
         // Required Fields
         new TrySetByRefGenericTest<Point, long>
         {
-            Name =
-                $"{nameof(Point)}:{nameof(Point.X)} " +
-                $"{nameof(MemberAccessor.TrySetValueByRef)}<TObject,TValue> " +
-                "returns success for required long field",
+            Name = $"{nameof(Point)}:{nameof(Point.X)} {nameof(MemberAccessor.TrySetValueByRef)}<TObject,TValue> returns success for required long field",
             DeclaringType = typeof(Point),
             MemberName = nameof(Point.X),
             ClrObject = new Point { X = 1, Y = 2 },
@@ -327,10 +462,7 @@ public partial class MemberAccessorTests
         // Required Fields With Coercion
         new TrySetByRefGenericTest<Point, string>
         {
-            Name =
-                $"{nameof(Point)}:{nameof(Point.X)} " +
-                $"{nameof(MemberAccessor.TrySetValueByRef)}<TObject,TValue> " +
-                "returns success for required long field with coercion from string",
+            Name = $"{nameof(Point)}:{nameof(Point.X)} {nameof(MemberAccessor.TrySetValueByRef)}<TObject,TValue> returns success for required long field with coercion from string",
             DeclaringType = typeof(Point),
             MemberName = nameof(Point.X),
             ShouldCoerce = true,
@@ -343,10 +475,7 @@ public partial class MemberAccessorTests
         // Required Properties
         new TrySetByRefGenericTest<Point, long>
         {
-            Name =
-                $"{nameof(Point)}:{nameof(Point.Y)} " +
-                $"{nameof(MemberAccessor.TrySetValueByRef)}<TObject,TValue> " +
-                "returns success for required long property",
+            Name = $"{nameof(Point)}:{nameof(Point.Y)} {nameof(MemberAccessor.TrySetValueByRef)}<TObject,TValue> returns success for required long property",
             DeclaringType = typeof(Point),
             MemberName = nameof(Point.Y),
             ClrObject = new Point { X = 1, Y = 2 },
@@ -358,10 +487,7 @@ public partial class MemberAccessorTests
         // Required Properties With Coercion
         new TrySetByRefGenericTest<Point, string>
         {
-            Name =
-                $"{nameof(Point)}:{nameof(Point.Y)} " +
-                $"{nameof(MemberAccessor.TrySetValueByRef)}<TObject,TValue> " +
-                "returns success for required long property with coercion from string",
+            Name = $"{nameof(Point)}:{nameof(Point.Y)} {nameof(MemberAccessor.TrySetValueByRef)}<TObject,TValue> returns success for required long property with coercion from string",
             DeclaringType = typeof(Point),
             MemberName = nameof(Point.Y),
             ShouldCoerce = true,
@@ -374,10 +500,7 @@ public partial class MemberAccessorTests
         // Optional Properties
         new TrySetByRefGenericTest<Point, string?>
         {
-            Name =
-                $"{nameof(Point)}:{nameof(Point.Note)} " +
-                $"{nameof(MemberAccessor.TrySetValueByRef)}<TObject,TValue> " +
-                "returns success for optional string property for non-null value",
+            Name = $"{nameof(Point)}:{nameof(Point.Note)} {nameof(MemberAccessor.TrySetValueByRef)}<TObject,TValue> returns success for optional string property for non-null value",
             DeclaringType = typeof(Point),
             MemberName = nameof(Point.Note),
             ClrObject = new Point { X = 1, Y = 2, Note = "Alice" },
@@ -388,10 +511,7 @@ public partial class MemberAccessorTests
 
         new TrySetByRefGenericTest<Point, string?>
         {
-            Name =
-                $"{nameof(Point)}:{nameof(Point.Note)} " +
-                $"{nameof(MemberAccessor.TrySetValueByRef)}<TObject,TValue> " +
-                "returns success for optional string property for null value",
+            Name = $"{nameof(Point)}:{nameof(Point.Note)} {nameof(MemberAccessor.TrySetValueByRef)}<TObject,TValue> returns success for optional string property for null value",
             DeclaringType = typeof(Point),
             MemberName = nameof(Point.Note),
             ClrObject = new Point { X = 1, Y = 2, Note = "Alice" },
@@ -403,10 +523,7 @@ public partial class MemberAccessorTests
         // Optional Properties With Coercion
         new TrySetByRefGenericTest<Point, Guid?>
         {
-            Name =
-                $"{nameof(Point)}:{nameof(Point.Note)} " +
-                $"{nameof(MemberAccessor.TrySetValueByRef)}<TObject,TValue> " +
-                "returns success for optional string property for non-null value with coercion from nullable Guid",
+            Name = $"{nameof(Point)}:{nameof(Point.Note)} {nameof(MemberAccessor.TrySetValueByRef)}<TObject,TValue> returns success for optional string property for non-null value with coercion from nullable Guid",
             DeclaringType = typeof(Point),
             MemberName = nameof(Point.Note),
             ShouldCoerce = true,
@@ -418,10 +535,7 @@ public partial class MemberAccessorTests
 
         new TrySetByRefGenericTest<Point, Guid?>
         {
-            Name =
-                $"{nameof(Point)}:{nameof(Point.Note)} " +
-                $"{nameof(MemberAccessor.TrySetValueByRef)}<TObject,TValue> " +
-                "returns success for optional string property for null value with coercion from nullable Guid",
+            Name = $"{nameof(Point)}:{nameof(Point.Note)} {nameof(MemberAccessor.TrySetValueByRef)}<TObject,TValue> returns success for optional string property for null value with coercion from nullable Guid",
             DeclaringType = typeof(Point),
             MemberName = nameof(Point.Note),
             ShouldCoerce = true,
@@ -437,10 +551,7 @@ public partial class MemberAccessorTests
         // Required Properties
         new TrySetNonGenericTest
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredName)} " +
-                $"{nameof(MemberAccessor.TrySetValue)} " +
-                "returns success for required string property for non-null value",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredName)} {nameof(MemberAccessor.TrySetValue)} returns success for required string property for non-null value",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.RequiredName),
             ClrObject = new ScalarsOnly("Alice", 123, true),
@@ -451,10 +562,7 @@ public partial class MemberAccessorTests
 
         new TrySetNonGenericTest
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredName)} " +
-                $"{nameof(MemberAccessor.TrySetValue)} " +
-                "returns success for required string property for null value",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredName)} {nameof(MemberAccessor.TrySetValue)} returns success for required string property for null value",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.RequiredName),
             ClrObject = new ScalarsOnly("Alice", 123, true),
@@ -465,10 +573,7 @@ public partial class MemberAccessorTests
 
         new TrySetNonGenericTest
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredNumber)} " +
-                $"{nameof(MemberAccessor.TrySetValue)} " +
-                "returns success for required long property",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredNumber)} {nameof(MemberAccessor.TrySetValue)} returns success for required long property",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.RequiredNumber),
             ClrObject = new ScalarsOnly("Alice", 123, true),
@@ -479,10 +584,7 @@ public partial class MemberAccessorTests
 
         new TrySetNonGenericTest
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredPredicate)} " +
-                $"{nameof(MemberAccessor.TrySetValue)} " +
-                "returns success for required bool property",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredPredicate)} {nameof(MemberAccessor.TrySetValue)} returns success for required bool property",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.RequiredPredicate),
             ClrObject = new ScalarsOnly("Alice", 123, true),
@@ -494,10 +596,7 @@ public partial class MemberAccessorTests
         // Optional Fields
         new TrySetNonGenericTest
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalName)} " +
-                $"{nameof(MemberAccessor.TrySetValue)} " +
-                "returns success for optional string field for non-null value",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalName)} {nameof(MemberAccessor.TrySetValue)} returns success for optional string field for non-null value",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalName),
             ClrObject = new ScalarsOnly("Alice", 123, true) { OptionalName = "Bob" },
@@ -508,10 +607,7 @@ public partial class MemberAccessorTests
 
         new TrySetNonGenericTest
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalName)} " +
-                $"{nameof(MemberAccessor.TrySetValue)} " +
-                "returns success for optional string field for null value",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalName)} {nameof(MemberAccessor.TrySetValue)} returns success for optional string field for null value",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalName),
             ClrObject = new ScalarsOnly("Alice", 123, true) { OptionalName = "Bob" },
@@ -522,10 +618,7 @@ public partial class MemberAccessorTests
 
         new TrySetNonGenericTest
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalNumber)} " +
-                $"{nameof(MemberAccessor.TrySetValue)} " +
-                "returns success for optional long field for non-null value",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalNumber)} {nameof(MemberAccessor.TrySetValue)} returns success for optional long field for non-null value",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalNumber),
             ClrObject = new ScalarsOnly("Alice", 123, true) { OptionalNumber = 42 },
@@ -536,10 +629,7 @@ public partial class MemberAccessorTests
 
         new TrySetNonGenericTest
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalNumber)} " +
-                $"{nameof(MemberAccessor.TrySetValue)} " +
-                "returns success for optional long field for null value",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalNumber)} {nameof(MemberAccessor.TrySetValue)} returns success for optional long field for null value",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalNumber),
             ClrObject = new ScalarsOnly("Alice", 123, true) { OptionalNumber = 42 },
@@ -550,10 +640,7 @@ public partial class MemberAccessorTests
 
         new TrySetNonGenericTest
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalPredicate)} " +
-                $"{nameof(MemberAccessor.TrySetValue)} " +
-                "returns success for optional bool field for non-null value",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalPredicate)} {nameof(MemberAccessor.TrySetValue)} returns success for optional bool field for non-null value",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalPredicate),
             ClrObject = new ScalarsOnly("Alice", 123, true) { OptionalPredicate = false },
@@ -564,10 +651,7 @@ public partial class MemberAccessorTests
 
         new TrySetNonGenericTest
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalPredicate)} " +
-                $"{nameof(MemberAccessor.TrySetValue)} " +
-                "returns success for optional bool field for null value",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalPredicate)} {nameof(MemberAccessor.TrySetValue)} returns success for optional bool field for null value",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalPredicate),
             ClrObject = new ScalarsOnly("Alice", 123, true) { OptionalPredicate = false },
@@ -579,10 +663,7 @@ public partial class MemberAccessorTests
         // Required Properties With Coercion
         new TrySetNonGenericTest
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredNumber)} " +
-                $"{nameof(MemberAccessor.TrySetValue)} " +
-                "returns success for required long property with coercion from string",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredNumber)} {nameof(MemberAccessor.TrySetValue)} returns success for required long property with coercion from string",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.RequiredNumber),
             ShouldCoerce = true,
@@ -594,10 +675,7 @@ public partial class MemberAccessorTests
 
         new TrySetNonGenericTest
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredPredicate)} " +
-                $"{nameof(MemberAccessor.TrySetValue)} " +
-                "returns success for required bool property with coercion from string",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredPredicate)} {nameof(MemberAccessor.TrySetValue)} returns success for required bool property with coercion from string",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.RequiredPredicate),
             ShouldCoerce = true,
@@ -610,10 +688,7 @@ public partial class MemberAccessorTests
         // Optional Fields With Coercion
         new TrySetNonGenericTest
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalNumber)} " +
-                $"{nameof(MemberAccessor.TrySetValue)} " +
-                "returns success for optional long field for non-null value with coercion from string",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalNumber)} {nameof(MemberAccessor.TrySetValue)} returns success for optional long field for non-null value with coercion from string",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalNumber),
             ShouldCoerce = true,
@@ -625,10 +700,7 @@ public partial class MemberAccessorTests
 
         new TrySetNonGenericTest
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalPredicate)} " +
-                $"{nameof(MemberAccessor.TrySetValue)} " +
-                "returns success for optional bool field for non-null value with coercion from string",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.OptionalPredicate)} {nameof(MemberAccessor.TrySetValue)} returns success for optional bool field for non-null value with coercion from string",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.OptionalPredicate),
             ShouldCoerce = true,
@@ -636,6 +708,116 @@ public partial class MemberAccessorTests
             ClrValue = "true",
             ExpectedTrySetSuccess = true,
             ExpectedTrySetClrObject = new ScalarsOnly("Alice", 123, true) { OptionalPredicate = true }
+        },
+        new TrySetNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.OptionalProperty)} object set boxed long to nullable long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.OptionalProperty),
+            ClrObject = new NullableValueMembers { OptionalProperty = null },
+            ClrValue = 42L,
+            ShouldCoerce = false,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { OptionalProperty = 42L }
+        },
+        new TrySetNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.OptionalProperty)} object set null to nullable long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.OptionalProperty),
+            ClrObject = new NullableValueMembers { OptionalProperty = 10L },
+            ClrValue = null,
+            ShouldCoerce = false,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { OptionalProperty = null }
+        },
+        new TrySetNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.OptionalProperty)} object set boxed long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.OptionalProperty),
+            ClrObject = new NullableValueMembers { OptionalProperty = null },
+            ClrValue = 42L,
+            ShouldCoerce = true,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { OptionalProperty = 42L }
+        },
+        new TrySetNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.RequiredProperty)} object set null to long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.RequiredProperty),
+            ClrObject = new NullableValueMembers { RequiredProperty = 10L },
+            ClrValue = null,
+            ShouldCoerce = false,
+            ExpectedTrySetSuccess = false,
+            ExpectedTrySetClrObject = new NullableValueMembers { RequiredProperty = 10L }
+        },
+        new TrySetNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.RequiredProperty)} object set null to long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.RequiredProperty),
+            ClrObject = new NullableValueMembers { RequiredProperty = 10L },
+            ClrValue = null,
+            ShouldCoerce = true,
+            ExpectedTrySetSuccess = false,
+            ExpectedTrySetClrObject = new NullableValueMembers { RequiredProperty = 10L }
+        },
+        new TrySetNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.OptionalProperty)} object set null to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.OptionalProperty),
+            ClrObject = new NullableValueMembers { OptionalProperty = 10L },
+            ClrValue = null,
+            ShouldCoerce = true,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { OptionalProperty = null }
+        },
+        new TrySetNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.OptionalField)} object set boxed long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.OptionalField),
+            ClrObject = new NullableValueMembers { OptionalField = null },
+            ClrValue = 42L,
+            ShouldCoerce = true,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { OptionalField = 42L }
+        },
+        new TrySetNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.RequiredField)} object set null to long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.RequiredField),
+            ClrObject = new NullableValueMembers { RequiredField = 10L },
+            ClrValue = null,
+            ShouldCoerce = false,
+            ExpectedTrySetSuccess = false,
+            ExpectedTrySetClrObject = new NullableValueMembers { RequiredField = 10L }
+        },
+        new TrySetNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.RequiredField)} object set null to long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.RequiredField),
+            ClrObject = new NullableValueMembers { RequiredField = 10L },
+            ClrValue = null,
+            ShouldCoerce = true,
+            ExpectedTrySetSuccess = false,
+            ExpectedTrySetClrObject = new NullableValueMembers { RequiredField = 10L }
+        },
+        new TrySetNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.OptionalField)} object set null to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.OptionalField),
+            ClrObject = new NullableValueMembers { OptionalField = 10L },
+            ClrValue = null,
+            ShouldCoerce = true,
+            ExpectedTrySetSuccess = true,
+            ExpectedTrySetClrObject = new NullableValueMembers { OptionalField = null }
         },
     ];
     #endregion

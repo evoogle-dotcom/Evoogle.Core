@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 
 using Evoogle.Coercion;
+using Evoogle.Extensions;
 using Evoogle.MemberAccess.Internal;
 
 namespace Evoogle.MemberAccess;
@@ -164,6 +165,19 @@ public sealed class MemberAccessor
     public bool CanWrite { get; }
     #endregion
 
+    #region Computed Properties
+    /// <summary>Gets the member's name.</summary>
+    public string MemberName => this.MemberInfo.Name;
+
+    /// <summary>Gets the exact reflected property.</summary>
+    /// <exception cref="MemberAccessException">Thrown if the member is not a property.</exception>
+    public PropertyInfo PropertyInfo => this.MemberInfo as PropertyInfo ?? throw new MemberAccessException("The member is not a property.");
+
+    /// <summary>Gets the exact reflected field.</summary>
+    /// <exception cref="MemberAccessException">Thrown if the member is not a field.</exception>
+    public FieldInfo FieldInfo => this.MemberInfo as FieldInfo ?? throw new MemberAccessException("The member is not a field.");
+    #endregion
+
     #region Factory Methods
     /// <summary>Creates an accessor for an exact reflected property or field.</summary>
     /// <param name="memberInfo">The member to access.</param>
@@ -313,7 +327,7 @@ public sealed class MemberAccessor
 
             var getter = this.GetObjectGetter();
             var value = getter(target);
-            return ConvertResult(value, valueType, coercion, context);
+            return ConvertResult(value, this.MemberType, valueType, coercion, context);
         }
         catch (Exception exception)
         {
@@ -378,7 +392,7 @@ public sealed class MemberAccessor
 
             var getter = this.GetStaticObjectGetter();
             var value = getter();
-            return ConvertResult(value, valueType, coercion, context);
+            return ConvertResult(value, this.MemberType, valueType, coercion, context);
         }
         catch (Exception exception)
         {
@@ -830,6 +844,23 @@ public sealed class MemberAccessor
     }
     #endregion
 
+    #region Object Methods
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        var declaringType = this.DeclaringType.SafeToName();
+        var memberType = this.MemberType.SafeToName();
+        var memberName = this.MemberName.SafeToString();
+        var isProperty = this.IsProperty;
+        var isField = this.IsField;
+        var isStatic = this.IsStatic;
+        var canRead = this.CanRead;
+        var canWrite = this.CanWrite;
+
+        return $"{nameof(MemberAccessor)} {{{nameof(this.DeclaringType)}={declaringType}, {nameof(this.MemberType)}={memberType}, {nameof(this.MemberName)}={memberName}, {nameof(this.IsProperty)}={isProperty}, {nameof(this.IsField)}={isField}, {nameof(this.IsStatic)}={isStatic}, {nameof(this.CanRead)}={canRead}, {nameof(this.CanWrite)}={canWrite}}}";
+    }
+    #endregion
+
     #region Factory Implementation Methods
     private static MemberAccessor CreateCore(MemberInfo memberInfo)
     {
@@ -1074,19 +1105,25 @@ public sealed class MemberAccessor
     private static object? ConvertResult
     (
         object? value,
+        Type memberType,
         Type? valueType,
         TypeCoercion? coercion,
         TypeCoercionContext? context
     )
     {
-        if (valueType is null || value is null || valueType.IsInstanceOfType(value))
+        if (valueType is null)
         {
             return value;
         }
 
         if (coercion is null)
         {
-            throw new MemberAccessException($"Value of type '{value.GetType()}' cannot be returned as '{valueType}' without coercion.");
+            if (!valueType.IsAssignableFrom(memberType))
+            {
+                throw new MemberAccessException($"Member type '{memberType}' cannot be returned as '{valueType}' without coercion.");
+            }
+
+            return value;
         }
 
         return coercion.Coerce(value, valueType, context ?? TypeCoercionContext.Default);

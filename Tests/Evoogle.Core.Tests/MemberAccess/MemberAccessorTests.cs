@@ -74,6 +74,279 @@ public partial class MemberAccessorTests(ITestOutputHelper output) : XUnitTests(
         protected bool? ActualTrySetSuccess { get; set; }
         #endregion
     }
+
+    private abstract class StaticTryTestBase : XUnitTest
+    {
+        #region User Supplied Properties
+        public required Type DeclaringType { get; init; }
+
+        public required string MemberName { get; init; }
+
+        public bool IsStaticMember { get; init; } = true;
+
+        public bool ShouldCoerce { get; init; }
+
+        public object? InitialClrValue { get; init; }
+        #endregion
+
+        #region Calculated Properties
+        protected MemberAccessor? Accessor { get; set; }
+
+        protected TypeCoercion? Coercion { get; set; }
+
+        private MemberInfo? MemberInfo { get; set; }
+
+        private object? MemberTarget { get; set; }
+        #endregion
+
+        #region XUnitTest Methods
+        protected override void Arrange()
+        {
+            var bindingFlags = BindingFlags.Public |
+                (this.IsStaticMember ? BindingFlags.Static : BindingFlags.Instance);
+
+            this.MemberInfo = (MemberInfo?)
+                this.DeclaringType.GetProperty(this.MemberName, bindingFlags)
+                ?? this.DeclaringType.GetField(this.MemberName, bindingFlags)
+                ?? throw new InvalidOperationException($"Member '{this.MemberName}' was not found on '{this.DeclaringType}'.");
+
+            this.MemberTarget = this.IsStaticMember
+                ? null
+                : Activator.CreateInstance(this.DeclaringType);
+            this.SetMemberValue(this.InitialClrValue);
+
+            this.Accessor = MemberAccessor.Create(this.MemberInfo);
+            this.Coercion = this.ShouldCoerce ? new TypeCoercion() : null;
+
+            this.WriteLine($"DeclaringType:   {this.DeclaringType.SafeToName()}");
+            this.WriteLine($"MemberName:      {this.MemberName.SafeToString()}");
+            this.WriteLine($"IsStaticMember:  {this.IsStaticMember.SafeToString()}");
+            this.WriteLine($"ShouldCoerce:    {this.ShouldCoerce.SafeToString()}");
+            this.WriteLine($"InitialClrValue: {this.InitialClrValue.SafeToString()}");
+            this.WriteLine();
+        }
+        #endregion
+
+        #region Implementation Methods
+        protected object? GetMemberValue()
+            => this.MemberInfo switch
+            {
+                PropertyInfo propertyInfo => propertyInfo.GetValue(this.MemberTarget),
+                FieldInfo fieldInfo => fieldInfo.GetValue(this.MemberTarget),
+                _ => throw new InvalidOperationException("The test member is unavailable.")
+            };
+
+        private void SetMemberValue(object? value)
+        {
+            switch (this.MemberInfo)
+            {
+                case PropertyInfo propertyInfo:
+                    propertyInfo.SetValue(this.MemberTarget, value);
+                    break;
+
+                case FieldInfo fieldInfo:
+                    fieldInfo.SetValue(this.MemberTarget, value);
+                    break;
+
+                default:
+                    throw new InvalidOperationException("The test member is unavailable.");
+            }
+        }
+        #endregion
+    }
+
+    private abstract class StaticTryGetTestBase : StaticTryTestBase
+    {
+        #region User Supplied Properties
+        public required bool ExpectedSuccess { get; init; }
+        #endregion
+
+        #region Calculated Properties
+        protected bool? ActualSuccess { get; set; }
+        #endregion
+    }
+
+    private abstract class StaticTrySetTestBase : StaticTryTestBase
+    {
+        #region User Supplied Properties
+        public required bool ExpectedSuccess { get; init; }
+
+        public object? ExpectedClrValue { get; init; }
+        #endregion
+
+        #region Calculated Properties
+        protected bool? ActualSuccess { get; set; }
+
+        private object? ActualClrValue { get; set; }
+        #endregion
+
+        #region XUnitTest Methods
+        protected override void Arrange()
+        {
+            base.Arrange();
+
+            this.WriteLine($"ExpectedSuccess:  {this.ExpectedSuccess.SafeToString()}");
+            this.WriteLine($"ExpectedClrValue: {this.ExpectedClrValue.SafeToString()}");
+        }
+
+        protected override void Act()
+        {
+            this.ActualSuccess = this.TrySetValue();
+            this.ActualClrValue = this.GetMemberValue();
+
+            this.WriteLine($"ActualSuccess:  {this.ActualSuccess.SafeToString()}");
+            this.WriteLine($"ActualClrValue: {this.ActualClrValue.SafeToString()}");
+        }
+
+        protected override void Assert()
+        {
+            this.ActualSuccess.Should().Be(this.ExpectedSuccess);
+            this.ActualClrValue.Should().BeEquivalentTo(
+                this.ExpectedSuccess ? this.ExpectedClrValue : this.InitialClrValue);
+        }
+        #endregion
+
+        #region Abstract Methods
+        protected abstract bool TrySetValue();
+        #endregion
+    }
+    #endregion
+
+    #region Factory Tests
+    private sealed class FactoryTest : XUnitTest
+    {
+        #region User Supplied Properties
+        public required Type DeclaringType { get; init; }
+        public required Type MemberType { get; init; }
+        public required string MemberName { get; init; }
+        public BindingFlags? BindingFlags { get; init; }
+        public bool? IsProperty { get; init; }
+        public bool? IsField { get; init; }
+        public bool? IsStatic { get; init; }
+        public bool? CanRead { get; init; }
+        public bool? CanWrite { get; init; }
+        public Type? ExceptionType { get; init; }
+        #endregion
+
+        #region Calculated Properties
+        private MemberAccessor? ExactAccessor { get; set; }
+        private MemberAccessor? NamedAccessor { get; set; }
+        private MemberAccessor? TryNamedAccessor { get; set; }
+        private Type? ActualExceptionType { get; set; }
+        #endregion
+
+        #region XUnitTest Methods
+        protected override void Arrange()
+        {
+            this.WriteLine($"DeclaringType: {this.DeclaringType.SafeToName()}");
+            this.WriteLine($"MemberType:    {this.MemberType.SafeToName()}");
+            this.WriteLine($"MemberName:    {this.MemberName.SafeToString()}");
+            this.WriteLine($"BindingFlags:  {this.BindingFlags.SafeToString()}");
+            this.WriteLine($"IsProperty:    {this.IsProperty.SafeToString()}");
+            this.WriteLine($"IsField:       {this.IsField.SafeToString()}");
+            this.WriteLine($"IsStatic:      {this.IsStatic.SafeToString()}");
+            this.WriteLine($"CanRead:       {this.CanRead.SafeToString()}");
+            this.WriteLine($"CanWrite:      {this.CanWrite.SafeToString()}");
+            this.WriteLine($"ExceptionType: {this.ExceptionType.SafeToName()}");
+            this.WriteLine();
+        }
+
+        protected override void Act()
+        {
+            try
+            {
+                var bindingFlags = this.BindingFlags ?? System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance;
+
+                if (this.IsField.HasValue && this.IsField.Value == true)
+                {
+                    var propertyAccessor = MemberAccessor.CreateField(this.DeclaringType!, this.MemberName!, bindingFlags);
+                    var tryFieldAccessor = MemberAccessor.TryCreateField(this.DeclaringType!, this.MemberName!, out var tryNamedAccessor, bindingFlags) ? tryNamedAccessor : null;
+                }
+
+                if (this.IsProperty.HasValue && this.IsProperty.Value == true)
+                {
+                    var propertyAccessor = MemberAccessor.CreateProperty(this.DeclaringType!, this.MemberName!, bindingFlags);
+                    var tryPropertyAccessor = MemberAccessor.TryCreateProperty(this.DeclaringType!, this.MemberName!, out var tryNamedAccessor, bindingFlags) ? tryNamedAccessor : null;
+                }
+
+                var fieldInfo = (MemberInfo?)Field(this.DeclaringType, this.MemberName, bindingFlags);
+                var propertyInfo = (MemberInfo?)Property(this.DeclaringType, this.MemberName, bindingFlags);
+                var methodInfo = (MemberInfo?)Method(this.DeclaringType, this.MemberName, bindingFlags);
+                var memberInfo = fieldInfo ?? propertyInfo ?? methodInfo;
+
+                this.ExactAccessor = MemberAccessor.Create(memberInfo!);
+                if (fieldInfo != null)
+                {
+                    this.NamedAccessor = MemberAccessor.Create(fieldInfo);
+                    this.TryNamedAccessor = MemberAccessor.TryCreate(fieldInfo, out var tryNamedAccessor) ? tryNamedAccessor : null;
+                }
+                else if (propertyInfo != null)
+                {
+                    this.NamedAccessor = MemberAccessor.Create(propertyInfo);
+                    this.TryNamedAccessor = MemberAccessor.TryCreate(propertyInfo, out var tryNamedAccessor) ? tryNamedAccessor : null;
+                }
+            }
+            catch (Exception ex)
+            {
+                this.ActualExceptionType = ex.GetType();
+            }
+        }
+
+        protected override void Assert()
+        {
+            if (this.ExceptionType == null)
+            {
+                this.ActualExceptionType.Should().BeNull();
+
+                // Expected factory methods to have succeeded
+                this.ExactAccessor.Should().NotBeNull();
+                this.NamedAccessor.Should().NotBeNull();
+                this.TryNamedAccessor.Should().NotBeNull();
+
+                // Exact, Named, and TryNamed accessors should refer to the same underlying object.
+                this.ExactAccessor.Should().BeSameAs(this.NamedAccessor);
+                this.ExactAccessor.Should().BeSameAs(this.TryNamedAccessor);
+
+                // Exact, Named, and TryNamed accessors should have the expected metadata.
+                this.ExactAccessor.DeclaringType.Should().Be(this.DeclaringType);
+                this.ExactAccessor.MemberType.Should().Be(this.MemberType);
+                this.ExactAccessor.MemberName.Should().Be(this.MemberName);
+
+                if (this.IsProperty.HasValue)
+                {
+                    this.ExactAccessor.IsProperty.Should().Be(this.IsProperty.Value);
+                }
+                if (this.IsField.HasValue)
+                {
+                    this.ExactAccessor.IsField.Should().Be(this.IsField.Value);
+                }
+                if (this.IsStatic.HasValue)
+                {
+                    this.ExactAccessor.IsStatic.Should().Be(this.IsStatic.Value);
+                }
+                if (this.CanRead.HasValue)
+                {
+                    this.ExactAccessor.CanRead.Should().Be(this.CanRead.Value);
+                }
+                if (this.CanWrite.HasValue)
+                {
+                    this.ExactAccessor.CanWrite.Should().Be(this.CanWrite.Value);
+                }
+            }
+            else
+            {
+                this.ActualExceptionType.Should().NotBeNull();
+                this.ActualExceptionType.Should().Be(this.ExceptionType);
+            }
+        }
+        #endregion
+
+        #region Reflection Methods
+        private static FieldInfo? Field(Type declaringType, string memberName, BindingFlags bindingFlags) => declaringType.GetField(memberName, bindingFlags);
+        private static PropertyInfo? Property(Type declaringType, string memberName, BindingFlags bindingFlags) => declaringType.GetProperty(memberName, bindingFlags);
+        private static MethodInfo? Method(Type declaringType, string memberName, BindingFlags bindingFlags) => declaringType.GetMethod(memberName, bindingFlags);
+        #endregion
+    }
     #endregion
 
     #region TryGet Tests
@@ -233,14 +506,7 @@ public partial class MemberAccessorTests(ITestOutputHelper output) : XUnitTests(
         protected override void Assert()
         {
             this.ActualTrySetSuccess.Should().Be(this.ExpectedTrySetSuccess);
-            if (this.ExpectedTrySetSuccess)
-            {
-                this.ActualTrySetClrObject.Should().BeEquivalentTo(this.ExpectedTrySetClrObject);
-            }
-            else
-            {
-                this.ActualTrySetClrObject.Should().BeEquivalentTo(this.ClrObject);
-            }
+            this.ActualTrySetClrObject.Should().BeEquivalentTo(this.ExpectedTrySetClrObject);
         }
         #endregion
     }
@@ -347,112 +613,13 @@ public partial class MemberAccessorTests(ITestOutputHelper output) : XUnitTests(
         protected override void Assert()
         {
             this.ActualTrySetSuccess.Should().Be(this.ExpectedTrySetSuccess);
-            if (this.ExpectedTrySetSuccess)
-            {
-                this.ActualTrySetClrObject.Should().BeEquivalentTo(this.ExpectedTrySetClrObject);
-            }
-            else
-            {
-                this.ActualTrySetClrObject.Should().BeEquivalentTo(this.ClrObject);
-            }
+            this.ActualTrySetClrObject.Should().BeEquivalentTo(this.ExpectedTrySetClrObject);
         }
         #endregion
     }
     #endregion
 
     #region Static Try Tests
-    private abstract class StaticTryTestBase : XUnitTest
-    {
-        #region User Supplied Properties
-        public required Type DeclaringType { get; init; }
-
-        public required string MemberName { get; init; }
-
-        public bool IsStaticMember { get; init; } = true;
-
-        public bool ShouldCoerce { get; init; }
-
-        public object? InitialClrValue { get; init; }
-        #endregion
-
-        #region Calculated Properties
-        protected MemberAccessor? Accessor { get; set; }
-
-        protected TypeCoercion? Coercion { get; set; }
-
-        private MemberInfo? MemberInfo { get; set; }
-
-        private object? MemberTarget { get; set; }
-        #endregion
-
-        #region XUnitTest Methods
-        protected override void Arrange()
-        {
-            var bindingFlags = BindingFlags.Public |
-                (this.IsStaticMember ? BindingFlags.Static : BindingFlags.Instance);
-
-            this.MemberInfo = (MemberInfo?)
-                this.DeclaringType.GetProperty(this.MemberName, bindingFlags)
-                ?? this.DeclaringType.GetField(this.MemberName, bindingFlags)
-                ?? throw new InvalidOperationException(
-                    $"Member '{this.MemberName}' was not found on '{this.DeclaringType}'.");
-
-            this.MemberTarget = this.IsStaticMember
-                ? null
-                : Activator.CreateInstance(this.DeclaringType);
-            this.SetMemberValue(this.InitialClrValue);
-
-            this.Accessor = MemberAccessor.Create(this.MemberInfo);
-            this.Coercion = this.ShouldCoerce ? new TypeCoercion() : null;
-
-            this.WriteLine($"DeclaringType:  {this.DeclaringType.SafeToName()}");
-            this.WriteLine($"MemberName:     {this.MemberName.SafeToString()}");
-            this.WriteLine($"IsStaticMember: {this.IsStaticMember.SafeToString()}");
-            this.WriteLine($"ShouldCoerce:   {this.ShouldCoerce.SafeToString()}");
-            this.WriteLine($"InitialClrValue: {this.InitialClrValue.SafeToString()}");
-            this.WriteLine();
-        }
-        #endregion
-
-        #region Implementation Methods
-        protected object? GetMemberValue()
-            => this.MemberInfo switch
-            {
-                PropertyInfo propertyInfo => propertyInfo.GetValue(this.MemberTarget),
-                FieldInfo fieldInfo => fieldInfo.GetValue(this.MemberTarget),
-                _ => throw new InvalidOperationException("The test member is unavailable.")
-            };
-
-        private void SetMemberValue(object? value)
-        {
-            switch (this.MemberInfo)
-            {
-                case PropertyInfo propertyInfo:
-                    propertyInfo.SetValue(this.MemberTarget, value);
-                    break;
-
-                case FieldInfo fieldInfo:
-                    fieldInfo.SetValue(this.MemberTarget, value);
-                    break;
-
-                default:
-                    throw new InvalidOperationException("The test member is unavailable.");
-            }
-        }
-        #endregion
-    }
-
-    private abstract class StaticTryGetTestBase : StaticTryTestBase
-    {
-        #region User Supplied Properties
-        public required bool ExpectedSuccess { get; init; }
-        #endregion
-
-        #region Calculated Properties
-        protected bool? ActualSuccess { get; set; }
-        #endregion
-    }
-
     private sealed class TryGetStaticGenericTest<TValue> : StaticTryGetTestBase
     {
         #region User Supplied Properties
@@ -529,51 +696,6 @@ public partial class MemberAccessorTests(ITestOutputHelper output) : XUnitTests(
             this.ActualClrValue.Should().BeEquivalentTo(
                 this.ExpectedSuccess ? this.ExpectedClrValue : null);
         }
-        #endregion
-    }
-
-    private abstract class StaticTrySetTestBase : StaticTryTestBase
-    {
-        #region User Supplied Properties
-        public required bool ExpectedSuccess { get; init; }
-
-        public object? ExpectedClrValue { get; init; }
-        #endregion
-
-        #region Calculated Properties
-        protected bool? ActualSuccess { get; set; }
-
-        private object? ActualClrValue { get; set; }
-        #endregion
-
-        #region XUnitTest Methods
-        protected override void Arrange()
-        {
-            base.Arrange();
-
-            this.WriteLine($"ExpectedSuccess:  {this.ExpectedSuccess.SafeToString()}");
-            this.WriteLine($"ExpectedClrValue: {this.ExpectedClrValue.SafeToString()}");
-        }
-
-        protected override void Act()
-        {
-            this.ActualSuccess = this.TrySetValue();
-            this.ActualClrValue = this.GetMemberValue();
-
-            this.WriteLine($"ActualSuccess:  {this.ActualSuccess.SafeToString()}");
-            this.WriteLine($"ActualClrValue: {this.ActualClrValue.SafeToString()}");
-        }
-
-        protected override void Assert()
-        {
-            this.ActualSuccess.Should().Be(this.ExpectedSuccess);
-            this.ActualClrValue.Should().BeEquivalentTo(
-                this.ExpectedSuccess ? this.ExpectedClrValue : this.InitialClrValue);
-        }
-        #endregion
-
-        #region Abstract Methods
-        protected abstract bool TrySetValue();
         #endregion
     }
 

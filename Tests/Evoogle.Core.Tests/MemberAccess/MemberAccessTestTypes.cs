@@ -82,3 +82,126 @@ public static class StaticScalarsOnly
 
     public static bool RequiredPredicate { get; set; }
 }
+
+public class MemberAccessBaseShape
+{
+    public string AmbiguousValue { get; set; } = "base";
+
+    public string InheritedValue { get; set; } = "inherited";
+}
+
+public sealed class MemberAccessShape : MemberAccessBaseShape
+{
+    private string _writeOnlyValue = string.Empty;
+
+    public const long ConstantField = 11;
+
+    public long FieldValue = 12;
+
+    public long? FieldNullableValue;
+
+    public string? FieldNullableString;
+
+    public readonly long ReadonlyField = 12;
+
+    public long ReadonlyProperty { get; } = 12;
+
+    private readonly string _privateReadonlyField = "private-readonly";
+
+    private string _privateField = "private-field";
+
+    private string PrivateFieldValue => _privateField;
+
+    public new long AmbiguousValue { get; set; } = 13;
+
+    public long CacheValue { get; set; } = 14;
+
+    public long? CacheNullableValue { get; set; }
+
+    public DateTime DateValue { get; set; } = new(2025, 6, 7, 8, 9, 10, DateTimeKind.Utc);
+
+    public string InitOnlyValue { get; init; } = "init";
+
+    public string PrivateGetterValue { private get; set; } = "private-getter";
+
+    public string PrivateSetterValue { get; private set; } = "private-setter";
+
+    private string PrivateValue { get; set; } = "private-property";
+
+    public string ReadOnlyValue => "read-only";
+
+    public string TextValue { get; set; } = "text";
+
+    public string? TextNullableValue { get; set; } = "text";
+
+    public string WriteOnlyValue
+    {
+        set => _writeOnlyValue = value;
+    }
+
+    public string WrittenValue => _writeOnlyValue;
+
+    public string this[int index] => index.ToString();
+
+    public static long StaticCacheValue { get; set; } = 15;
+
+    public static DateTime StaticDateValue { get; set; } =
+        new(2025, 6, 7, 8, 9, 10, DateTimeKind.Utc);
+
+#pragma warning disable CA2211 // Non-constant fields should not be visible
+    public static string StaticTextField = "static-field";
+#pragma warning restore CA2211 // Non-constant fields should not be visible
+
+    public static string StaticTextValue { get; set; } = "static-text";
+
+    private static readonly string _privateStaticReadonlyField = "private-static-readonly";
+
+    private static string? _secretToken;
+
+    // Write-only static property
+    public static string SecretToken
+    {
+        set { _secretToken = value; } // No "get" accessor allowed here
+    }
+
+    public MemberAccessShape()
+    {
+        if (_privateReadonlyField == "private-readonly" && _privateStaticReadonlyField != null)
+        {
+            // Do something with the private static readonly field
+            _privateField = "modified-private-field";
+        }
+    }
+
+    public void Foo()
+    {
+        _privateField = "modified-private-field";
+
+        if (_privateReadonlyField == "private-readonly" && _privateStaticReadonlyField != null)
+        {
+            // Do something with the private static readonly field
+            _privateField = "modified-private-field";
+        }
+    }
+}
+
+public sealed class NullableValueMembers
+{
+    public long RequiredField;
+
+    public long? OptionalField;
+
+#pragma warning disable CA2211 // Non-constant fields should not be visible
+    public static long StaticRequiredField;
+
+    public static long? StaticOptionalField;
+#pragma warning restore CA2211 // Non-constant fields should not be visible
+
+    public long RequiredProperty { get; set; }
+
+    public long? OptionalProperty { get; set; }
+
+    public static long StaticRequiredProperty { get; set; }
+
+    public static long? StaticOptionalProperty { get; set; }
+}

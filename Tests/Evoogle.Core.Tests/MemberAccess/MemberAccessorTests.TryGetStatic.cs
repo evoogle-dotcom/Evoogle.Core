@@ -14,10 +14,7 @@ public partial class MemberAccessorTests
     [
         new TryGetStaticGenericTest<string>
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredName)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)}<TValue> " +
-                "returns success for required string property",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredName)} {nameof(MemberAccessor.TryGetStaticValue)}<TValue> returns success for required string property",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.RequiredName),
             InitialClrValue = "Alice",
@@ -27,10 +24,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticGenericTest<long>
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredNumber)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)}<TValue> " +
-                "returns success for required long property",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredNumber)} {nameof(MemberAccessor.TryGetStaticValue)}<TValue> returns success for required long property",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.RequiredNumber),
             InitialClrValue = 123L,
@@ -40,10 +34,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticGenericTest<bool>
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredPredicate)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)}<TValue> " +
-                "returns success for required bool property",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredPredicate)} {nameof(MemberAccessor.TryGetStaticValue)}<TValue> returns success for required bool property",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.RequiredPredicate),
             InitialClrValue = true,
@@ -53,10 +44,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticGenericTest<string?>
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalName)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)}<TValue> " +
-                "returns success for optional string field for non-null value",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalName)} {nameof(MemberAccessor.TryGetStaticValue)}<TValue> returns success for optional string field for non-null value",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalName),
             InitialClrValue = "Bob",
@@ -66,23 +54,16 @@ public partial class MemberAccessorTests
 
         new TryGetStaticGenericTest<string?>
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalName)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)}<TValue> " +
-                "returns success for optional string field for null value",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalName)} {nameof(MemberAccessor.TryGetStaticValue)}<TValue> returns success for optional string field for null value",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalName),
             InitialClrValue = null,
             ExpectedSuccess = true,
-            ExpectedClrValue = null
-        },
+            ExpectedClrValue = null    },
 
         new TryGetStaticGenericTest<long?>
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalNumber)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)}<TValue> " +
-                "returns success for optional long field for non-null value",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalNumber)} {nameof(MemberAccessor.TryGetStaticValue)}<TValue> returns success for optional long field for non-null value",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalNumber),
             InitialClrValue = 42L,
@@ -92,10 +73,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticGenericTest<long?>
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalNumber)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)}<TValue> " +
-                "returns success for optional long field for null value",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalNumber)} {nameof(MemberAccessor.TryGetStaticValue)}<TValue> returns success for optional long field for null value",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalNumber),
             InitialClrValue = null,
@@ -105,10 +83,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticGenericTest<bool?>
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalPredicate)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)}<TValue> " +
-                "returns success for optional bool field for non-null value",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalPredicate)} {nameof(MemberAccessor.TryGetStaticValue)}<TValue> returns success for optional bool field for non-null value",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalPredicate),
             InitialClrValue = false,
@@ -118,10 +93,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticGenericTest<bool?>
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalPredicate)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)}<TValue> " +
-                "returns success for optional bool field for null value",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalPredicate)} {nameof(MemberAccessor.TryGetStaticValue)}<TValue> returns success for optional bool field for null value",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalPredicate),
             InitialClrValue = null,
@@ -131,10 +103,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticGenericTest<string>
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredNumber)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)}<TValue> " +
-                "returns success for required long property with coercion to string",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredNumber)} {nameof(MemberAccessor.TryGetStaticValue)}<TValue> returns success for required long property with coercion to string",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.RequiredNumber),
             ShouldCoerce = true,
@@ -145,10 +114,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticGenericTest<string>
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredPredicate)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)}<TValue> " +
-                "returns success for required bool property with coercion to string",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredPredicate)} {nameof(MemberAccessor.TryGetStaticValue)}<TValue> returns success for required bool property with coercion to string",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.RequiredPredicate),
             ShouldCoerce = true,
@@ -159,10 +125,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticGenericTest<string?>
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalNumber)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)}<TValue> " +
-                "returns success for optional long field for non-null value with coercion to string",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalNumber)} {nameof(MemberAccessor.TryGetStaticValue)}<TValue> returns success for optional long field for non-null value with coercion to string",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalNumber),
             ShouldCoerce = true,
@@ -173,10 +136,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticGenericTest<string?>
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalNumber)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)}<TValue> " +
-                "returns success for optional long field for null value with coercion to string",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalNumber)} {nameof(MemberAccessor.TryGetStaticValue)}<TValue> returns success for optional long field for null value with coercion to string",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalNumber),
             ShouldCoerce = true,
@@ -187,10 +147,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticGenericTest<string?>
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalPredicate)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)}<TValue> " +
-                "returns success for optional bool field for non-null value with coercion to string",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalPredicate)} {nameof(MemberAccessor.TryGetStaticValue)}<TValue> returns success for optional bool field for non-null value with coercion to string",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalPredicate),
             ShouldCoerce = true,
@@ -201,10 +158,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticGenericTest<string?>
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalPredicate)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)}<TValue> " +
-                "returns success for optional bool field for null value with coercion to string",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalPredicate)} {nameof(MemberAccessor.TryGetStaticValue)}<TValue> returns success for optional bool field for null value with coercion to string",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalPredicate),
             ShouldCoerce = true,
@@ -215,15 +169,192 @@ public partial class MemberAccessorTests
 
         new TryGetStaticGenericTest<string>
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredName)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)}<TValue> " +
-                "returns failure for instance member",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredName)} {nameof(MemberAccessor.TryGetStaticValue)}<TValue> returns failure for instance member",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.RequiredName),
             IsStaticMember = false,
             InitialClrValue = "Alice",
             ExpectedSuccess = false
+        },
+        new TryGetStaticGenericTest<long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticRequiredProperty)} static generic get long to nullable long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticRequiredProperty),
+            InitialClrValue = 42L,
+            ShouldCoerce = false,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticGenericTest<long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticRequiredProperty)} static generic get long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticRequiredProperty),
+            InitialClrValue = 42L,
+            ShouldCoerce = true,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticGenericTest<long>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalProperty)} static generic get non-null nullable long to long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalProperty),
+            InitialClrValue = 42L,
+            ShouldCoerce = false,
+            ExpectedSuccess = false,
+            ExpectedClrValue = 0L
+        },
+        new TryGetStaticGenericTest<long>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalProperty)} static generic get non-null nullable long to long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalProperty),
+            InitialClrValue = 42L,
+            ShouldCoerce = true,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticGenericTest<long>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalProperty)} static generic get null nullable long to long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalProperty),
+            InitialClrValue = null,
+            ShouldCoerce = false,
+            ExpectedSuccess = false,
+            ExpectedClrValue = 0L
+        },
+        new TryGetStaticGenericTest<long>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalProperty)} static generic get null nullable long to long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalProperty),
+            InitialClrValue = null,
+            ShouldCoerce = true,
+            ExpectedSuccess = false,
+            ExpectedClrValue = 0L
+        },
+        new TryGetStaticGenericTest<long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalProperty)} static generic get non-null nullable long to nullable long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalProperty),
+            InitialClrValue = 42L,
+            ShouldCoerce = false,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticGenericTest<long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalProperty)} static generic get null nullable long to nullable long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalProperty),
+            InitialClrValue = null,
+            ShouldCoerce = false,
+            ExpectedSuccess = true,
+            ExpectedClrValue = null
+        },
+        new TryGetStaticGenericTest<long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalProperty)} static generic get non-null nullable long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalProperty),
+            InitialClrValue = 42L,
+            ShouldCoerce = true,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticGenericTest<long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalProperty)} static generic get null nullable long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalProperty),
+            InitialClrValue = null,
+            ShouldCoerce = true,
+            ExpectedSuccess = true,
+            ExpectedClrValue = null
+        },
+        new TryGetStaticGenericTest<long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticRequiredField)} static generic get long to nullable long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticRequiredField),
+            InitialClrValue = 42L,
+            ShouldCoerce = false,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticGenericTest<long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticRequiredField)} static generic get long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticRequiredField),
+            InitialClrValue = 42L,
+            ShouldCoerce = true,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticGenericTest<long>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalField)} static generic get non-null nullable long to long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalField),
+            InitialClrValue = 42L,
+            ShouldCoerce = false,
+            ExpectedSuccess = false,
+            ExpectedClrValue = 0L
+        },
+        new TryGetStaticGenericTest<long>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalField)} static generic get non-null nullable long to long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalField),
+            InitialClrValue = 42L,
+            ShouldCoerce = true,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticGenericTest<long>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalField)} static generic get null nullable long to long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalField),
+            InitialClrValue = null,
+            ShouldCoerce = false,
+            ExpectedSuccess = false,
+            ExpectedClrValue = 0L
+        },
+        new TryGetStaticGenericTest<long>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalField)} static generic get null nullable long to long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalField),
+            InitialClrValue = null,
+            ShouldCoerce = true,
+            ExpectedSuccess = false,
+            ExpectedClrValue = 0L
+        },
+        new TryGetStaticGenericTest<long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalField)} static generic get non-null nullable long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalField),
+            InitialClrValue = 42L,
+            ShouldCoerce = true,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticGenericTest<long?>
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalField)} static generic get null nullable long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalField),
+            InitialClrValue = null,
+            ShouldCoerce = true,
+            ExpectedSuccess = true,
+            ExpectedClrValue = null
         },
     ];
 
@@ -231,10 +362,7 @@ public partial class MemberAccessorTests
     [
         new TryGetStaticNonGenericTest
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredName)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)} " +
-                "returns success for required string property",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredName)} {nameof(MemberAccessor.TryGetStaticValue)} returns success for required string property",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.RequiredName),
             InitialClrValue = "Alice",
@@ -244,10 +372,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticNonGenericTest
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredNumber)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)} " +
-                "returns success for required long property",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredNumber)} {nameof(MemberAccessor.TryGetStaticValue)} returns success for required long property",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.RequiredNumber),
             InitialClrValue = 123L,
@@ -257,10 +382,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticNonGenericTest
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredPredicate)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)} " +
-                "returns success for required bool property",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredPredicate)} {nameof(MemberAccessor.TryGetStaticValue)} returns success for required bool property",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.RequiredPredicate),
             InitialClrValue = true,
@@ -270,10 +392,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticNonGenericTest
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalName)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)} " +
-                "returns success for optional string field for non-null value",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalName)} {nameof(MemberAccessor.TryGetStaticValue)} returns success for optional string field for non-null value",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalName),
             InitialClrValue = "Bob",
@@ -283,10 +402,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticNonGenericTest
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalName)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)} " +
-                "returns success for optional string field for null value",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalName)} {nameof(MemberAccessor.TryGetStaticValue)} returns success for optional string field for null value",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalName),
             InitialClrValue = null,
@@ -296,10 +412,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticNonGenericTest
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalNumber)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)} " +
-                "returns success for optional long field for non-null value",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalNumber)} {nameof(MemberAccessor.TryGetStaticValue)} returns success for optional long field for non-null value",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalNumber),
             InitialClrValue = 42L,
@@ -309,10 +422,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticNonGenericTest
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalNumber)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)} " +
-                "returns success for optional long field for null value",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalNumber)} {nameof(MemberAccessor.TryGetStaticValue)} returns success for optional long field for null value",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalNumber),
             InitialClrValue = null,
@@ -322,10 +432,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticNonGenericTest
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalPredicate)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)} " +
-                "returns success for optional bool field for non-null value",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalPredicate)} {nameof(MemberAccessor.TryGetStaticValue)} returns success for optional bool field for non-null value",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalPredicate),
             InitialClrValue = false,
@@ -335,10 +442,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticNonGenericTest
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalPredicate)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)} " +
-                "returns success for optional bool field for null value",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalPredicate)} {nameof(MemberAccessor.TryGetStaticValue)} returns success for optional bool field for null value",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalPredicate),
             InitialClrValue = null,
@@ -348,10 +452,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticNonGenericTest
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredNumber)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)} " +
-                "returns success for required long property with coercion to string",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredNumber)} {nameof(MemberAccessor.TryGetStaticValue)} returns success for required long property with coercion to string",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.RequiredNumber),
             ShouldCoerce = true,
@@ -363,10 +464,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticNonGenericTest
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredPredicate)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)} " +
-                "returns success for required bool property with coercion to string",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.RequiredPredicate)} {nameof(MemberAccessor.TryGetStaticValue)} returns success for required bool property with coercion to string",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.RequiredPredicate),
             ShouldCoerce = true,
@@ -378,10 +476,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticNonGenericTest
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalNumber)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)} " +
-                "returns success for optional long field for non-null value with coercion to string",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalNumber)} {nameof(MemberAccessor.TryGetStaticValue)} returns success for optional long field for non-null value with coercion to string",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalNumber),
             ShouldCoerce = true,
@@ -393,10 +488,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticNonGenericTest
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalNumber)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)} " +
-                "returns success for optional long field for null value with coercion to string",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalNumber)} {nameof(MemberAccessor.TryGetStaticValue)} returns success for optional long field for null value with coercion to string",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalNumber),
             ShouldCoerce = true,
@@ -408,10 +500,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticNonGenericTest
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalPredicate)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)} " +
-                "returns success for optional bool field for non-null value with coercion to string",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalPredicate)} {nameof(MemberAccessor.TryGetStaticValue)} returns success for optional bool field for non-null value with coercion to string",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalPredicate),
             ShouldCoerce = true,
@@ -423,10 +512,7 @@ public partial class MemberAccessorTests
 
         new TryGetStaticNonGenericTest
         {
-            Name =
-                $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalPredicate)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)} " +
-                "returns success for optional bool field for null value with coercion to string",
+            Name = $"{nameof(StaticScalarsOnly)}:{nameof(StaticScalarsOnly.OptionalPredicate)} {nameof(MemberAccessor.TryGetStaticValue)} returns success for optional bool field for null value with coercion to string",
             DeclaringType = typeof(StaticScalarsOnly),
             MemberName = nameof(StaticScalarsOnly.OptionalPredicate),
             ShouldCoerce = true,
@@ -438,15 +524,210 @@ public partial class MemberAccessorTests
 
         new TryGetStaticNonGenericTest
         {
-            Name =
-                $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredName)} " +
-                $"{nameof(MemberAccessor.TryGetStaticValue)} " +
-                "returns failure for instance member",
+            Name = $"{nameof(ScalarsOnly)}:{nameof(ScalarsOnly.RequiredName)} {nameof(MemberAccessor.TryGetStaticValue)} returns failure for instance member",
             DeclaringType = typeof(ScalarsOnly),
             MemberName = nameof(ScalarsOnly.RequiredName),
             IsStaticMember = false,
             InitialClrValue = "Alice",
             ExpectedSuccess = false
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticRequiredProperty)} static object get long to nullable long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticRequiredProperty),
+            InitialClrValue = 42L,
+            ClrValueType = typeof(long?),
+            ShouldCoerce = false,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticRequiredProperty)} static object get long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticRequiredProperty),
+            InitialClrValue = 42L,
+            ClrValueType = typeof(long?),
+            ShouldCoerce = true,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalProperty)} static object get non-null nullable long to long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalProperty),
+            InitialClrValue = 42L,
+            ClrValueType = typeof(long),
+            ShouldCoerce = false,
+            ExpectedSuccess = false,
+            ExpectedClrValue = null
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalProperty)} static object get non-null nullable long to long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalProperty),
+            InitialClrValue = 42L,
+            ClrValueType = typeof(long),
+            ShouldCoerce = true,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalProperty)} static object get null nullable long to long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalProperty),
+            InitialClrValue = null,
+            ClrValueType = typeof(long),
+            ShouldCoerce = false,
+            ExpectedSuccess = false,
+            ExpectedClrValue = null
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalProperty)} static object get null nullable long to long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalProperty),
+            InitialClrValue = null,
+            ClrValueType = typeof(long),
+            ShouldCoerce = true,
+            ExpectedSuccess = false,
+            ExpectedClrValue = null
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalProperty)} static object get non-null nullable long to nullable long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalProperty),
+            InitialClrValue = 42L,
+            ClrValueType = typeof(long?),
+            ShouldCoerce = false,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalProperty)} static object get null nullable long to nullable long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalProperty),
+            InitialClrValue = null,
+            ClrValueType = typeof(long?),
+            ShouldCoerce = false,
+            ExpectedSuccess = true,
+            ExpectedClrValue = null
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalProperty)} static object get non-null nullable long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalProperty),
+            InitialClrValue = 42L,
+            ClrValueType = typeof(long?),
+            ShouldCoerce = true,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalProperty)} static object get null nullable long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalProperty),
+            InitialClrValue = null,
+            ClrValueType = typeof(long?),
+            ShouldCoerce = true,
+            ExpectedSuccess = true,
+            ExpectedClrValue = null
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticRequiredField)} static object get long to nullable long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticRequiredField),
+            InitialClrValue = 42L,
+            ClrValueType = typeof(long?),
+            ShouldCoerce = false,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticRequiredField)} static object get long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticRequiredField),
+            InitialClrValue = 42L,
+            ClrValueType = typeof(long?),
+            ShouldCoerce = true,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalField)} static object get non-null nullable long to long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalField),
+            InitialClrValue = 42L,
+            ClrValueType = typeof(long),
+            ShouldCoerce = false,
+            ExpectedSuccess = false,
+            ExpectedClrValue = null
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalField)} static object get non-null nullable long to long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalField),
+            InitialClrValue = 42L,
+            ClrValueType = typeof(long),
+            ShouldCoerce = true,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalField)} static object get null nullable long to long direct",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalField),
+            InitialClrValue = null,
+            ClrValueType = typeof(long),
+            ShouldCoerce = false,
+            ExpectedSuccess = false,
+            ExpectedClrValue = null
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalField)} static object get null nullable long to long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalField),
+            InitialClrValue = null,
+            ClrValueType = typeof(long),
+            ShouldCoerce = true,
+            ExpectedSuccess = false,
+            ExpectedClrValue = null
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalField)} static object get non-null nullable long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalField),
+            InitialClrValue = 42L,
+            ClrValueType = typeof(long?),
+            ShouldCoerce = true,
+            ExpectedSuccess = true,
+            ExpectedClrValue = 42L
+        },
+        new TryGetStaticNonGenericTest
+        {
+            Name = $"{nameof(NullableValueMembers)}:{nameof(NullableValueMembers.StaticOptionalField)} static object get null nullable long to nullable long coercing",
+            DeclaringType = typeof(NullableValueMembers),
+            MemberName = nameof(NullableValueMembers.StaticOptionalField),
+            InitialClrValue = null,
+            ClrValueType = typeof(long?),
+            ShouldCoerce = true,
+            ExpectedSuccess = true,
+            ExpectedClrValue = null
         },
     ];
     #endregion
