@@ -21,8 +21,7 @@ public struct Point
         var y = this.Y.SafeToString();
         var note = this.Note.SafeToString();
 
-        return $"{nameof(Point)} {{{nameof(this.X)}={x}, {nameof(this.Y)}={y}, " +
-            $"{nameof(this.Note)}={note}}}";
+        return $"{nameof(Point)} {{{nameof(this.X)}={x}, {nameof(this.Y)}={y}, {nameof(this.Note)}={note}}}";
     }
 }
 
@@ -134,6 +133,7 @@ public class MemberAccessBaseShape
 public sealed class MemberAccessShape : MemberAccessBaseShape
 {
     private string _writeOnlyValue = string.Empty;
+    private int _getterInvocationCount;
 
     public const long ConstantField = 11;
 
@@ -159,9 +159,22 @@ public sealed class MemberAccessShape : MemberAccessBaseShape
 
     public long? CacheNullableValue { get; set; }
 
+    public long ConcurrentCacheValue { get; set; } = 24;
+
     public DateTime DateValue { get; set; } = new(2025, 6, 7, 8, 9, 10, DateTimeKind.Utc);
 
     public string InitOnlyValue { get; init; } = "init";
+
+    public int GetterInvocationCount => _getterInvocationCount;
+
+    public long InvocationTrackedValue
+    {
+        get
+        {
+            _getterInvocationCount++;
+            return 42;
+        }
+    }
 
     public string PrivateGetterValue { private get; set; } = "private-getter";
 
@@ -185,6 +198,21 @@ public sealed class MemberAccessShape : MemberAccessBaseShape
     public string this[int index] => index.ToString();
 
     public static long StaticCacheValue { get; set; } = 15;
+
+    public static long StaticConcurrentCacheValue { get; set; } = 25;
+
+    public static int StaticGetterInvocationCount { get; private set; }
+
+    public static long StaticInvocationTrackedValue
+    {
+        get
+        {
+            StaticGetterInvocationCount++;
+            return 43;
+        }
+    }
+
+    public static void ResetStaticGetterInvocationCount() => StaticGetterInvocationCount = 0;
 
     public static DateTime StaticDateValue { get; set; } =
         new(2025, 6, 7, 8, 9, 10, DateTimeKind.Utc);

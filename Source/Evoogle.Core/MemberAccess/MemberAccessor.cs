@@ -24,11 +24,24 @@ namespace Evoogle.MemberAccess;
 public sealed class MemberAccessor
 {
     #region Types
+    [Flags]
+    private enum AccessCapabilities
+    {
+        None = 0,
+        Read = 1,
+        Write = 2,
+    }
+
     private readonly record struct LookupKey
     (
-        Type DeclaringType,
         string MemberName,
         BindingFlags BindingFlags
+    );
+
+    private readonly record struct PropertyLookupResult
+    (
+        PropertyInfo PropertyInfo,
+        AccessCapabilities Capabilities
     );
 
     private readonly record struct TryLookupState
@@ -41,50 +54,120 @@ public sealed class MemberAccessor
     private sealed class AccessorCacheEntry
     {
         private readonly MemberInfo _memberInfo;
-        private readonly Lazy<MemberAccessor> _accessor;
+        private readonly Type _declaringType;
+        private readonly Type _memberType;
+        private readonly bool _isStatic;
+        private readonly AccessCapabilities _availableCapabilities;
+        private readonly Lazy<MemberAccessor> _readAccessor;
+        private readonly Lazy<MemberAccessor> _writeAccessor;
+        private readonly Lazy<MemberAccessor> _readWriteAccessor;
 
         public AccessorCacheEntry(MemberInfo memberInfo)
         {
             _memberInfo = memberInfo;
-            _accessor = new Lazy<MemberAccessor>
+            (_declaringType, _memberType, _isStatic, _availableCapabilities) = Inspect(memberInfo);
+            _readAccessor = new Lazy<MemberAccessor>
             (
-                this.CreateAccessor,
+                this.CreateReadAccessor,
+                LazyThreadSafetyMode.ExecutionAndPublication
+            );
+            _writeAccessor = new Lazy<MemberAccessor>
+            (
+                this.CreateWriteAccessor,
+                LazyThreadSafetyMode.ExecutionAndPublication
+            );
+            _readWriteAccessor = new Lazy<MemberAccessor>
+            (
+                this.CreateReadWriteAccessor,
                 LazyThreadSafetyMode.ExecutionAndPublication
             );
         }
 
-        public MemberAccessor Accessor => _accessor.Value;
+        public AccessCapabilities AvailableCapabilities => _availableCapabilities;
 
-        private MemberAccessor CreateAccessor() => CreateCore(_memberInfo);
+        public MemberAccessor GetAccessor(AccessCapabilities capabilities) => capabilities switch
+        {
+            AccessCapabilities.Read => _readAccessor.Value,
+            AccessCapabilities.Write => _writeAccessor.Value,
+            AccessCapabilities.Read | AccessCapabilities.Write => _readWriteAccessor.Value,
+            _ => throw new MemberAccessException($"Member '{_memberInfo.Name}' has no usable getter or setter."),
+        };
+
+        private MemberAccessor CreateReadAccessor() => this.CreateAccessor(AccessCapabilities.Read);
+
+        private MemberAccessor CreateWriteAccessor() => this.CreateAccessor(AccessCapabilities.Write);
+
+        private MemberAccessor CreateReadWriteAccessor() => this.CreateAccessor(AccessCapabilities.Read | AccessCapabilities.Write);
+
+        private MemberAccessor CreateAccessor(AccessCapabilities capabilities)
+        {
+            if ((_availableCapabilities & capabilities) != capabilities)
+            {
+                throw new MemberAccessException($"Member '{_memberInfo.Name}' does not support the requested operation.");
+            }
+
+            return new MemberAccessor
+            (
+                _memberInfo,
+                _declaringType,
+                _memberType,
+                _isStatic,
+                canRead: capabilities.HasFlag(AccessCapabilities.Read),
+                canWrite: capabilities.HasFlag(AccessCapabilities.Write)
+            );
+        }
+
+        private static (Type DeclaringType, Type MemberType, bool IsStatic, AccessCapabilities Capabilities) Inspect
+        (
+            MemberInfo memberInfo
+        )
+        {
+            var declaringType = memberInfo.DeclaringType ?? throw new MemberAccessException($"Member '{memberInfo.Name}' has no declaring type.");
+            if (declaringType.ContainsGenericParameters)
+            {
+                throw new MemberAccessException($"Member '{memberInfo.Name}' belongs to an open generic type.");
+            }
+
+            return memberInfo switch
+            {
+                PropertyInfo propertyInfo => InspectProperty(propertyInfo, declaringType),
+                FieldInfo fieldInfo => InspectField(fieldInfo, declaringType),
+                _ => throw new MemberAccessException($"Member '{memberInfo.Name}' is neither a property nor a field."),
+            };
+        }
     }
 
     private sealed class PropertyLookupCacheEntry
     {
+        private readonly Type _declaringType;
         private readonly LookupKey _lookup;
-        private readonly Lazy<PropertyInfo?> _propertyInfo;
+        private readonly Lazy<PropertyLookupResult?> _result;
 
-        public PropertyLookupCacheEntry(LookupKey lookup)
+        public PropertyLookupCacheEntry(Type declaringType, LookupKey lookup)
         {
+            _declaringType = declaringType;
             _lookup = lookup;
-            _propertyInfo = new Lazy<PropertyInfo?>
+            _result = new Lazy<PropertyLookupResult?>
             (
                 this.FindProperty,
                 LazyThreadSafetyMode.ExecutionAndPublication
             );
         }
 
-        public PropertyInfo? PropertyInfo => _propertyInfo.Value;
+        public PropertyLookupResult? Result => _result.Value;
 
-        private PropertyInfo? FindProperty() => _lookup.DeclaringType.GetProperty(_lookup.MemberName, _lookup.BindingFlags);
+        private PropertyLookupResult? FindProperty() => FindPropertyCore(_declaringType, _lookup);
     }
 
     private sealed class FieldLookupCacheEntry
     {
+        private readonly Type _declaringType;
         private readonly LookupKey _lookup;
         private readonly Lazy<FieldInfo?> _fieldInfo;
 
-        public FieldLookupCacheEntry(LookupKey lookup)
+        public FieldLookupCacheEntry(Type declaringType, LookupKey lookup)
         {
+            _declaringType = declaringType;
             _lookup = lookup;
             _fieldInfo = new Lazy<FieldInfo?>
             (
@@ -95,16 +178,77 @@ public sealed class MemberAccessor
 
         public FieldInfo? FieldInfo => _fieldInfo.Value;
 
-        private FieldInfo? FindField() => _lookup.DeclaringType.GetField(_lookup.MemberName, _lookup.BindingFlags);
+        private FieldInfo? FindField() => _declaringType.GetField(_lookup.MemberName, _lookup.BindingFlags);
+    }
+
+    private sealed class TypeLookupCache(Type declaringType)
+    {
+        private readonly Type _declaringType = declaringType;
+        private readonly ConcurrentDictionary<MemberInfo, AccessorCacheEntry> _accessors = new();
+        private readonly ConcurrentDictionary<LookupKey, PropertyLookupCacheEntry> _properties = new();
+        private readonly ConcurrentDictionary<LookupKey, FieldLookupCacheEntry> _fields = new();
+
+        public AccessorCacheEntry GetAccessor(MemberInfo memberInfo)
+            => _accessors.GetOrAdd(memberInfo, static member => new AccessorCacheEntry(member));
+
+        public PropertyLookupResult? FindProperty(LookupKey lookup)
+        {
+            var entry = _properties.GetOrAdd
+            (
+                lookup,
+                static (key, declaringType) => new PropertyLookupCacheEntry(declaringType, key),
+                _declaringType
+            );
+
+            try
+            {
+                var result = entry.Result;
+                if (result is null)
+                {
+                    _properties.TryRemove(lookup, out _);
+                }
+
+                return result;
+            }
+            catch (Exception)
+            {
+                _properties.TryRemove(lookup, out _);
+                throw;
+            }
+        }
+
+        public FieldInfo? FindField(LookupKey lookup)
+        {
+            var entry = _fields.GetOrAdd
+            (
+                lookup,
+                static (key, declaringType) => new FieldLookupCacheEntry(declaringType, key),
+                _declaringType
+            );
+
+            try
+            {
+                var fieldInfo = entry.FieldInfo;
+                if (fieldInfo is null)
+                {
+                    _fields.TryRemove(lookup, out _);
+                }
+
+                return fieldInfo;
+            }
+            catch (Exception)
+            {
+                _fields.TryRemove(lookup, out _);
+                throw;
+            }
+        }
     }
     #endregion
 
     #region Fields
     private const BindingFlags _defaultFlags = BindingFlags.Public | BindingFlags.Instance;
 
-    private static readonly ConcurrentDictionary<MemberInfo, AccessorCacheEntry> _accessors = new();
-    private static readonly ConcurrentDictionary<LookupKey, PropertyLookupCacheEntry> _properties = new();
-    private static readonly ConcurrentDictionary<LookupKey, FieldLookupCacheEntry> _fields = new();
+    private static readonly ConditionalWeakTable<Type, TypeLookupCache> _lookups = [];
 
     private Func<object, object?>? _getter;
     private Func<object?>? _staticGetter;
@@ -186,8 +330,10 @@ public sealed class MemberAccessor
     {
         ArgumentNullException.ThrowIfNull(memberInfo);
 
-        var entry = _accessors.GetOrAdd(memberInfo, static member => new AccessorCacheEntry(member));
-        return entry.Accessor;
+        var declaringType = memberInfo.DeclaringType ?? throw new MemberAccessException($"Member '{memberInfo.Name}' has no declaring type.");
+        var cache = _lookups.GetValue(declaringType, static type => new TypeLookupCache(type));
+        var entry = cache.GetAccessor(memberInfo);
+        return entry.GetAccessor(entry.AvailableCapabilities);
     }
 
     /// <summary>Looks up a property and creates its accessor.</summary>
@@ -205,11 +351,11 @@ public sealed class MemberAccessor
         ArgumentNullException.ThrowIfNull(declaringType);
         ArgumentException.ThrowIfNullOrWhiteSpace(memberName);
 
-        var key = new LookupKey(declaringType, memberName, bindingFlags);
+        var key = new LookupKey(memberName, bindingFlags);
         try
         {
-            var propertyInfo = FindProperty(key) ?? throw new MemberAccessException($"Property '{memberName}' was not found on '{declaringType}'.");
-            return Create(propertyInfo);
+            var result = FindProperty(declaringType, key) ?? throw new MemberAccessException($"Property '{memberName}' was not found on '{declaringType}'.");
+            return Create(result.PropertyInfo, result.Capabilities);
         }
         catch (AmbiguousMatchException exception)
         {
@@ -232,10 +378,10 @@ public sealed class MemberAccessor
         ArgumentNullException.ThrowIfNull(declaringType);
         ArgumentException.ThrowIfNullOrWhiteSpace(memberName);
 
-        var key = new LookupKey(declaringType, memberName, bindingFlags);
+        var key = new LookupKey(memberName, bindingFlags);
         try
         {
-            var fieldInfo = FindField(key) ?? throw new MemberAccessException($"Field '{memberName}' was not found on '{declaringType}'.");
+            var fieldInfo = FindField(declaringType, key) ?? throw new MemberAccessException($"Field '{memberName}' was not found on '{declaringType}'.");
             return Create(fieldInfo);
         }
         catch (AmbiguousMatchException exception)
@@ -325,9 +471,9 @@ public sealed class MemberAccessor
                 return this.GetCoercingObjectGetter()(target, valueType, coercion, context);
             }
 
+            ValidateResultType(this.MemberType, valueType);
             var getter = this.GetObjectGetter();
-            var value = getter(target);
-            return ConvertResult(value, this.MemberType, valueType, coercion, context);
+            return getter(target);
         }
         catch (Exception exception)
         {
@@ -390,9 +536,9 @@ public sealed class MemberAccessor
                 return coercingGetter(valueType, coercion, context);
             }
 
+            ValidateResultType(this.MemberType, valueType);
             var getter = this.GetStaticObjectGetter();
-            var value = getter();
-            return ConvertResult(value, this.MemberType, valueType, coercion, context);
+            return getter();
         }
         catch (Exception exception)
         {
@@ -862,37 +1008,40 @@ public sealed class MemberAccessor
     #endregion
 
     #region Factory Implementation Methods
-    private static MemberAccessor CreateCore(MemberInfo memberInfo)
+    private static MemberAccessor Create(MemberInfo memberInfo, AccessCapabilities capabilities)
     {
         var declaringType = memberInfo.DeclaringType ?? throw new MemberAccessException($"Member '{memberInfo.Name}' has no declaring type.");
-        if (declaringType.ContainsGenericParameters)
-        {
-            throw new MemberAccessException($"Member '{memberInfo.Name}' belongs to an open generic type.");
-        }
-
-        return memberInfo switch
-        {
-            PropertyInfo propertyInfo => CreateForProperty(propertyInfo, declaringType),
-            FieldInfo fieldInfo => CreateField(fieldInfo, declaringType),
-
-            _ => throw new MemberAccessException($"Member '{memberInfo.Name}' is neither a property nor a field.")
-        };
+        var cache = _lookups.GetValue(declaringType, static type => new TypeLookupCache(type));
+        var entry = cache.GetAccessor(memberInfo);
+        return entry.GetAccessor(capabilities);
     }
 
-    private static MemberAccessor CreateField(FieldInfo fieldInfo, Type declaringType)
+    private static (Type DeclaringType, Type MemberType, bool IsStatic, AccessCapabilities Capabilities) InspectField
+    (
+        FieldInfo fieldInfo,
+        Type declaringType
+    )
     {
-        return new MemberAccessor
+        var capabilities = AccessCapabilities.Read;
+        if (!fieldInfo.IsInitOnly && !fieldInfo.IsLiteral)
+        {
+            capabilities |= AccessCapabilities.Write;
+        }
+
+        return
         (
-            fieldInfo,
             declaringType,
-            memberType: fieldInfo.FieldType,
-            isStatic: fieldInfo.IsStatic,
-            canRead: true,
-            canWrite: !fieldInfo.IsInitOnly && !fieldInfo.IsLiteral
+            fieldInfo.FieldType,
+            fieldInfo.IsStatic,
+            capabilities
         );
     }
 
-    private static MemberAccessor CreateForProperty(PropertyInfo propertyInfo, Type declaringType)
+    private static (Type DeclaringType, Type MemberType, bool IsStatic, AccessCapabilities Capabilities) InspectProperty
+    (
+        PropertyInfo propertyInfo,
+        Type declaringType
+    )
     {
         if (propertyInfo.GetIndexParameters().Length != 0)
         {
@@ -911,57 +1060,106 @@ public sealed class MemberAccessor
             .GetRequiredCustomModifiers()
             .Contains(typeof(IsExternalInit)) == true;
 
-        return new MemberAccessor
+        var capabilities = AccessCapabilities.None;
+        if (getter is not null)
+        {
+            capabilities |= AccessCapabilities.Read;
+        }
+        if (setter is not null && !isInitOnly)
+        {
+            capabilities |= AccessCapabilities.Write;
+        }
+
+        return
         (
-            propertyInfo,
             declaringType,
-            memberType: propertyInfo.PropertyType,
-            isStatic: method.IsStatic,
-            canRead: getter is not null,
-            canWrite: setter is not null && !isInitOnly
+            propertyInfo.PropertyType,
+            method.IsStatic,
+            capabilities
         );
     }
 
-    private static PropertyInfo? FindProperty(LookupKey key)
+    private static PropertyLookupResult? FindProperty(Type declaringType, LookupKey key)
     {
-        var entry = _properties.GetOrAdd(key, static lookup => new PropertyLookupCacheEntry(lookup));
-
-        try
-        {
-            var propertyInfo = entry.PropertyInfo;
-            if (propertyInfo is null)
-            {
-                _properties.TryRemove(key, out _);
-            }
-
-            return propertyInfo;
-        }
-        catch (Exception)
-        {
-            _properties.TryRemove(key, out _);
-            throw;
-        }
+        var cache = _lookups.GetValue(declaringType, static type => new TypeLookupCache(type));
+        return cache.FindProperty(key);
     }
 
-    private static FieldInfo? FindField(LookupKey key)
+    private static FieldInfo? FindField(Type declaringType, LookupKey key)
     {
-        var entry = _fields.GetOrAdd(key, static lookup => new FieldLookupCacheEntry(lookup));
+        var cache = _lookups.GetValue(declaringType, static type => new TypeLookupCache(type));
+        return cache.FindField(key);
+    }
 
-        try
+    private static PropertyLookupResult? FindPropertyCore(Type declaringType, LookupKey lookup)
+    {
+        var visibilityFlags = lookup.BindingFlags & (BindingFlags.Public | BindingFlags.NonPublic);
+        if (visibilityFlags == 0)
         {
-            var fieldInfo = entry.FieldInfo;
-            if (fieldInfo is null)
+            return null;
+        }
+
+        var comparison = lookup.BindingFlags.HasFlag(BindingFlags.IgnoreCase)
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
+        var enumerationFlags = lookup.BindingFlags | BindingFlags.Public | BindingFlags.NonPublic;
+        PropertyLookupResult? result = null;
+
+        foreach (var propertyInfo in declaringType.GetProperties(enumerationFlags))
+        {
+            if (!string.Equals(propertyInfo.Name, lookup.MemberName, comparison))
             {
-                _fields.TryRemove(key, out _);
+                continue;
             }
 
-            return fieldInfo;
+            var capabilities = GetVisibleCapabilities(propertyInfo, visibilityFlags);
+            if (capabilities == AccessCapabilities.None)
+            {
+                continue;
+            }
+
+            if (result is not null)
+            {
+                throw new AmbiguousMatchException();
+            }
+
+            result = new PropertyLookupResult(propertyInfo, capabilities);
         }
-        catch (Exception)
+
+        return result;
+    }
+
+    private static AccessCapabilities GetVisibleCapabilities
+    (
+        PropertyInfo propertyInfo,
+        BindingFlags visibilityFlags
+    )
+    {
+        var capabilities = AccessCapabilities.None;
+        var getter = propertyInfo.GetGetMethod(nonPublic: true);
+        var setter = propertyInfo.GetSetMethod(nonPublic: true);
+
+        if (getter is not null && IsVisible(getter, visibilityFlags))
         {
-            _fields.TryRemove(key, out _);
-            throw;
+            capabilities |= AccessCapabilities.Read;
         }
+
+        var isInitOnly = setter?.ReturnParameter
+            .GetRequiredCustomModifiers()
+            .Contains(typeof(IsExternalInit)) == true;
+        if (setter is not null && !isInitOnly && IsVisible(setter, visibilityFlags))
+        {
+            capabilities |= AccessCapabilities.Write;
+        }
+
+        return capabilities;
+    }
+
+    private static bool IsVisible(MethodInfo methodInfo, BindingFlags visibilityFlags)
+    {
+        return methodInfo.IsPublic
+            ? visibilityFlags.HasFlag(BindingFlags.Public)
+            : visibilityFlags.HasFlag(BindingFlags.NonPublic);
     }
 
     private static bool TryCreateCore<TState>
@@ -1102,31 +1300,17 @@ public sealed class MemberAccessor
         }
     }
 
-    private static object? ConvertResult
-    (
-        object? value,
-        Type memberType,
-        Type? valueType,
-        TypeCoercion? coercion,
-        TypeCoercionContext? context
-    )
+    private static void ValidateResultType(Type memberType, Type? valueType)
     {
         if (valueType is null)
         {
-            return value;
+            return;
         }
 
-        if (coercion is null)
+        if (!valueType.IsAssignableFrom(memberType))
         {
-            if (!valueType.IsAssignableFrom(memberType))
-            {
-                throw new MemberAccessException($"Member type '{memberType}' cannot be returned as '{valueType}' without coercion.");
-            }
-
-            return value;
+            throw new MemberAccessException($"Member type '{memberType}' cannot be returned as '{valueType}' without coercion.");
         }
-
-        return coercion.Coerce(value, valueType, context ?? TypeCoercionContext.Default);
     }
     #endregion
 }
