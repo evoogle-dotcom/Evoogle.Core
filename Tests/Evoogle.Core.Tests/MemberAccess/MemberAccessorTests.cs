@@ -23,6 +23,8 @@ public partial class MemberAccessorTests(ITestOutputHelper output) : XUnitTests(
 
         public required string MemberName { get; init; }
 
+        public required BindingFlags BindingFlags { get; init; }
+
         public bool ShouldCoerce { get; init; }
         #endregion
 
@@ -35,10 +37,10 @@ public partial class MemberAccessorTests(ITestOutputHelper output) : XUnitTests(
         #region XUnitTest Methods
         protected override void Arrange()
         {
-            const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance;
+            ValidateBindingFlags(this.BindingFlags);
 
-            var memberInfo = (MemberInfo?)this.DeclaringType.GetProperty(this.MemberName, bindingFlags)
-                ?? this.DeclaringType.GetField(this.MemberName, bindingFlags)
+            var memberInfo = (MemberInfo?)this.DeclaringType.GetProperty(this.MemberName, this.BindingFlags)
+                ?? this.DeclaringType.GetField(this.MemberName, this.BindingFlags)
                 ?? throw new InvalidOperationException(
                     $"Member '{this.MemberName}' was not found on '{this.DeclaringType}'.");
 
@@ -47,6 +49,7 @@ public partial class MemberAccessorTests(ITestOutputHelper output) : XUnitTests(
 
             this.WriteLine($"DeclaringType: {this.DeclaringType.SafeToName()}");
             this.WriteLine($"MemberName:    {this.MemberName.SafeToString()}");
+            this.WriteLine($"BindingFlags:  {this.BindingFlags.SafeToString()}");
             this.WriteLine($"ShouldCoerce:  {this.ShouldCoerce.SafeToString()}");
             this.WriteLine();
         }
@@ -82,7 +85,7 @@ public partial class MemberAccessorTests(ITestOutputHelper output) : XUnitTests(
 
         public required string MemberName { get; init; }
 
-        public bool IsStaticMember { get; init; } = true;
+        public required BindingFlags BindingFlags { get; init; }
 
         public bool ShouldCoerce { get; init; }
 
@@ -102,15 +105,16 @@ public partial class MemberAccessorTests(ITestOutputHelper output) : XUnitTests(
         #region XUnitTest Methods
         protected override void Arrange()
         {
-            var bindingFlags = BindingFlags.Public |
-                (this.IsStaticMember ? BindingFlags.Static : BindingFlags.Instance);
+            ValidateBindingFlags(this.BindingFlags);
+            var isStaticMember = this.BindingFlags.HasFlag(BindingFlags.Static);
 
             this.MemberInfo = (MemberInfo?)
-                this.DeclaringType.GetProperty(this.MemberName, bindingFlags)
-                ?? this.DeclaringType.GetField(this.MemberName, bindingFlags)
-                ?? throw new InvalidOperationException($"Member '{this.MemberName}' was not found on '{this.DeclaringType}'.");
+                this.DeclaringType.GetProperty(this.MemberName, this.BindingFlags)
+                ?? this.DeclaringType.GetField(this.MemberName, this.BindingFlags)
+                ?? throw new InvalidOperationException(
+                    $"Member '{this.MemberName}' was not found on '{this.DeclaringType}'.");
 
-            this.MemberTarget = this.IsStaticMember
+            this.MemberTarget = isStaticMember
                 ? null
                 : Activator.CreateInstance(this.DeclaringType);
             this.SetMemberValue(this.InitialClrValue);
@@ -120,7 +124,7 @@ public partial class MemberAccessorTests(ITestOutputHelper output) : XUnitTests(
 
             this.WriteLine($"DeclaringType:   {this.DeclaringType.SafeToName()}");
             this.WriteLine($"MemberName:      {this.MemberName.SafeToString()}");
-            this.WriteLine($"IsStaticMember:  {this.IsStaticMember.SafeToString()}");
+            this.WriteLine($"BindingFlags:    {this.BindingFlags.SafeToString()}");
             this.WriteLine($"ShouldCoerce:    {this.ShouldCoerce.SafeToString()}");
             this.WriteLine($"InitialClrValue: {this.InitialClrValue.SafeToString()}");
             this.WriteLine();
@@ -212,6 +216,20 @@ public partial class MemberAccessorTests(ITestOutputHelper output) : XUnitTests(
     }
     #endregion
 
+    #region Validation Methods
+    private static void ValidateBindingFlags(BindingFlags bindingFlags)
+    {
+        var includesInstance = bindingFlags.HasFlag(BindingFlags.Instance);
+        var includesStatic = bindingFlags.HasFlag(BindingFlags.Static);
+        if (includesInstance == includesStatic)
+        {
+            throw new InvalidOperationException(
+                $"Binding flags must include exactly one of {nameof(BindingFlags.Instance)} or " +
+                $"{nameof(BindingFlags.Static)}.");
+        }
+    }
+    #endregion
+
     #region Factory Tests
     private sealed class FactoryTest : XUnitTest
     {
@@ -255,18 +273,37 @@ public partial class MemberAccessorTests(ITestOutputHelper output) : XUnitTests(
         {
             try
             {
-                var bindingFlags = this.BindingFlags ?? System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance;
+                var bindingFlags = this.BindingFlags ??
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance;
 
                 if (this.IsField.HasValue && this.IsField.Value == true)
                 {
-                    var propertyAccessor = MemberAccessor.CreateField(this.DeclaringType!, this.MemberName!, bindingFlags);
-                    var tryFieldAccessor = MemberAccessor.TryCreateField(this.DeclaringType!, this.MemberName!, out var tryNamedAccessor, bindingFlags) ? tryNamedAccessor : null;
+                    var propertyAccessor = MemberAccessor.CreateField(
+                        this.DeclaringType!,
+                        this.MemberName!,
+                        bindingFlags);
+                    var tryFieldAccessor = MemberAccessor.TryCreateField(
+                        this.DeclaringType!,
+                        this.MemberName!,
+                        out var tryNamedAccessor,
+                        bindingFlags)
+                        ? tryNamedAccessor
+                        : null;
                 }
 
                 if (this.IsProperty.HasValue && this.IsProperty.Value == true)
                 {
-                    var propertyAccessor = MemberAccessor.CreateProperty(this.DeclaringType!, this.MemberName!, bindingFlags);
-                    var tryPropertyAccessor = MemberAccessor.TryCreateProperty(this.DeclaringType!, this.MemberName!, out var tryNamedAccessor, bindingFlags) ? tryNamedAccessor : null;
+                    var propertyAccessor = MemberAccessor.CreateProperty(
+                        this.DeclaringType!,
+                        this.MemberName!,
+                        bindingFlags);
+                    var tryPropertyAccessor = MemberAccessor.TryCreateProperty(
+                        this.DeclaringType!,
+                        this.MemberName!,
+                        out var tryNamedAccessor,
+                        bindingFlags)
+                        ? tryNamedAccessor
+                        : null;
                 }
 
                 var fieldInfo = (MemberInfo?)Field(this.DeclaringType, this.MemberName, bindingFlags);
@@ -278,12 +315,16 @@ public partial class MemberAccessorTests(ITestOutputHelper output) : XUnitTests(
                 if (fieldInfo != null)
                 {
                     this.NamedAccessor = MemberAccessor.Create(fieldInfo);
-                    this.TryNamedAccessor = MemberAccessor.TryCreate(fieldInfo, out var tryNamedAccessor) ? tryNamedAccessor : null;
+                    this.TryNamedAccessor = MemberAccessor.TryCreate(fieldInfo, out var tryNamedAccessor)
+                        ? tryNamedAccessor
+                        : null;
                 }
                 else if (propertyInfo != null)
                 {
                     this.NamedAccessor = MemberAccessor.Create(propertyInfo);
-                    this.TryNamedAccessor = MemberAccessor.TryCreate(propertyInfo, out var tryNamedAccessor) ? tryNamedAccessor : null;
+                    this.TryNamedAccessor = MemberAccessor.TryCreate(propertyInfo, out var tryNamedAccessor)
+                        ? tryNamedAccessor
+                        : null;
                 }
             }
             catch (Exception ex)
@@ -342,9 +383,14 @@ public partial class MemberAccessorTests(ITestOutputHelper output) : XUnitTests(
         #endregion
 
         #region Reflection Methods
-        private static FieldInfo? Field(Type declaringType, string memberName, BindingFlags bindingFlags) => declaringType.GetField(memberName, bindingFlags);
-        private static PropertyInfo? Property(Type declaringType, string memberName, BindingFlags bindingFlags) => declaringType.GetProperty(memberName, bindingFlags);
-        private static MethodInfo? Method(Type declaringType, string memberName, BindingFlags bindingFlags) => declaringType.GetMethod(memberName, bindingFlags);
+        private static FieldInfo? Field(Type declaringType, string memberName, BindingFlags bindingFlags)
+            => declaringType.GetField(memberName, bindingFlags);
+
+        private static PropertyInfo? Property(Type declaringType, string memberName, BindingFlags bindingFlags)
+            => declaringType.GetProperty(memberName, bindingFlags);
+
+        private static MethodInfo? Method(Type declaringType, string memberName, BindingFlags bindingFlags)
+            => declaringType.GetMethod(memberName, bindingFlags);
         #endregion
     }
     #endregion

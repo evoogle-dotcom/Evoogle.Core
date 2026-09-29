@@ -28,6 +28,14 @@ public struct Point
 
 public sealed class ScalarsOnly
 {
+    private long? _nonPublicOptionalNumber;
+
+    private long NonPublicRequiredNumber { get; set; }
+
+    public const string NonPublicOptionalNumberFieldName = nameof(_nonPublicOptionalNumber);
+
+    public const string NonPublicRequiredNumberPropertyName = nameof(NonPublicRequiredNumber);
+
     public string? OptionalName;
     public long? OptionalNumber;
     public bool? OptionalPredicate;
@@ -43,6 +51,25 @@ public sealed class ScalarsOnly
         this.RequiredNumber = requiredNumber;
         this.RequiredPredicate = requiredPredicate;
     }
+
+    public ScalarsOnly
+    (
+        string requiredName,
+        long requiredNumber,
+        bool requiredPredicate,
+        long nonPublicRequiredNumber,
+        long? nonPublicOptionalNumber
+    ) : this(requiredName, requiredNumber, requiredPredicate)
+    {
+        this.NonPublicRequiredNumber = nonPublicRequiredNumber;
+        this.SetNonPublicOptionalNumber(nonPublicOptionalNumber);
+    }
+
+    public long? NonPublicOptionalNumberValue => this._nonPublicOptionalNumber;
+
+    public long NonPublicRequiredNumberValue => this.NonPublicRequiredNumber;
+
+    public void SetNonPublicOptionalNumber(long? value) => this._nonPublicOptionalNumber = value;
 
     public string RequiredName { get; set; }
 
@@ -70,6 +97,20 @@ public sealed class ScalarsOnly
 
 public static class StaticScalarsOnly
 {
+    private static long? _nonPublicOptionalNumber;
+
+    private static long NonPublicRequiredNumber { get; set; }
+
+    public const string NonPublicOptionalNumberFieldName = nameof(_nonPublicOptionalNumber);
+
+    public const string NonPublicRequiredNumberPropertyName = nameof(NonPublicRequiredNumber);
+
+    public static long? NonPublicOptionalNumberValue => _nonPublicOptionalNumber;
+
+    public static long NonPublicRequiredNumberValue => NonPublicRequiredNumber;
+
+    public static void SetNonPublicOptionalNumber(long? value) => _nonPublicOptionalNumber = value;
+
     public static string? OptionalName;
 
     public static long? OptionalNumber;
