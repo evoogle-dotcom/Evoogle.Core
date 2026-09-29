@@ -4,8 +4,6 @@
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Loader;
 
 using Evoogle.Coercion;
 using Evoogle.XUnit;
@@ -96,12 +94,6 @@ public partial class MemberAccessorTests
                 Operation = operation,
             }))
             .ToArray();
-
-    public static TheoryDataRow<IXUnitTest>[] CollectibleCacheTheoryData =>
-    [
-        new CollectibleCacheTest { Name = $"{nameof(MemberAccessor)} field cache does not retain collectible type", MemberName = nameof(NullableValueMembers.RequiredField), IsProperty = false },
-        new CollectibleCacheTest { Name = $"{nameof(MemberAccessor)} property cache does not retain collectible type", MemberName = nameof(NullableValueMembers.RequiredProperty), IsProperty = true },
-    ];
     #endregion
 
     #region Test Methods
@@ -124,10 +116,6 @@ public partial class MemberAccessorTests
     [Theory]
     [MemberData(nameof(CacheConcurrencyTheoryData))]
     public void CacheConcurrency(IXUnitTest test) => test.Execute(this);
-
-    [Theory]
-    [MemberData(nameof(CollectibleCacheTheoryData))]
-    public void CollectibleCache(IXUnitTest test) => test.Execute(this);
     #endregion
 
     #region Tests
@@ -292,36 +280,6 @@ public partial class MemberAccessorTests
             this.Values.Should().OnlyContain(value => value != null && value.ToString() == ExpectedConcurrentValue(this.Operation));
         }
     }
-
-    private sealed class CollectibleCacheTest : XUnitTest
-    {
-        public required string MemberName { get; init; }
-
-        public required bool IsProperty { get; init; }
-
-        private bool LoadContextWasCollected { get; set; }
-
-        private bool TypeWasCollected { get; set; }
-
-        protected override void Act()
-        {
-            var references = PopulateCollectibleCache(this.MemberName, this.IsProperty);
-            for (var attempt = 0; attempt < 20 && (references.LoadContext.IsAlive || references.Type.IsAlive); attempt++)
-            {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
-            }
-            this.LoadContextWasCollected = !references.LoadContext.IsAlive;
-            this.TypeWasCollected = !references.Type.IsAlive;
-        }
-
-        protected override void Assert()
-        {
-            this.LoadContextWasCollected.Should().BeTrue();
-            this.TypeWasCollected.Should().BeTrue();
-        }
-    }
     #endregion
 
     #region Theory Data Methods
@@ -390,25 +348,5 @@ public partial class MemberAccessorTests
     private static (object, object?) DelegateResult(Func<long> getter) => (getter, getter());
     private static (object, object?) DelegateResult(Func<Type, TypeCoercion, TypeCoercionContext?, object?> getter, TypeCoercion coercion) => (getter, getter(typeof(string), coercion, null));
     private static (object, object?) DelegateResult(Func<TypeCoercion, TypeCoercionContext?, string?> getter, TypeCoercion coercion) => (getter, getter(coercion, null));
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static (WeakReference LoadContext, WeakReference Type) PopulateCollectibleCache(string memberName, bool isProperty)
-    {
-        var loadContext = new AssemblyLoadContext($"MemberAccessCollectible{Guid.NewGuid():N}", isCollectible: true);
-        loadContext.Resolving += static (_, assemblyName) => AssemblyLoadContext.Default.Assemblies.SingleOrDefault(assembly => assembly.GetName().Name == assemblyName.Name);
-        var assembly = loadContext.LoadFromAssemblyPath(typeof(MemberAccessorTests).Assembly.Location);
-        var collectibleType = assembly.GetType(typeof(NullableValueMembers).FullName!, throwOnError: true)!;
-        if (isProperty)
-        {
-            MemberAccessor.CreateProperty(collectibleType, memberName);
-        }
-        else
-        {
-            MemberAccessor.CreateField(collectibleType, memberName);
-        }
-        var references = (new WeakReference(loadContext), new WeakReference(collectibleType));
-        loadContext.Unload();
-        return references;
-    }
     #endregion
 }

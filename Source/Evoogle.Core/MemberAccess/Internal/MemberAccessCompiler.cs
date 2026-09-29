@@ -6,7 +6,6 @@
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 using Evoogle.Coercion;
 
@@ -35,6 +34,13 @@ internal enum AccessOperation
 internal static class MemberAccessCompiler
 {
     #region Types
+    private readonly record struct CacheKey
+    (
+        MemberInfo MemberInfo,
+        Type DelegateType,
+        AccessOperation Operation
+    );
+
     private sealed class CompiledDelegateCacheEntry
     {
         private readonly MemberAccessor _accessor;
@@ -60,76 +66,10 @@ internal static class MemberAccessCompiler
         private Delegate Compile() => MemberAccessCompiler.Compile(_accessor, _delegateType, _operation);
     }
 
-    private sealed class DelegateTypeCache
-    {
-        private CompiledDelegateCacheEntry? _get;
-        private CompiledDelegateCacheEntry? _set;
-        private CompiledDelegateCacheEntry? _coercingGet;
-        private CompiledDelegateCacheEntry? _coercingSet;
-
-        public CompiledDelegateCacheEntry Get
-        (
-            MemberAccessor accessor,
-            Type delegateType,
-            AccessOperation operation
-        )
-        {
-            ref var location = ref this.GetLocation(operation);
-            var entry = Volatile.Read(ref location);
-            if (entry is not null)
-            {
-                return entry;
-            }
-
-            var created = new CompiledDelegateCacheEntry(accessor, delegateType, operation);
-            return Interlocked.CompareExchange(ref location, created, null) ?? created;
-        }
-
-        private ref CompiledDelegateCacheEntry? GetLocation(AccessOperation operation)
-        {
-            switch (operation)
-            {
-                case AccessOperation.Get:
-                    return ref _get;
-                case AccessOperation.Set:
-                    return ref _set;
-                case AccessOperation.CoercingGet:
-                    return ref _coercingGet;
-                case AccessOperation.CoercingSet:
-                    return ref _coercingSet;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(operation));
-            }
-        }
-    }
-
-    private sealed class MemberDelegateCache
-    {
-        private readonly ConditionalWeakTable<Type, DelegateTypeCache> _delegateTypes = new();
-
-        public CompiledDelegateCacheEntry Get
-        (
-            MemberAccessor accessor,
-            Type delegateType,
-            AccessOperation operation
-        )
-        {
-            var cache = _delegateTypes.GetValue(delegateType, static _ => new DelegateTypeCache());
-            return cache.Get(accessor, delegateType, operation);
-        }
-    }
-
-    private sealed class DeclaringTypeDelegateCache
-    {
-        private readonly ConcurrentDictionary<MemberInfo, MemberDelegateCache> _members = new();
-
-        public MemberDelegateCache Get(MemberInfo memberInfo)
-            => _members.GetOrAdd(memberInfo, static _ => new MemberDelegateCache());
-    }
     #endregion
 
     #region Fields
-    private static readonly ConditionalWeakTable<Type, DeclaringTypeDelegateCache> _cache = [];
+    private static readonly ConcurrentDictionary<CacheKey, CompiledDelegateCacheEntry> _cache = new();
 
     private static readonly MethodInfo _coerceMethod = typeof(TypeCoercion)
         .GetMethods(BindingFlags.Public | BindingFlags.Instance)
@@ -155,9 +95,18 @@ internal static class MemberAccessCompiler
             throw new MemberAccessException($"Member '{accessor.MemberInfo.Name}' does not support the requested operation.");
         }
 
-        var declaringTypeCache = _cache.GetValue(accessor.DeclaringType, static _ => new DeclaringTypeDelegateCache());
-        var memberCache = declaringTypeCache.Get(accessor.MemberInfo);
-        var entry = memberCache.Get(accessor, typeof(TDelegate), operation);
+        var key = new CacheKey(accessor.MemberInfo, typeof(TDelegate), operation);
+        var entry = _cache.GetOrAdd
+        (
+            key,
+            static (cacheKey, memberAccessor) => new CompiledDelegateCacheEntry
+            (
+                memberAccessor,
+                cacheKey.DelegateType,
+                cacheKey.Operation
+            ),
+            accessor
+        );
 
         try
         {
@@ -225,8 +174,7 @@ internal static class MemberAccessCompiler
 
             if (!isGetter && (targetType.IsValueType || declaringType.IsValueType) && !isByRef)
             {
-                throw new MemberAccessException(
-                    $"Setter for value-type member '{member.Name}' requires a by-reference target.");
+                throw new MemberAccessException($"Setter for value-type member '{member.Name}' requires a by-reference target.");
             }
 
             target = targetType == typeof(object)
@@ -283,8 +231,7 @@ internal static class MemberAccessCompiler
             {
                 if (!valueType.IsAssignableFrom(memberType))
                 {
-                    throw new MemberAccessException(
-                        $"Getter for '{member.Name}' cannot return '{valueType}' without coercion.");
+                    throw new MemberAccessException($"Getter for '{member.Name}' cannot return '{valueType}' without coercion.");
                 }
 
                 body = memberType == valueType ? memberAccess : Expression.Convert(memberAccess, valueType);
@@ -320,8 +267,7 @@ internal static class MemberAccessCompiler
             {
                 if (!memberType.IsAssignableFrom(valueType) && valueType != typeof(object))
                 {
-                    throw new MemberAccessException(
-                        $"Setter for '{member.Name}' cannot accept '{valueType}' without coercion.");
+                    throw new MemberAccessException($"Setter for '{member.Name}' cannot accept '{valueType}' without coercion.");
                 }
 
                 body = Expression.Assign(memberAccess, memberType == valueType

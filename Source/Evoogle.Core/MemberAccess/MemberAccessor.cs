@@ -19,7 +19,8 @@ namespace Evoogle.MemberAccess;
 /// <remarks>
 ///     Delegates are compiled on first use and shared with <see cref="MemberAccessorFactory"/>.
 ///     A member can support only reading or only writing. Struct mutation requires a
-///     by-reference setter.
+///     by-reference setter. Member metadata, accessors, and compiled delegates are cached
+///     for the process lifetime and are intended for application model types with that lifetime.
 /// </remarks>
 public sealed class MemberAccessor
 {
@@ -34,6 +35,7 @@ public sealed class MemberAccessor
 
     private readonly record struct LookupKey
     (
+        Type DeclaringType,
         string MemberName,
         BindingFlags BindingFlags
     );
@@ -139,13 +141,11 @@ public sealed class MemberAccessor
 
     private sealed class PropertyLookupCacheEntry
     {
-        private readonly Type _declaringType;
         private readonly LookupKey _lookup;
         private readonly Lazy<PropertyLookupResult?> _result;
 
-        public PropertyLookupCacheEntry(Type declaringType, LookupKey lookup)
+        public PropertyLookupCacheEntry(LookupKey lookup)
         {
-            _declaringType = declaringType;
             _lookup = lookup;
             _result = new Lazy<PropertyLookupResult?>
             (
@@ -156,18 +156,16 @@ public sealed class MemberAccessor
 
         public PropertyLookupResult? Result => _result.Value;
 
-        private PropertyLookupResult? FindProperty() => FindPropertyCore(_declaringType, _lookup);
+        private PropertyLookupResult? FindProperty() => FindPropertyCore(_lookup.DeclaringType, _lookup);
     }
 
     private sealed class FieldLookupCacheEntry
     {
-        private readonly Type _declaringType;
         private readonly LookupKey _lookup;
         private readonly Lazy<FieldInfo?> _fieldInfo;
 
-        public FieldLookupCacheEntry(Type declaringType, LookupKey lookup)
+        public FieldLookupCacheEntry(LookupKey lookup)
         {
-            _declaringType = declaringType;
             _lookup = lookup;
             _fieldInfo = new Lazy<FieldInfo?>
             (
@@ -178,77 +176,16 @@ public sealed class MemberAccessor
 
         public FieldInfo? FieldInfo => _fieldInfo.Value;
 
-        private FieldInfo? FindField() => _declaringType.GetField(_lookup.MemberName, _lookup.BindingFlags);
-    }
-
-    private sealed class TypeLookupCache(Type declaringType)
-    {
-        private readonly Type _declaringType = declaringType;
-        private readonly ConcurrentDictionary<MemberInfo, AccessorCacheEntry> _accessors = new();
-        private readonly ConcurrentDictionary<LookupKey, PropertyLookupCacheEntry> _properties = new();
-        private readonly ConcurrentDictionary<LookupKey, FieldLookupCacheEntry> _fields = new();
-
-        public AccessorCacheEntry GetAccessor(MemberInfo memberInfo)
-            => _accessors.GetOrAdd(memberInfo, static member => new AccessorCacheEntry(member));
-
-        public PropertyLookupResult? FindProperty(LookupKey lookup)
-        {
-            var entry = _properties.GetOrAdd
-            (
-                lookup,
-                static (key, declaringType) => new PropertyLookupCacheEntry(declaringType, key),
-                _declaringType
-            );
-
-            try
-            {
-                var result = entry.Result;
-                if (result is null)
-                {
-                    _properties.TryRemove(lookup, out _);
-                }
-
-                return result;
-            }
-            catch (Exception)
-            {
-                _properties.TryRemove(lookup, out _);
-                throw;
-            }
-        }
-
-        public FieldInfo? FindField(LookupKey lookup)
-        {
-            var entry = _fields.GetOrAdd
-            (
-                lookup,
-                static (key, declaringType) => new FieldLookupCacheEntry(declaringType, key),
-                _declaringType
-            );
-
-            try
-            {
-                var fieldInfo = entry.FieldInfo;
-                if (fieldInfo is null)
-                {
-                    _fields.TryRemove(lookup, out _);
-                }
-
-                return fieldInfo;
-            }
-            catch (Exception)
-            {
-                _fields.TryRemove(lookup, out _);
-                throw;
-            }
-        }
+        private FieldInfo? FindField() => _lookup.DeclaringType.GetField(_lookup.MemberName, _lookup.BindingFlags);
     }
     #endregion
 
     #region Fields
     private const BindingFlags _defaultFlags = BindingFlags.Public | BindingFlags.Instance;
 
-    private static readonly ConditionalWeakTable<Type, TypeLookupCache> _lookups = [];
+    private static readonly ConcurrentDictionary<MemberInfo, AccessorCacheEntry> _accessors = new();
+    private static readonly ConcurrentDictionary<LookupKey, PropertyLookupCacheEntry> _properties = new();
+    private static readonly ConcurrentDictionary<LookupKey, FieldLookupCacheEntry> _fields = new();
 
     private Func<object, object?>? _getter;
     private Func<object?>? _staticGetter;
@@ -330,9 +267,7 @@ public sealed class MemberAccessor
     {
         ArgumentNullException.ThrowIfNull(memberInfo);
 
-        var declaringType = memberInfo.DeclaringType ?? throw new MemberAccessException($"Member '{memberInfo.Name}' has no declaring type.");
-        var cache = _lookups.GetValue(declaringType, static type => new TypeLookupCache(type));
-        var entry = cache.GetAccessor(memberInfo);
+        var entry = _accessors.GetOrAdd(memberInfo, static member => new AccessorCacheEntry(member));
         return entry.GetAccessor(entry.AvailableCapabilities);
     }
 
@@ -351,10 +286,10 @@ public sealed class MemberAccessor
         ArgumentNullException.ThrowIfNull(declaringType);
         ArgumentException.ThrowIfNullOrWhiteSpace(memberName);
 
-        var key = new LookupKey(memberName, bindingFlags);
+        var key = new LookupKey(declaringType, memberName, bindingFlags);
         try
         {
-            var result = FindProperty(declaringType, key) ?? throw new MemberAccessException($"Property '{memberName}' was not found on '{declaringType}'.");
+            var result = FindProperty(key) ?? throw new MemberAccessException($"Property '{memberName}' was not found on '{declaringType}'.");
             return Create(result.PropertyInfo, result.Capabilities);
         }
         catch (AmbiguousMatchException exception)
@@ -378,10 +313,10 @@ public sealed class MemberAccessor
         ArgumentNullException.ThrowIfNull(declaringType);
         ArgumentException.ThrowIfNullOrWhiteSpace(memberName);
 
-        var key = new LookupKey(memberName, bindingFlags);
+        var key = new LookupKey(declaringType, memberName, bindingFlags);
         try
         {
-            var fieldInfo = FindField(declaringType, key) ?? throw new MemberAccessException($"Field '{memberName}' was not found on '{declaringType}'.");
+            var fieldInfo = FindField(key) ?? throw new MemberAccessException($"Field '{memberName}' was not found on '{declaringType}'.");
             return Create(fieldInfo);
         }
         catch (AmbiguousMatchException exception)
@@ -1010,9 +945,7 @@ public sealed class MemberAccessor
     #region Factory Implementation Methods
     private static MemberAccessor Create(MemberInfo memberInfo, AccessCapabilities capabilities)
     {
-        var declaringType = memberInfo.DeclaringType ?? throw new MemberAccessException($"Member '{memberInfo.Name}' has no declaring type.");
-        var cache = _lookups.GetValue(declaringType, static type => new TypeLookupCache(type));
-        var entry = cache.GetAccessor(memberInfo);
+        var entry = _accessors.GetOrAdd(memberInfo, static member => new AccessorCacheEntry(member));
         return entry.GetAccessor(capabilities);
     }
 
@@ -1079,16 +1012,46 @@ public sealed class MemberAccessor
         );
     }
 
-    private static PropertyLookupResult? FindProperty(Type declaringType, LookupKey key)
+    private static PropertyLookupResult? FindProperty(LookupKey key)
     {
-        var cache = _lookups.GetValue(declaringType, static type => new TypeLookupCache(type));
-        return cache.FindProperty(key);
+        var entry = _properties.GetOrAdd(key, static lookup => new PropertyLookupCacheEntry(lookup));
+
+        try
+        {
+            var result = entry.Result;
+            if (result is null)
+            {
+                _properties.TryRemove(key, out _);
+            }
+
+            return result;
+        }
+        catch (Exception)
+        {
+            _properties.TryRemove(key, out _);
+            throw;
+        }
     }
 
-    private static FieldInfo? FindField(Type declaringType, LookupKey key)
+    private static FieldInfo? FindField(LookupKey key)
     {
-        var cache = _lookups.GetValue(declaringType, static type => new TypeLookupCache(type));
-        return cache.FindField(key);
+        var entry = _fields.GetOrAdd(key, static lookup => new FieldLookupCacheEntry(lookup));
+
+        try
+        {
+            var fieldInfo = entry.FieldInfo;
+            if (fieldInfo is null)
+            {
+                _fields.TryRemove(key, out _);
+            }
+
+            return fieldInfo;
+        }
+        catch (Exception)
+        {
+            _fields.TryRemove(key, out _);
+            throw;
+        }
     }
 
     private static PropertyLookupResult? FindPropertyCore(Type declaringType, LookupKey lookup)
