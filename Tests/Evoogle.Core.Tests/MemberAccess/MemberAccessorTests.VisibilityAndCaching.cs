@@ -266,9 +266,11 @@ public partial class MemberAccessorTests
 
         protected override void Act()
         {
+            var start = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
             var tasks = Enumerable.Range(0, 32)
-                .Select(_ => Task.Run(() => InvokeConcurrentCache(this.Operation)))
+                .Select(_ => InvokeConcurrentCacheWhenReleased(start.Task, this.Operation))
                 .ToArray();
+            start.SetResult();
             var results = Task.WhenAll(tasks).GetAwaiter().GetResult();
             this.Identities = results.Select(static result => result.Identity).ToArray();
             this.Values = results.Select(static result => result.Value).ToArray();
@@ -308,6 +310,16 @@ public partial class MemberAccessorTests
     #endregion
 
     #region Implementation Methods
+    private static async Task<(object Identity, object? Value)> InvokeConcurrentCacheWhenReleased
+    (
+        Task start,
+        ConcurrentCacheOperation operation
+    )
+    {
+        await start.ConfigureAwait(false);
+        return InvokeConcurrentCache(operation);
+    }
+
     private static (object Identity, object? Value) InvokeConcurrentCache(ConcurrentCacheOperation operation)
     {
         var instanceProperty = typeof(MemberAccessShape).GetProperty(nameof(MemberAccessShape.ConcurrentCacheValue))!;
@@ -317,8 +329,24 @@ public partial class MemberAccessorTests
 
         return operation switch
         {
-            ConcurrentCacheOperation.Accessor => AccessorResult(MemberAccessor.CreateProperty(typeof(MemberAccessShape), nameof(MemberAccessShape.ConcurrentCacheValue)), instance),
-            ConcurrentCacheOperation.StaticAccessor => StaticAccessorResult(MemberAccessor.CreateProperty(typeof(MemberAccessShape), nameof(MemberAccessShape.StaticConcurrentCacheValue), BindingFlags.Public | BindingFlags.Static)),
+            ConcurrentCacheOperation.Accessor => AccessorResult
+            (
+                MemberAccessor.CreateProperty
+                (
+                    typeof(MemberAccessShape),
+                    nameof(MemberAccessShape.ConcurrentAccessorCacheValue)
+                ),
+                instance
+            ),
+            ConcurrentCacheOperation.StaticAccessor => StaticAccessorResult
+            (
+                MemberAccessor.CreateProperty
+                (
+                    typeof(MemberAccessShape),
+                    nameof(MemberAccessShape.StaticConcurrentAccessorCacheValue),
+                    BindingFlags.Public | BindingFlags.Static
+                )
+            ),
             ConcurrentCacheOperation.Getter => DelegateResult(MemberAccessorFactory.CreateGetter(instanceProperty), instance),
             ConcurrentCacheOperation.GenericGetter => DelegateResult(MemberAccessorFactory.CreateGetter<MemberAccessShape, long>(instanceProperty), instance),
             ConcurrentCacheOperation.CoercingGetter => DelegateResult(MemberAccessorFactory.CreateCoercingGetter(instanceProperty), instance, coercion),
@@ -332,11 +360,16 @@ public partial class MemberAccessorTests
     }
 
     private static string ExpectedConcurrentValue(ConcurrentCacheOperation operation)
-        => operation is ConcurrentCacheOperation.StaticAccessor or ConcurrentCacheOperation.StaticGetter or ConcurrentCacheOperation.GenericStaticGetter
-            ? "25"
-            : operation is ConcurrentCacheOperation.CoercingStaticGetter or ConcurrentCacheOperation.CoercingGenericStaticGetter
-                ? "25"
-                : "24";
+        => operation switch
+        {
+            ConcurrentCacheOperation.Accessor => "26",
+            ConcurrentCacheOperation.StaticAccessor => "27",
+            ConcurrentCacheOperation.StaticGetter or
+            ConcurrentCacheOperation.GenericStaticGetter or
+            ConcurrentCacheOperation.CoercingStaticGetter or
+            ConcurrentCacheOperation.CoercingGenericStaticGetter => "25",
+            _ => "24",
+        };
 
     private static (object, object?) AccessorResult(MemberAccessor accessor, MemberAccessShape instance) => (accessor, accessor.GetValue(instance));
     private static (object, object?) StaticAccessorResult(MemberAccessor accessor) => (accessor, accessor.GetStaticValue());

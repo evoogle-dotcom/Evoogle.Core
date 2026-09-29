@@ -239,10 +239,10 @@ public sealed class MemberAccessor
     /// <summary>Gets whether the member is static.</summary>
     public bool IsStatic { get; }
 
-    /// <summary>Gets whether the member has a getter.</summary>
+    /// <summary>Gets whether this accessor permits reading the member.</summary>
     public bool CanRead { get; }
 
-    /// <summary>Gets whether the member has a runtime setter.</summary>
+    /// <summary>Gets whether this accessor permits writing the member.</summary>
     public bool CanWrite { get; }
     #endregion
 
@@ -273,7 +273,9 @@ public sealed class MemberAccessor
 
     /// <summary>Looks up a property and creates its accessor.</summary>
     /// <param name="declaringType">The type to search.</param>
-    /// <param name="memberName">The case-sensitive property name.</param>
+    /// <param name="memberName">
+    ///     The property name. Matching ignores case when <see cref="BindingFlags.IgnoreCase"/> is specified.
+    /// </param>
     /// <param name="bindingFlags">Reflection lookup flags. The default is public instance.</param>
     /// <returns>The accessor.</returns>
     public static MemberAccessor CreateProperty
@@ -300,7 +302,9 @@ public sealed class MemberAccessor
 
     /// <summary>Looks up a field and creates its accessor.</summary>
     /// <param name="declaringType">The type to search.</param>
-    /// <param name="memberName">The case-sensitive field name.</param>
+    /// <param name="memberName">
+    ///     The field name. Matching ignores case when <see cref="BindingFlags.IgnoreCase"/> is specified.
+    /// </param>
     /// <param name="bindingFlags">Reflection lookup flags. The default is public instance.</param>
     /// <returns>The accessor.</returns>
     public static MemberAccessor CreateField
@@ -334,7 +338,9 @@ public sealed class MemberAccessor
 
     /// <summary>Attempts to look up and create a property accessor.</summary>
     /// <param name="declaringType">The type to search.</param>
-    /// <param name="memberName">The case-sensitive property name.</param>
+    /// <param name="memberName">
+    ///     The property name. Matching ignores case when <see cref="BindingFlags.IgnoreCase"/> is specified.
+    /// </param>
     /// <param name="accessor">The created accessor when successful.</param>
     /// <param name="bindingFlags">Reflection lookup flags.</param>
     /// <returns>Whether creation succeeded.</returns>
@@ -358,7 +364,9 @@ public sealed class MemberAccessor
 
     /// <summary>Attempts to look up and create a field accessor.</summary>
     /// <param name="declaringType">The type to search.</param>
-    /// <param name="memberName">The case-sensitive field name.</param>
+    /// <param name="memberName">
+    ///     The field name. Matching ignores case when <see cref="BindingFlags.IgnoreCase"/> is specified.
+    /// </param>
     /// <param name="accessor">The created accessor when successful.</param>
     /// <param name="bindingFlags">Reflection lookup flags.</param>
     /// <returns>Whether creation succeeded.</returns>

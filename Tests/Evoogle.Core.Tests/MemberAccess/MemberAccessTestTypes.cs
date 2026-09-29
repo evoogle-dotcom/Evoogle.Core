@@ -161,6 +161,8 @@ public sealed class MemberAccessShape : MemberAccessBaseShape
 
     public long ConcurrentCacheValue { get; set; } = 24;
 
+    public long ConcurrentAccessorCacheValue { get; set; } = 26;
+
     public DateTime DateValue { get; set; } = new(2025, 6, 7, 8, 9, 10, DateTimeKind.Utc);
 
     public string InitOnlyValue { get; init; } = "init";
@@ -200,6 +202,8 @@ public sealed class MemberAccessShape : MemberAccessBaseShape
     public static long StaticCacheValue { get; set; } = 15;
 
     public static long StaticConcurrentCacheValue { get; set; } = 25;
+
+    public static long StaticConcurrentAccessorCacheValue { get; set; } = 27;
 
     public static int StaticGetterInvocationCount { get; private set; }
 

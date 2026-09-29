@@ -35,7 +35,7 @@ public static partial class MemberAccessorFactory
     /// <summary>Creates a static setter with per-call coercion.</summary>
     /// <param name="memberInfo">The static member to write.</param>
     /// <returns>The cached coercing setter.</returns>
-    public static Action<object?, TypeCoercion, TypeCoercionContext?>CreateCoercingStaticSetter(MemberInfo memberInfo)
+    public static Action<object?, TypeCoercion, TypeCoercionContext?> CreateCoercingStaticSetter(MemberInfo memberInfo)
         => Get<Action<object?, TypeCoercion, TypeCoercionContext?>>(memberInfo, AccessOperation.CoercingSet, isStatic: true);
 
     /// <summary>Creates a typed static getter.</summary>
@@ -102,7 +102,7 @@ public static partial class MemberAccessorFactory
     /// <param name="getter">The getter when successful.</param>
     /// <returns>Whether creation succeeded.</returns>
     public static bool TryCreateStaticGetter<TValue>(MemberInfo? memberInfo, out Func<TValue?>? getter)
-        => TryCreate(memberInfo, static member => CreateStaticGetter<TValue>(member!),out getter);
+        => TryCreate(memberInfo, static member => CreateStaticGetter<TValue>(member!), out getter);
 
     /// <summary>Attempts to create a typed coercing static getter.</summary>
     /// <typeparam name="TValue">The returned value type.</typeparam>
