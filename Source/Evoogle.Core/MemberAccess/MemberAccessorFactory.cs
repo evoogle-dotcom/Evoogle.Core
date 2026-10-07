@@ -107,7 +107,7 @@ public static partial class MemberAccessorFactory
     /// <param name="getter">The getter when successful.</param>
     /// <returns>Whether creation succeeded.</returns>
     public static bool TryCreateGetter<TObject, TValue>(MemberInfo? memberInfo, out Func<TObject, TValue?>? getter)
-        => TryCreate(memberInfo, static member => CreateGetter<TObject, TValue>(member!), out getter );
+        => TryCreate(memberInfo, static member => CreateGetter<TObject, TValue>(member!), out getter);
 
     /// <summary>Attempts to create a typed coercing getter.</summary>
     /// <typeparam name="TObject">The target type.</typeparam>

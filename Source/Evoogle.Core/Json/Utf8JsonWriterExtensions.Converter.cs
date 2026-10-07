@@ -195,6 +195,40 @@ public static partial class Utf8JsonWriterExtensions
     }
     #endregion
 
+    #region WritePropertyWithConverter Extension Methods
+    /// <summary>
+    ///     Writes an enum property using the specified converter, including default enum values.
+    /// </summary>
+    /// <remarks>
+    ///     Always writes the property regardless of <see cref="JsonSerializerOptions.DefaultIgnoreCondition"/>.
+    ///     Use this method for required enum identities and structural discriminators.
+    /// </remarks>
+    /// <typeparam name="TEnum">The enum type to write.</typeparam>
+    /// <param name="writer">The writer to which the value will be written.</param>
+    /// <param name="propertyName">The name of the JSON property.</param>
+    /// <param name="value">The enum value to write.</param>
+    /// <param name="options">The serializer options passed to the converter.</param>
+    /// <param name="converter">The converter used to write the value.</param>
+    public static void WritePropertyWithConverter<TEnum>
+    (
+        this Utf8JsonWriter writer,
+        string propertyName,
+        TEnum value,
+        JsonSerializerOptions options,
+        EnumJsonConverter<TEnum> converter
+    )
+        where TEnum : struct, Enum
+    {
+        ArgumentNullException.ThrowIfNull(writer);
+        ArgumentNullException.ThrowIfNull(propertyName);
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(converter);
+
+        writer.WritePropertyName(propertyName);
+        converter.Write(writer, value, options);
+    }
+    #endregion
+
     #region TryWritePropertyWithConverter Extension Methods
     /// <summary>
     ///     Attempts to write a <see cref="CultureInfo"/> property using the specified converter when the

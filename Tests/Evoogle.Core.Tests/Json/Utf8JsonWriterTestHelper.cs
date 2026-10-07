@@ -58,6 +58,20 @@ public static class Utf8JsonWriterTestHelper
         writer.TryWritePropertyWithConverter("value", value, options, _testEnumConverter);
     }
 
+    public static void WriteRequiredPropertyEnumWithConverter
+    (
+        Utf8JsonWriter writer,
+        string valueAsString,
+        string conditionAsString
+    )
+    {
+        var value = Enum.Parse<Utf8JsonWriterTestEnum>(valueAsString);
+        var condition = GetCondition(conditionAsString);
+
+        var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
+        writer.WritePropertyWithConverter("value", value, options, _testEnumConverter);
+    }
+
     public static void WritePropertyNullableEnumWithConverter(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
     {
         var value = valueAsString != null ? Enum.Parse<Utf8JsonWriterTestEnum>(valueAsString) : (Utf8JsonWriterTestEnum?)null;

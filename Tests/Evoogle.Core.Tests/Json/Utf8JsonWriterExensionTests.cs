@@ -137,6 +137,41 @@ public class Utf8JsonWriterExensionTests(ITestOutputHelper output) : XUnitTests(
             ExpectedJson = $@"{{""value"":""{_defaultEnumString}""}}",
         },
 
+        // .. Required Enum (default) With Converter
+        new WritePropertyTest
+        {
+            Name = "Type=Required Enum With Converter, Value=default, Condition=WhenWritingNull",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WriteRequiredPropertyEnumWithConverter
+            (
+                a,
+                _defaultEnumString,
+                nameof(JsonIgnoreCondition.WhenWritingNull)
+            ),
+            ExpectedJson = $@"{{""value"":""{_defaultEnumString}""}}",
+        },
+        new WritePropertyTest
+        {
+            Name = "Type=Required Enum With Converter, Value=default, Condition=WhenWritingDefault",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WriteRequiredPropertyEnumWithConverter
+            (
+                a,
+                _defaultEnumString,
+                nameof(JsonIgnoreCondition.WhenWritingDefault)
+            ),
+            ExpectedJson = $@"{{""value"":""{_defaultEnumString}""}}",
+        },
+        new WritePropertyTest
+        {
+            Name = "Type=Required Enum With Converter, Value=default, Condition=Never",
+            WritePropertyExpression = (a) => Utf8JsonWriterTestHelper.WriteRequiredPropertyEnumWithConverter
+            (
+                a,
+                _defaultEnumString,
+                nameof(JsonIgnoreCondition.Never)
+            ),
+            ExpectedJson = $@"{{""value"":""{_defaultEnumString}""}}",
+        },
+
         // .. Type (null) With Converter
         new WritePropertyTest
         {
