@@ -49,7 +49,7 @@ public static class JsonUnitTests
         /// <value>
         ///     Defaults to <see cref="DefaultJsonSerializerOptions"/> if not explicitly provided.
         /// </value>
-        public JsonSerializerOptions JsonSerializerOptions { get; init; } = DefaultJsonSerializerOptions;
+        public JsonSerializerOptions JsonSerializerOptions { get; init; } = new(DefaultJsonSerializerOptions);
 
         /// <summary>
         ///     Gets the expected exception type thrown during serialization or deserialization.
