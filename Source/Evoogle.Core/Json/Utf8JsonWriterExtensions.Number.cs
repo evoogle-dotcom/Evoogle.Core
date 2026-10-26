@@ -18,11 +18,18 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="propertyName">The name of the JSON property.</param>
     /// <param name="value">The decimal value to write.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">Optional comparer used to detect default values.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWritePropertyAsNumber(this Utf8JsonWriter writer, string propertyName, decimal value, JsonSerializerOptions options, EqualityComparer<decimal>? equalityComparer = null)
+    public static bool TryWritePropertyAsNumber
+    (
+        this Utf8JsonWriter writer,
+        string propertyName,
+        decimal value,
+        JsonSerializerOptions options,
+        decimal defaultValue = default,
+        EqualityComparer<decimal>? equalityComparer = null
+    )
     {
         return writer.TryWriteProperty
         (
@@ -30,6 +37,7 @@ public static partial class Utf8JsonWriterExtensions
             value,
             options,
             static (writer, value) => writer.WriteNumberValue(value),
+            defaultValue,
             equalityComparer
         );
     }
@@ -41,11 +49,18 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="propertyName">The name of the JSON property.</param>
     /// <param name="value">The decimal value to write, if present.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">Optional comparer used to detect default values.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWritePropertyAsNumber(this Utf8JsonWriter writer, string propertyName, decimal? value, JsonSerializerOptions options, EqualityComparer<decimal>? equalityComparer = null)
+    public static bool TryWritePropertyAsNumber
+    (
+        this Utf8JsonWriter writer,
+        string propertyName,
+        decimal? value,
+        JsonSerializerOptions options,
+        decimal? defaultValue = default,
+        EqualityComparer<decimal?>? equalityComparer = null
+    )
     {
         return writer.TryWriteProperty
         (
@@ -53,6 +68,7 @@ public static partial class Utf8JsonWriterExtensions
             value,
             options,
             static (writer, value) => writer.WriteNumberValue(value),
+            defaultValue,
             equalityComparer
         );
     }
@@ -64,11 +80,18 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="propertyName">The name of the JSON property.</param>
     /// <param name="value">The double value to write.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">Optional comparer used to detect default values.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWritePropertyAsNumber(this Utf8JsonWriter writer, string propertyName, double value, JsonSerializerOptions options, EqualityComparer<double>? equalityComparer = null)
+    public static bool TryWritePropertyAsNumber
+    (
+        this Utf8JsonWriter writer,
+        string propertyName,
+        double value,
+        JsonSerializerOptions options,
+        double defaultValue = default,
+        EqualityComparer<double>? equalityComparer = null
+    )
     {
         return writer.TryWriteProperty
         (
@@ -76,6 +99,7 @@ public static partial class Utf8JsonWriterExtensions
             value,
             options,
             static (writer, value) => writer.WriteNumberValue(value),
+            defaultValue,
             equalityComparer
         );
     }
@@ -87,11 +111,18 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="propertyName">The name of the JSON property.</param>
     /// <param name="value">The double value to write, if present.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">Optional comparer used to detect default values.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWritePropertyAsNumber(this Utf8JsonWriter writer, string propertyName, double? value, JsonSerializerOptions options, EqualityComparer<double>? equalityComparer = null)
+    public static bool TryWritePropertyAsNumber
+    (
+        this Utf8JsonWriter writer,
+        string propertyName,
+        double? value,
+        JsonSerializerOptions options,
+        double? defaultValue = default,
+        EqualityComparer<double?>? equalityComparer = null
+    )
     {
         return writer.TryWriteProperty
         (
@@ -99,6 +130,7 @@ public static partial class Utf8JsonWriterExtensions
             value,
             options,
             static (writer, value) => writer.WriteNumberValue(value),
+            defaultValue,
             equalityComparer
         );
     }
@@ -110,11 +142,18 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="propertyName">The name of the JSON property.</param>
     /// <param name="value">The float value to write.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">Optional comparer used to detect default values.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWritePropertyAsNumber(this Utf8JsonWriter writer, string propertyName, float value, JsonSerializerOptions options, EqualityComparer<float>? equalityComparer = null)
+    public static bool TryWritePropertyAsNumber
+    (
+        this Utf8JsonWriter writer,
+        string propertyName,
+        float value,
+        JsonSerializerOptions options,
+        float defaultValue = default,
+        EqualityComparer<float>? equalityComparer = null
+    )
     {
         return writer.TryWriteProperty
         (
@@ -122,6 +161,7 @@ public static partial class Utf8JsonWriterExtensions
             value,
             options,
             static (writer, value) => writer.WriteNumberValue(value),
+            defaultValue,
             equalityComparer
         );
     }
@@ -133,11 +173,18 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="propertyName">The name of the JSON property.</param>
     /// <param name="value">The float value to write, if present.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">Optional comparer used to detect default values.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWritePropertyAsNumber(this Utf8JsonWriter writer, string propertyName, float? value, JsonSerializerOptions options, EqualityComparer<float>? equalityComparer = null)
+    public static bool TryWritePropertyAsNumber
+    (
+        this Utf8JsonWriter writer,
+        string propertyName,
+        float? value,
+        JsonSerializerOptions options,
+        float? defaultValue = default,
+        EqualityComparer<float?>? equalityComparer = null
+    )
     {
         return writer.TryWriteProperty
         (
@@ -145,6 +192,7 @@ public static partial class Utf8JsonWriterExtensions
             value,
             options,
             static (writer, value) => writer.WriteNumberValue(value),
+            defaultValue,
             equalityComparer
         );
     }
@@ -156,11 +204,16 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="propertyName">The name of the JSON property.</param>
     /// <param name="value">The integer value to write.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWritePropertyAsNumber(this Utf8JsonWriter writer, string propertyName, int value, JsonSerializerOptions options, EqualityComparer<int>? equalityComparer = null)
+    public static bool TryWritePropertyAsNumber
+    (
+        this Utf8JsonWriter writer,
+        string propertyName,
+        int value,
+        JsonSerializerOptions options,
+        int defaultValue = default
+    )
     {
         return writer.TryWriteProperty
         (
@@ -168,7 +221,7 @@ public static partial class Utf8JsonWriterExtensions
             value,
             options,
             static (writer, value) => writer.WriteNumberValue(value),
-            equalityComparer
+            defaultValue: defaultValue
         );
     }
 
@@ -179,11 +232,16 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="propertyName">The name of the JSON property.</param>
     /// <param name="value">The integer value to write, if present.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWritePropertyAsNumber(this Utf8JsonWriter writer, string propertyName, int? value, JsonSerializerOptions options, EqualityComparer<int>? equalityComparer = null)
+    public static bool TryWritePropertyAsNumber
+    (
+        this Utf8JsonWriter writer,
+        string propertyName,
+        int? value,
+        JsonSerializerOptions options,
+        int? defaultValue = default
+    )
     {
         return writer.TryWriteProperty
         (
@@ -191,7 +249,7 @@ public static partial class Utf8JsonWriterExtensions
             value,
             options,
             static (writer, value) => writer.WriteNumberValue(value),
-            equalityComparer
+            defaultValue: defaultValue
         );
     }
 
@@ -202,11 +260,16 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="propertyName">The name of the JSON property.</param>
     /// <param name="value">The long value to write.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWritePropertyAsNumber(this Utf8JsonWriter writer, string propertyName, long value, JsonSerializerOptions options, EqualityComparer<long>? equalityComparer = null)
+    public static bool TryWritePropertyAsNumber
+    (
+        this Utf8JsonWriter writer,
+        string propertyName,
+        long value,
+        JsonSerializerOptions options,
+        long defaultValue = default
+    )
     {
         return writer.TryWriteProperty
         (
@@ -214,7 +277,7 @@ public static partial class Utf8JsonWriterExtensions
             value,
             options,
             static (writer, value) => writer.WriteNumberValue(value),
-            equalityComparer
+            defaultValue: defaultValue
         );
     }
 
@@ -225,11 +288,16 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="propertyName">The name of the JSON property.</param>
     /// <param name="value">The long value to write, if present.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWritePropertyAsNumber(this Utf8JsonWriter writer, string propertyName, long? value, JsonSerializerOptions options, EqualityComparer<long>? equalityComparer = null)
+    public static bool TryWritePropertyAsNumber
+    (
+        this Utf8JsonWriter writer,
+        string propertyName,
+        long? value,
+        JsonSerializerOptions options,
+        long? defaultValue = default
+    )
     {
         return writer.TryWriteProperty
         (
@@ -237,7 +305,7 @@ public static partial class Utf8JsonWriterExtensions
             value,
             options,
             static (writer, value) => writer.WriteNumberValue(value),
-            equalityComparer
+            defaultValue: defaultValue
         );
     }
     #endregion

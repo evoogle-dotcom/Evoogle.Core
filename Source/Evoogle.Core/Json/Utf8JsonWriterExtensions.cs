@@ -12,6 +12,14 @@ namespace Evoogle.Json;
 ///     Provides helper methods for <see cref="Utf8JsonWriter"/> that only write values when
 ///     the current <see cref="JsonSerializerOptions"/> indicate they should be included.
 /// </summary>
+/// <remarks>
+///     Conditional writers omit null under WhenWritingNull and WhenWritingDefault.
+///     WhenWritingDefault also omits values equal to the supplied default, using the supplied
+///     comparer or the type's default equality comparer. Never writes all values.
+///     Nullable structs compare present values against an underlying-type default and still omit null.
+///     Collections use ordinary equality unless a custom comparer is supplied.
+///     Custom defaults affect omission only; they do not configure deserialization.
+/// </remarks>
 public static partial class Utf8JsonWriterExtensions
 {
     #region TryWrite Methods
@@ -24,6 +32,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="value">The value to write.</param>
     /// <param name="options">The serializer options that control when values are ignored.</param>
     /// <param name="writeAction">The action that writes the value using the writer.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <param name="equalityComparer">
     ///     Optional comparer used to determine whether the value is the default and should be
     ///     ignored.
@@ -35,6 +44,7 @@ public static partial class Utf8JsonWriterExtensions
         T value,
         JsonSerializerOptions options,
         Action<Utf8JsonWriter, T> writeAction,
+        T defaultValue = default,
         EqualityComparer<T>? equalityComparer = null
     )
         where T : struct
@@ -43,7 +53,7 @@ public static partial class Utf8JsonWriterExtensions
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(writeAction);
 
-        var (shouldWrite, _) = ShouldWrite(value, options, equalityComparer);
+        var shouldWrite = ShouldWrite(value, options, defaultValue: defaultValue, equalityComparer: equalityComparer);
         if (!shouldWrite)
         {
             return false;
@@ -63,6 +73,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="nullableValue">The value to write, if present.</param>
     /// <param name="options">The serializer options that control when values are ignored.</param>
     /// <param name="writeAction">The action that writes the value using the writer.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <param name="equalityComparer">
     ///     Optional comparer used to determine whether the value is the default and should be
     ///     ignored.
@@ -74,7 +85,8 @@ public static partial class Utf8JsonWriterExtensions
         T? nullableValue,
         JsonSerializerOptions options,
         Action<Utf8JsonWriter, T> writeAction,
-        EqualityComparer<T>? equalityComparer = null
+        T? defaultValue = default,
+        EqualityComparer<T?>? equalityComparer = null
     )
         where T : struct
     {
@@ -82,7 +94,8 @@ public static partial class Utf8JsonWriterExtensions
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(writeAction);
 
-        var (shouldWrite, isNull) = ShouldWrite(nullableValue, options, equalityComparer);
+        var (shouldWrite, isNull) =
+            ShouldWrite(nullableValue, options, defaultValue: defaultValue, equalityComparer: equalityComparer);
         if (!shouldWrite)
         {
             return false;
@@ -110,13 +123,17 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="obj">The object to write.</param>
     /// <param name="options">The serializer options that control when values are ignored.</param>
     /// <param name="writeAction">The action that writes the value using the writer.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">The comparer used to compare non-null values with the default.</param>
     /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
     public static bool TryWrite<T>
     (
         this Utf8JsonWriter writer,
         T? obj,
         JsonSerializerOptions options,
-        Action<Utf8JsonWriter, T> writeAction
+        Action<Utf8JsonWriter, T> writeAction,
+        T? defaultValue = default,
+        IEqualityComparer<T>? equalityComparer = null
     )
         where T : class
     {
@@ -124,7 +141,8 @@ public static partial class Utf8JsonWriterExtensions
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(writeAction);
 
-        var (shouldWrite, isNull) = ShouldWrite(obj, options);
+        var (shouldWrite, isNull) =
+            ShouldWrite(obj, options, defaultValue: defaultValue, equalityComparer: equalityComparer);
         if (!shouldWrite)
         {
             return false;
@@ -153,6 +171,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="options">The serializer options that control when values are ignored.</param>
     /// <param name="state">The state passed to the action.</param>
     /// <param name="writeAction">The action that writes the value using the writer and state.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <param name="equalityComparer">Optional comparer used to detect default values.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
     public static bool TryWriteProperty<T, TState>
@@ -163,6 +182,7 @@ public static partial class Utf8JsonWriterExtensions
         JsonSerializerOptions options,
         TState state,
         Action<Utf8JsonWriter, T, TState> writeAction,
+        T defaultValue = default,
         EqualityComparer<T>? equalityComparer = null
     )
         where T : struct
@@ -172,7 +192,7 @@ public static partial class Utf8JsonWriterExtensions
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(writeAction);
 
-        var (shouldWrite, _) = ShouldWrite(value, options, equalityComparer);
+        var shouldWrite = ShouldWrite(value, options, defaultValue: defaultValue, equalityComparer: equalityComparer);
         if (!shouldWrite)
         {
             return false;
@@ -194,6 +214,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="options">The serializer options that control when values are ignored.</param>
     /// <param name="state">The state passed to the action.</param>
     /// <param name="writeAction">The action that writes the value using the writer and state.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <param name="equalityComparer">Optional comparer used to detect default values.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
     public static bool TryWriteProperty<T, TState>
@@ -204,7 +225,8 @@ public static partial class Utf8JsonWriterExtensions
         JsonSerializerOptions options,
         TState state,
         Action<Utf8JsonWriter, T, TState> writeAction,
-        EqualityComparer<T>? equalityComparer = null
+        T? defaultValue = default,
+        EqualityComparer<T?>? equalityComparer = null
     )
         where T : struct
     {
@@ -213,7 +235,8 @@ public static partial class Utf8JsonWriterExtensions
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(writeAction);
 
-        var (shouldWrite, isNull) = ShouldWrite(nullableValue, options, equalityComparer);
+        var (shouldWrite, isNull) =
+            ShouldWrite(nullableValue, options, defaultValue: defaultValue, equalityComparer: equalityComparer);
         if (!shouldWrite)
         {
             return false;
@@ -243,6 +266,8 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="options">The serializer options that control when values are ignored.</param>
     /// <param name="state">The state passed to the action.</param>
     /// <param name="writeAction">The action that writes the value using the writer and state.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">The comparer used to compare non-null values with the default.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
     public static bool TryWriteProperty<T, TState>
     (
@@ -251,7 +276,9 @@ public static partial class Utf8JsonWriterExtensions
         T? obj,
         JsonSerializerOptions options,
         TState state,
-        Action<Utf8JsonWriter, T, TState> writeAction
+        Action<Utf8JsonWriter, T, TState> writeAction,
+        T? defaultValue = default,
+        IEqualityComparer<T>? equalityComparer = null
     )
         where T : class
     {
@@ -260,7 +287,8 @@ public static partial class Utf8JsonWriterExtensions
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(writeAction);
 
-        var (shouldWrite, isNull) = ShouldWrite(obj, options);
+        var (shouldWrite, isNull) =
+            ShouldWrite(obj, options, defaultValue: defaultValue, equalityComparer: equalityComparer);
         if (!shouldWrite)
         {
             return false;
@@ -291,6 +319,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="options">The serializer options that control when values are ignored.</param>
     /// <param name="state">The state passed to the action.</param>
     /// <param name="writeAction">The action that writes the value using the writer and state.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <param name="equalityComparer">Optional comparer used to detect default values.</param>
     /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
     public static bool TryWrite<T, TState>
@@ -300,6 +329,7 @@ public static partial class Utf8JsonWriterExtensions
         JsonSerializerOptions options,
         TState state,
         Action<Utf8JsonWriter, T, TState> writeAction,
+        T defaultValue = default,
         EqualityComparer<T>? equalityComparer = null
     )
         where T : struct
@@ -308,7 +338,7 @@ public static partial class Utf8JsonWriterExtensions
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(writeAction);
 
-        var (shouldWrite, _) = ShouldWrite(value, options, equalityComparer);
+        var shouldWrite = ShouldWrite(value, options, defaultValue: defaultValue, equalityComparer: equalityComparer);
         if (!shouldWrite)
         {
             return false;
@@ -328,6 +358,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="options">The serializer options that control when values are ignored.</param>
     /// <param name="state">The state passed to the action.</param>
     /// <param name="writeAction">The action that writes the value using the writer and state.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <param name="equalityComparer">Optional comparer used to detect default values.</param>
     /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
     public static bool TryWrite<T, TState>
@@ -337,7 +368,8 @@ public static partial class Utf8JsonWriterExtensions
         JsonSerializerOptions options,
         TState state,
         Action<Utf8JsonWriter, T, TState> writeAction,
-        EqualityComparer<T>? equalityComparer = null
+        T? defaultValue = default,
+        EqualityComparer<T?>? equalityComparer = null
     )
         where T : struct
     {
@@ -345,7 +377,8 @@ public static partial class Utf8JsonWriterExtensions
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(writeAction);
 
-        var (shouldWrite, isNull) = ShouldWrite(nullableValue, options, equalityComparer);
+        var (shouldWrite, isNull) =
+            ShouldWrite(nullableValue, options, defaultValue: defaultValue, equalityComparer: equalityComparer);
         if (!shouldWrite)
         {
             return false;
@@ -373,6 +406,8 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="options">The serializer options that control when values are ignored.</param>
     /// <param name="state">The state passed to the action.</param>
     /// <param name="writeAction">The action that writes the value using the writer and state.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">The comparer used to compare non-null values with the default.</param>
     /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
     public static bool TryWrite<T, TState>
     (
@@ -380,7 +415,9 @@ public static partial class Utf8JsonWriterExtensions
         T? obj,
         JsonSerializerOptions options,
         TState state,
-        Action<Utf8JsonWriter, T, TState> writeAction
+        Action<Utf8JsonWriter, T, TState> writeAction,
+        T? defaultValue = default,
+        IEqualityComparer<T>? equalityComparer = null
     )
         where T : class
     {
@@ -388,7 +425,8 @@ public static partial class Utf8JsonWriterExtensions
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(writeAction);
 
-        var (shouldWrite, isNull) = ShouldWrite(obj, options);
+        var (shouldWrite, isNull) =
+            ShouldWrite(obj, options, defaultValue: defaultValue, equalityComparer: equalityComparer);
         if (!shouldWrite)
         {
             return false;
@@ -418,6 +456,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="value">The value to write.</param>
     /// <param name="options">The serializer options that control when values are ignored.</param>
     /// <param name="writeAction">The action that writes the value using the writer.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <param name="equalityComparer">
     ///     Optional comparer used to determine whether the value is the default and should be
     ///     ignored.
@@ -430,6 +469,7 @@ public static partial class Utf8JsonWriterExtensions
         T value,
         JsonSerializerOptions options,
         Action<Utf8JsonWriter, T> writeAction,
+        T defaultValue = default,
         EqualityComparer<T>? equalityComparer = null
     )
         where T : struct
@@ -439,7 +479,7 @@ public static partial class Utf8JsonWriterExtensions
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(writeAction);
 
-        var (shouldWrite, _) = ShouldWrite(value, options, equalityComparer);
+        var shouldWrite = ShouldWrite(value, options, defaultValue: defaultValue, equalityComparer: equalityComparer);
         if (!shouldWrite)
         {
             return false;
@@ -461,6 +501,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="nullableValue">The value to write, if present.</param>
     /// <param name="options">The serializer options that control when values are ignored.</param>
     /// <param name="writeAction">The action that writes the value using the writer.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <param name="equalityComparer">
     ///     Optional comparer used to determine whether the value is the default and should be
     ///     ignored.
@@ -473,7 +514,8 @@ public static partial class Utf8JsonWriterExtensions
         T? nullableValue,
         JsonSerializerOptions options,
         Action<Utf8JsonWriter, T> writeAction,
-        EqualityComparer<T>? equalityComparer = null
+        T? defaultValue = default,
+        EqualityComparer<T?>? equalityComparer = null
     )
         where T : struct
     {
@@ -482,7 +524,8 @@ public static partial class Utf8JsonWriterExtensions
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(writeAction);
 
-        var (shouldWrite, isNull) = ShouldWrite(nullableValue, options, equalityComparer);
+        var (shouldWrite, isNull) =
+            ShouldWrite(nullableValue, options, defaultValue: defaultValue, equalityComparer: equalityComparer);
         if (!shouldWrite)
         {
             return false;
@@ -513,6 +556,8 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="obj">The object to write.</param>
     /// <param name="options">The serializer options that control when values are ignored.</param>
     /// <param name="writeAction">The action that writes the value using the writer.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">The comparer used to compare non-null values with the default.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
     public static bool TryWriteProperty<T>
     (
@@ -520,7 +565,9 @@ public static partial class Utf8JsonWriterExtensions
         string propertyName,
         T? obj,
         JsonSerializerOptions options,
-        Action<Utf8JsonWriter, T> writeAction
+        Action<Utf8JsonWriter, T> writeAction,
+        T? defaultValue = default,
+        IEqualityComparer<T>? equalityComparer = null
     )
         where T : class
     {
@@ -529,7 +576,8 @@ public static partial class Utf8JsonWriterExtensions
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(writeAction);
 
-        var (shouldWrite, isNull) = ShouldWrite(obj, options);
+        var (shouldWrite, isNull) =
+            ShouldWrite(obj, options, defaultValue: defaultValue, equalityComparer: equalityComparer);
         if (!shouldWrite)
         {
             return false;
@@ -558,6 +606,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <typeparam name="T">The type of the value being evaluated.</typeparam>
     /// <param name="value">The value to inspect.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault.</param>
     /// <param name="equalityComparer">
     ///     Optional comparer used to detect default values.
     /// </param>
@@ -565,21 +614,28 @@ public static partial class Utf8JsonWriterExtensions
     ///     A tuple indicating whether the value should be written and whether it was the default
     ///     value.
     /// </returns>
-    private static (bool ShouldWrite, bool IsDefault) ShouldWrite<T>(T value, JsonSerializerOptions options, EqualityComparer<T>? equalityComparer)
+    private static bool ShouldWrite<T>
+    (
+        T value,
+        JsonSerializerOptions options,
+        T defaultValue,
+        EqualityComparer<T>? equalityComparer
+    )
         where T : struct
     {
         ArgumentNullException.ThrowIfNull(options);
 
+        if (options.DefaultIgnoreCondition is JsonIgnoreCondition.WhenWritingNull or JsonIgnoreCondition.Never)
+        {
+            return true;
+        }
+
         var comparer = equalityComparer ?? EqualityComparer<T>.Default;
-        var isDefault = comparer.Equals(value, default);
+        var isDefault = comparer.Equals(value, defaultValue);
 
         return options.DefaultIgnoreCondition switch
         {
-            JsonIgnoreCondition.WhenWritingDefault =>
-                isDefault ? (false, false) : (true, false),
-
-            JsonIgnoreCondition.WhenWritingNull or JsonIgnoreCondition.Never =>
-                (true, false),
+            JsonIgnoreCondition.WhenWritingDefault => !isDefault,
 
             _ => throw new ArgumentOutOfRangeException(nameof(options))
         };
@@ -592,43 +648,36 @@ public static partial class Utf8JsonWriterExtensions
     /// <typeparam name="T">The type of the value being evaluated.</typeparam>
     /// <param name="nullableValue">The value to inspect.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault.</param>
     /// <param name="equalityComparer">
     ///     Optional comparer used to detect default values.
     /// </param>
     /// <returns>
     ///     A tuple indicating whether the value should be written and whether it was <c>null</c>.
     /// </returns>
-    private static (bool ShouldWrite, bool IsNull) ShouldWrite<T>(T? nullableValue, JsonSerializerOptions options, EqualityComparer<T>? equalityComparer)
+    private static (bool ShouldWrite, bool IsNull) ShouldWrite<T>
+    (
+        T? nullableValue,
+        JsonSerializerOptions options,
+        T? defaultValue,
+        EqualityComparer<T?>? equalityComparer
+    )
         where T : struct
     {
         ArgumentNullException.ThrowIfNull(options);
 
         var isNull = !nullableValue.HasValue;
 
-        switch (options.DefaultIgnoreCondition)
+        var shouldWrite = options.DefaultIgnoreCondition switch
         {
-            case JsonIgnoreCondition.WhenWritingNull:
-                return isNull ? (false, true) : (true, false);
+            JsonIgnoreCondition.Never => true,
+            JsonIgnoreCondition.WhenWritingNull => !isNull,
+            JsonIgnoreCondition.WhenWritingDefault => !(equalityComparer ?? EqualityComparer<T?>.Default).Equals(nullableValue, defaultValue),
 
-            case JsonIgnoreCondition.WhenWritingDefault:
-                if (isNull)
-                {
-                    return (false, true);
-                }
+            _ => throw new ArgumentOutOfRangeException(nameof(options))
+        };
 
-                var value = nullableValue!.Value; // value is not null => safe to access .Value
-
-                var comparer = equalityComparer ?? EqualityComparer<T>.Default;
-                var isDefault = comparer.Equals(value, default);
-
-                return isDefault ? (false, false) : (true, false);
-
-            case JsonIgnoreCondition.Never:
-                return (true, isNull);
-
-            default:
-                throw new ArgumentOutOfRangeException(nameof(options));
-        }
+        return (shouldWrite, isNull);
     }
 
     /// <summary>
@@ -638,27 +687,35 @@ public static partial class Utf8JsonWriterExtensions
     /// <typeparam name="T">The type of the value being evaluated.</typeparam>
     /// <param name="obj">The object to inspect.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault.</param>
+    /// <param name="equalityComparer">The comparer used to detect default values.</param>
     /// <returns>
     ///     A tuple indicating whether the value should be written and whether it was
     ///     <c>null</c>.
     /// </returns>
-    private static (bool ShouldWrite, bool IsNull) ShouldWrite<T>(T? obj, JsonSerializerOptions options)
+    private static (bool ShouldWrite, bool IsNull) ShouldWrite<T>
+    (
+        T? obj,
+        JsonSerializerOptions options,
+        T? defaultValue,
+        IEqualityComparer<T>? equalityComparer
+    )
         where T : class
     {
         ArgumentNullException.ThrowIfNull(options);
 
         var isNull = obj is null;
 
-        return options.DefaultIgnoreCondition switch
+        var shouldWrite = options.DefaultIgnoreCondition switch
         {
-            JsonIgnoreCondition.WhenWritingNull or JsonIgnoreCondition.WhenWritingDefault =>
-                isNull ? (false, true) : (true, false),
-
-            JsonIgnoreCondition.Never =>
-                (true, isNull),
+            JsonIgnoreCondition.Never => true,
+            JsonIgnoreCondition.WhenWritingNull => !isNull,
+            JsonIgnoreCondition.WhenWritingDefault => !(equalityComparer ?? EqualityComparer<T>.Default).Equals(obj, defaultValue),
 
             _ => throw new ArgumentOutOfRangeException(nameof(options))
         };
+
+        return (shouldWrite, isNull);
     }
     #endregion
 }

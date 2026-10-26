@@ -21,9 +21,8 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="value">The value to write.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
     /// <param name="writeAction">The action that writes the value after the property name.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">Optional comparer used to detect default values.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">
     ///     Thrown when <paramref name="writer"/>, <paramref name="propertyName"/>,
@@ -36,11 +35,20 @@ public static partial class Utf8JsonWriterExtensions
         T value,
         JsonSerializerOptions options,
         Action<Utf8JsonWriter, T> writeAction,
+        T defaultValue = default,
         EqualityComparer<T>? equalityComparer = null
     )
         where T : struct
     {
-        return writer.TryWriteProperty(propertyName, value, options, writeAction, equalityComparer);
+        return writer.TryWriteProperty
+        (
+            propertyName,
+            value,
+            options,
+            writeAction,
+            defaultValue,
+            equalityComparer
+        );
     }
 
     /// <summary>
@@ -53,9 +61,8 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="nullableValue">The value to write, if present.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
     /// <param name="writeAction">The action that writes the value after the property name.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">Optional comparer used to detect default values.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">
     ///     Thrown when <paramref name="writer"/>, <paramref name="propertyName"/>,
@@ -68,11 +75,20 @@ public static partial class Utf8JsonWriterExtensions
         T? nullableValue,
         JsonSerializerOptions options,
         Action<Utf8JsonWriter, T> writeAction,
-        EqualityComparer<T>? equalityComparer = null
+        T? defaultValue = default,
+        EqualityComparer<T?>? equalityComparer = null
     )
         where T : struct
     {
-        return writer.TryWriteProperty(propertyName, nullableValue, options, writeAction, equalityComparer);
+        return writer.TryWriteProperty
+        (
+            propertyName,
+            nullableValue,
+            options,
+            writeAction,
+            defaultValue,
+            equalityComparer
+        );
     }
 
     /// <summary>
@@ -85,6 +101,8 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="obj">The object to write.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
     /// <param name="writeAction">The action that writes the value after the property name.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">Optional comparer used to detect default values.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">
     ///     Thrown when <paramref name="writer"/>, <paramref name="propertyName"/>,
@@ -96,11 +114,21 @@ public static partial class Utf8JsonWriterExtensions
         string propertyName,
         T? obj,
         JsonSerializerOptions options,
-        Action<Utf8JsonWriter, T> writeAction
+        Action<Utf8JsonWriter, T> writeAction,
+        T? defaultValue = default,
+        IEqualityComparer<T>? equalityComparer = null
     )
         where T : class
     {
-        return writer.TryWriteProperty(propertyName, obj, options, writeAction);
+        return writer.TryWriteProperty
+        (
+            propertyName,
+            obj,
+            options,
+            writeAction,
+            defaultValue,
+            equalityComparer
+        );
     }
 
     /// <summary>

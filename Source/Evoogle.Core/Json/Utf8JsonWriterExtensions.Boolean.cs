@@ -18,11 +18,16 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="propertyName">The name of the JSON property.</param>
     /// <param name="value">The boolean value to write.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWritePropertyAsBoolean(this Utf8JsonWriter writer, string propertyName, bool value, JsonSerializerOptions options, EqualityComparer<bool>? equalityComparer = null)
+    public static bool TryWritePropertyAsBoolean
+    (
+        this Utf8JsonWriter writer,
+        string propertyName,
+        bool value,
+        JsonSerializerOptions options,
+        bool defaultValue = default
+    )
     {
         return writer.TryWriteProperty
         (
@@ -30,7 +35,7 @@ public static partial class Utf8JsonWriterExtensions
             value,
             options,
             static (writer, value) => writer.WriteBooleanValue(value),
-            equalityComparer
+            defaultValue
         );
     }
 
@@ -41,11 +46,16 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="propertyName">The name of the JSON property.</param>
     /// <param name="value">The boolean value to write, if present.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWritePropertyAsBoolean(this Utf8JsonWriter writer, string propertyName, bool? value, JsonSerializerOptions options, EqualityComparer<bool>? equalityComparer = null)
+    public static bool TryWritePropertyAsBoolean
+    (
+        this Utf8JsonWriter writer,
+        string propertyName,
+        bool? value,
+        JsonSerializerOptions options,
+        bool? defaultValue = default
+    )
     {
         return writer.TryWriteProperty
         (
@@ -53,7 +63,7 @@ public static partial class Utf8JsonWriterExtensions
             value,
             options,
             static (writer, value) => writer.WriteBooleanValue(value),
-            equalityComparer
+            defaultValue
         );
     }
     #endregion

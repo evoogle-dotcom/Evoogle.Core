@@ -20,364 +20,234 @@ public static class Utf8JsonWriterTestHelper
     #endregion
 
     #region Boolean Methods
-    public static void WritePropertyBoolean(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
+    public static void TryWriteBoolPropertyAsBoolean(Utf8JsonWriter writer, bool value, JsonIgnoreCondition condition, bool defaultValue)
     {
-        var value = bool.Parse(valueAsString);
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsBoolean("value", value, options);
+        writer.TryWritePropertyAsBoolean("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyNullableBoolean(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteNullableBoolPropertyAsBoolean(Utf8JsonWriter writer, bool? value, JsonIgnoreCondition condition, bool? defaultValue)
     {
-        var value = valueAsString != null ? bool.Parse(valueAsString) : (bool?)null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsBoolean("value", value, options);
+        writer.TryWritePropertyAsBoolean("value", value, options, defaultValue);
     }
     #endregion
 
     #region Converter Methods
-    public static void WritePropertyCultureInfoWithConverter(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void WriteRequiredPropertyEnumWithConverter(Utf8JsonWriter writer, Utf8JsonWriterTestEnum value, JsonIgnoreCondition condition)
     {
-        var value = valueAsString != null ? CultureInfo.GetCultureInfo(valueAsString, predefinedOnly: true) : null;
-        var condition = GetCondition(conditionAsString);
-
-        var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyWithConverter("value", value, options, _cultureInfoJsonConverter);
-    }
-
-    public static void WritePropertyEnumWithConverter(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
-    {
-        var value = Enum.Parse<Utf8JsonWriterTestEnum>(valueAsString);
-        var condition = GetCondition(conditionAsString);
-
-        var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyWithConverter("value", value, options, _testEnumConverter);
-    }
-
-    public static void WriteRequiredPropertyEnumWithConverter
-    (
-        Utf8JsonWriter writer,
-        string valueAsString,
-        string conditionAsString
-    )
-    {
-        var value = Enum.Parse<Utf8JsonWriterTestEnum>(valueAsString);
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
         writer.WritePropertyWithConverter("value", value, options, _testEnumConverter);
     }
 
-    public static void WritePropertyNullableEnumWithConverter(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteCultureInfoPropertyWithConverter(Utf8JsonWriter writer, CultureInfo? value, JsonIgnoreCondition condition, CultureInfo? defaultValue)
     {
-        var value = valueAsString != null ? Enum.Parse<Utf8JsonWriterTestEnum>(valueAsString) : (Utf8JsonWriterTestEnum?)null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyWithConverter("value", value, options, _testEnumConverter);
+        writer.TryWritePropertyWithConverter("value", value, options, _cultureInfoJsonConverter, defaultValue);
     }
 
-    public static void WritePropertyTypeWithConverter(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteEnumPropertyWithConverter(Utf8JsonWriter writer, Utf8JsonWriterTestEnum value, JsonIgnoreCondition condition, Utf8JsonWriterTestEnum defaultValue)
     {
-        var value = valueAsString != null ? Type.GetType(valueAsString, throwOnError: true) : null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyWithConverter("value", value, options, _typeConverter);
+        writer.TryWritePropertyWithConverter("value", value, options, _testEnumConverter, defaultValue);
+    }
+
+    public static void TryWriteNullableEnumPropertyWithConverter(Utf8JsonWriter writer, Utf8JsonWriterTestEnum? value, JsonIgnoreCondition condition, Utf8JsonWriterTestEnum? defaultValue)
+    {
+        var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
+        writer.TryWritePropertyWithConverter("value", value, options, _testEnumConverter, defaultValue);
+    }
+
+    public static void TryWriteTypePropertyWithConverter(Utf8JsonWriter writer, Type value, JsonIgnoreCondition condition, Type? defaultValue)
+    {
+        var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
+        writer.TryWritePropertyWithConverter("value", value, options, _typeConverter, defaultValue);
     }
     #endregion
 
     #region Number Methods
-    public static void WritePropertyDecimal(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
+    public static void TryWriteDecimalPropertyAsNumber(Utf8JsonWriter writer, decimal value, JsonIgnoreCondition condition, decimal defaultValue)
     {
-        var value = decimal.Parse(valueAsString);
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyDouble(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
+    public static void TryWriteDoublePropertyAsNumber(Utf8JsonWriter writer, double value, JsonIgnoreCondition condition, double defaultValue)
     {
-        var value = double.Parse(valueAsString);
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyFloat(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
+    public static void TryWriteFloatPropertyAsNumber(Utf8JsonWriter writer, float value, JsonIgnoreCondition condition, float defaultValue)
     {
-        var value = float.Parse(valueAsString);
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyInt(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
+    public static void TryWriteIntPropertyAsNumber(Utf8JsonWriter writer, int value, JsonIgnoreCondition condition, int defaultValue)
     {
-        var value = int.Parse(valueAsString);
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyLong(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
+    public static void TryWriteLongPropertyAsNumber(Utf8JsonWriter writer, long value, JsonIgnoreCondition condition, long defaultValue)
     {
-        var value = long.Parse(valueAsString);
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyNullableDecimal(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteNullableDecimalPropertyAsNumber(Utf8JsonWriter writer, decimal? value, JsonIgnoreCondition condition, decimal? defaultValue)
     {
-        var value = valueAsString != null ? decimal.Parse(valueAsString) : (decimal?)null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyNullableDouble(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteNullableDoublePropertyAsNumber(Utf8JsonWriter writer, double? value, JsonIgnoreCondition condition, double? defaultValue)
     {
-        var value = valueAsString != null ? double.Parse(valueAsString) : (double?)null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyNullableFloat(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteNullableNullableFloatPropertyAsNumber(Utf8JsonWriter writer, float? value, JsonIgnoreCondition condition, float? defaultValue)
     {
-        var value = valueAsString != null ? float.Parse(valueAsString) : (float?)null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyNullableInt(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteNullableIntPropertyAsNumber(Utf8JsonWriter writer, int? value, JsonIgnoreCondition condition, int? defaultValue)
     {
-        var value = valueAsString != null ? int.Parse(valueAsString) : (int?)null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyNullableLong(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteNullableLongPropertyAsNumber(Utf8JsonWriter writer, long? value, JsonIgnoreCondition condition, long? defaultValue)
     {
-        var value = valueAsString != null ? long.Parse(valueAsString) : (long?)null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsNumber("value", value, options);
+        writer.TryWritePropertyAsNumber("value", value, options, defaultValue);
     }
     #endregion
 
     #region Serializer Methods
-    public static void WritePropertyBooleanWithSerializer(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
+    public static void TryWriteBoolPropertyWithSerializer(Utf8JsonWriter writer, bool value, JsonIgnoreCondition condition, bool defaultValue)
     {
-        var value = bool.Parse(valueAsString);
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyWithSerializer("value", value, options);
+        writer.TryWritePropertyWithSerializer("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyNullableBooleanWithSerializer(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteDecimalPropertyWithSerializer(Utf8JsonWriter writer, decimal value, JsonIgnoreCondition condition, decimal defaultValue)
     {
-        var value = valueAsString != null ? bool.Parse(valueAsString) : (bool?)null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyWithSerializer("value", value, options);
+        writer.TryWritePropertyWithSerializer("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyDecimalWithSerializer(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
+    public static void TryWriteGuidPropertyWithSerializer(Utf8JsonWriter writer, Guid value, JsonIgnoreCondition condition, Guid defaultValue)
     {
-        var value = decimal.Parse(valueAsString);
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyWithSerializer("value", value, options);
+        writer.TryWritePropertyWithSerializer("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyNullableDecimalWithSerializer(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteNullableBoolPropertyWithSerializer(Utf8JsonWriter writer, bool? value, JsonIgnoreCondition condition, bool? defaultValue)
     {
-        var value = valueAsString != null ? decimal.Parse(valueAsString) : (decimal?)null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyWithSerializer("value", value, options);
+        writer.TryWritePropertyWithSerializer("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyGuidWithSerializer(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
+    public static void TryWriteNullableDecimalPropertyWithSerializer(Utf8JsonWriter writer, decimal? value, JsonIgnoreCondition condition, decimal? defaultValue)
     {
-        var value = Guid.Parse(valueAsString);
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyWithSerializer("value", value, options);
+        writer.TryWritePropertyWithSerializer("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyNullableGuidWithSerializer(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteNullableGuidPropertyWithSerializer(Utf8JsonWriter writer, Guid? value, JsonIgnoreCondition condition, Guid? defaultValue)
     {
-        var value = valueAsString != null ? Guid.Parse(valueAsString) : (Guid?)null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyWithSerializer("value", value, options);
+        writer.TryWritePropertyWithSerializer("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyStringWithSerializer(Utf8JsonWriter writer, string? value, string conditionAsString)
+    public static void TryWriteStringPropertyWithSerializer(Utf8JsonWriter writer, string? value, JsonIgnoreCondition condition, string? defaultValue)
     {
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyWithSerializer("value", value, options);
+        writer.TryWritePropertyWithSerializer("value", value, options, defaultValue);
     }
     #endregion
 
     #region String Methods
-    public static void WritePropertyDateTime(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
+    public static void TryWriteDateTimePropertyAsString(Utf8JsonWriter writer, DateTime value, JsonIgnoreCondition condition, DateTime defaultValue)
     {
-        var value = DateTime.Parse(UnescapeJsonString(valueAsString));
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options, defaultValue: defaultValue);
     }
 
-    public static void WritePropertyDateTimeOffset(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
+    public static void TryWriteDateTimeOffsetPropertyAsString(Utf8JsonWriter writer, DateTimeOffset value, JsonIgnoreCondition condition, DateTimeOffset defaultValue)
     {
-        var value = DateTimeOffset.Parse(UnescapeJsonString(valueAsString));
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options, defaultValue: defaultValue);
     }
 
-    public static void WritePropertyEnum(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
+    public static void TryWriteEnumPropertyAsString(Utf8JsonWriter writer, Utf8JsonWriterTestEnum value, JsonIgnoreCondition condition, Utf8JsonWriterTestEnum defaultValue)
     {
-        var value = Enum.Parse<Utf8JsonWriterTestEnum>(valueAsString);
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyGuid(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
+    public static void TryWriteGuidPropertyAsString(Utf8JsonWriter writer, Guid value, JsonIgnoreCondition condition, Guid defaultValue)
     {
-        var value = Guid.Parse(valueAsString);
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyNullableDateTime(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteNullableDateTimePropertyAsString(Utf8JsonWriter writer, DateTime? value, JsonIgnoreCondition condition, DateTime? defaultValue)
     {
-        var value = valueAsString != null ? DateTime.Parse(UnescapeJsonString(valueAsString)) : (DateTime?)null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options, defaultValue: defaultValue);
     }
 
-    public static void WritePropertyNullableDateTimeOffset(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteNullableDateTimeOffsetPropertyAsString(Utf8JsonWriter writer, DateTimeOffset? value, JsonIgnoreCondition condition, DateTimeOffset? defaultValue)
     {
-        var value = valueAsString != null ? DateTimeOffset.Parse(UnescapeJsonString(valueAsString)) : (DateTimeOffset?)null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options, defaultValue: defaultValue);
     }
 
-    public static void WritePropertyNullableEnum(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteNullableEnumPropertyAsString(Utf8JsonWriter writer, Utf8JsonWriterTestEnum? value, JsonIgnoreCondition condition, Utf8JsonWriterTestEnum? defaultValue)
     {
-        var value = valueAsString != null ? Enum.Parse<Utf8JsonWriterTestEnum>(valueAsString) : (Utf8JsonWriterTestEnum?)null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyNullableGuid(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteNullableGuidPropertyAsString(Utf8JsonWriter writer, Guid? value, JsonIgnoreCondition condition, Guid? defaultValue)
     {
-        var value = valueAsString != null ? Guid.Parse(valueAsString) : (Guid?)null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyNullableTimeSpan(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteNullableTimeSpanPropertyAsString(Utf8JsonWriter writer, TimeSpan? value, JsonIgnoreCondition condition, TimeSpan? defaultValue)
     {
-        var value = valueAsString != null ? TimeSpan.Parse(UnescapeJsonString(valueAsString)) : (TimeSpan?)null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options, defaultValue: defaultValue);
     }
 
-    public static void WritePropertyNullableUlid(Utf8JsonWriter writer, string? valueAsString, string conditionAsString)
+    public static void TryWriteNullableUlidPropertyAsString(Utf8JsonWriter writer, Ulid? value, JsonIgnoreCondition condition, Ulid? defaultValue)
     {
-        var value = valueAsString != null ? Ulid.Parse(valueAsString) : (Ulid?)null;
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyString(Utf8JsonWriter writer, string? value, string conditionAsString)
+    public static void TryWriteStringPropertyAsString(Utf8JsonWriter writer, string? value, JsonIgnoreCondition condition, string? defaultValue)
     {
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options, defaultValue);
     }
 
-    public static void WritePropertyTimeSpan(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
+    public static void TryWriteTimeSpanPropertyAsString(Utf8JsonWriter writer, TimeSpan value, JsonIgnoreCondition condition, TimeSpan defaultValue)
     {
-        var value = TimeSpan.Parse(UnescapeJsonString(valueAsString));
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsString("value", value, options);
+        writer.TryWritePropertyAsString("value", value, options, defaultValue: defaultValue);
     }
 
-    public static void WritePropertyUlid(Utf8JsonWriter writer, string valueAsString, string conditionAsString)
+    public static void TryWriteUlidPropertyAsString(Utf8JsonWriter writer, Ulid value, JsonIgnoreCondition condition, Ulid defaultValue)
     {
-        var value = Ulid.Parse(valueAsString);
-        var condition = GetCondition(conditionAsString);
-
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = condition };
-        writer.TryWritePropertyAsString("value", value, options);
-    }
-    #endregion
-
-    #region Implementation Methods
-    private static JsonIgnoreCondition GetCondition(string conditionAsString)
-    {
-        return Enum.TryParse<JsonIgnoreCondition>(conditionAsString, out var condition)
-            ? condition
-            : throw new ArgumentException($"Invalid condition: {conditionAsString}", nameof(conditionAsString));
-    }
-
-    private static string UnescapeJsonString(string escaped)
-    {
-        // Deserialize as a JSON string literal to handle all escape sequences
-        return JsonSerializer.Deserialize<string>($"\"{escaped}\"")
-               ?? throw new ArgumentException("Failed to unescape string", nameof(escaped));
+        writer.TryWritePropertyAsString("value", value, options, defaultValue);
     }
     #endregion
 }

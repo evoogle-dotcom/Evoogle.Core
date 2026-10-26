@@ -21,6 +21,8 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="collection">The collection of items to write.</param>
     /// <param name="options">The serializer options that control when values are ignored.</param>
     /// <param name="writeItem">The action that writes each item to the JSON writer.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">Optional comparer used to detect default values.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">
     ///     Thrown when <paramref name="writer"/>, <paramref name="propertyName"/>,
@@ -32,7 +34,9 @@ public static partial class Utf8JsonWriterExtensions
         string propertyName,
         IEnumerable<TItem>? collection,
         JsonSerializerOptions options,
-        Action<Utf8JsonWriter, TItem> writeItem
+        Action<Utf8JsonWriter, TItem> writeItem,
+        IEnumerable<TItem>? defaultValue = default,
+        EqualityComparer<IEnumerable<TItem>>? equalityComparer = null
     )
     {
         return writer.TryWriteProperty
@@ -41,7 +45,9 @@ public static partial class Utf8JsonWriterExtensions
             collection,
             options,
             writeItem,
-            static (writer, collection, writeItem) => writer.WriteJsonArray(collection, writeItem)
+            static (writer, collection, writeItem) => writer.WriteJsonArray(collection, writeItem),
+            defaultValue,
+            equalityComparer
         );
     }
 
@@ -57,6 +63,8 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="state">The state passed to the item-writing action.</param>
     /// <param name="options">The serializer options that control when values are ignored.</param>
     /// <param name="writeItem">The action that writes each item to the JSON writer.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">Optional comparer used to detect default values.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">
     ///     Thrown when <paramref name="writer"/>, <paramref name="propertyName"/>,
@@ -69,7 +77,9 @@ public static partial class Utf8JsonWriterExtensions
         IEnumerable<TItem>? collection,
         TState state,
         JsonSerializerOptions options,
-        Action<Utf8JsonWriter, TItem, TState> writeItem
+        Action<Utf8JsonWriter, TItem, TState> writeItem,
+        IEnumerable<TItem>? defaultValue = default,
+        EqualityComparer<IEnumerable<TItem>>? equalityComparer = null
     )
     {
         return writer.TryWriteProperty
@@ -78,8 +88,9 @@ public static partial class Utf8JsonWriterExtensions
             collection,
             options,
             (state, writeItem),
-            static (writer, collection, callbackState) =>
-                writer.WriteJsonArray(collection, callbackState.state, callbackState.writeItem)
+            static (writer, collection, callbackState) => writer.WriteJsonArray(collection, callbackState.state, callbackState.writeItem),
+            defaultValue,
+            equalityComparer
         );
     }
 

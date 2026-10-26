@@ -19,6 +19,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="writer">The writer to which the value will be serialized.</param>
     /// <param name="value">The value to serialize.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <param name="equalityComparer">
     ///     Optional comparer used to detect default values.
     /// </param>
@@ -28,6 +29,7 @@ public static partial class Utf8JsonWriterExtensions
         this Utf8JsonWriter writer,
         T value,
         JsonSerializerOptions options,
+        T defaultValue = default,
         EqualityComparer<T>? equalityComparer = null
     )
         where T : struct
@@ -38,6 +40,7 @@ public static partial class Utf8JsonWriterExtensions
             options,
             options,
             static (writer, value, options) => JsonSerializer.Serialize(writer, value, options),
+            defaultValue,
             equalityComparer
         );
     }
@@ -50,6 +53,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="writer">The writer to which the value will be serialized.</param>
     /// <param name="nullableValue">The value to serialize, if present.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <param name="equalityComparer">
     ///     Optional comparer used to detect default values.
     /// </param>
@@ -59,7 +63,8 @@ public static partial class Utf8JsonWriterExtensions
         this Utf8JsonWriter writer,
         T? nullableValue,
         JsonSerializerOptions options,
-        EqualityComparer<T>? equalityComparer = null
+        T? defaultValue = default,
+        EqualityComparer<T?>? equalityComparer = null
     )
         where T : struct
     {
@@ -69,6 +74,7 @@ public static partial class Utf8JsonWriterExtensions
             options,
             options,
             static (writer, value, options) => JsonSerializer.Serialize(writer, value, options),
+            defaultValue,
             equalityComparer
         );
     }
@@ -81,12 +87,16 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="writer">The writer to which the value will be serialized.</param>
     /// <param name="obj">The object to serialize.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">The comparer used to compare non-null values with the default.</param>
     /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
     public static bool TryWriteWithSerializer<T>
     (
         this Utf8JsonWriter writer,
         T? obj,
-        JsonSerializerOptions options
+        JsonSerializerOptions options,
+        T? defaultValue = default,
+        IEqualityComparer<T>? equalityComparer = null
     )
         where T : class
     {
@@ -95,7 +105,9 @@ public static partial class Utf8JsonWriterExtensions
             obj,
             options,
             options,
-            static (writer, value, options) => JsonSerializer.Serialize(writer, value, options)
+            static (writer, value, options) => JsonSerializer.Serialize(writer, value, options),
+            defaultValue,
+            equalityComparer
         );
     }
     #endregion
@@ -110,6 +122,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="propertyName">The name of the JSON property.</param>
     /// <param name="value">The value to serialize.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <param name="equalityComparer">
     ///     Optional comparer used to detect default values.
     /// </param>
@@ -120,6 +133,7 @@ public static partial class Utf8JsonWriterExtensions
         string propertyName,
         T value,
         JsonSerializerOptions options,
+        T defaultValue = default,
         EqualityComparer<T>? equalityComparer = null
     )
         where T : struct
@@ -131,6 +145,7 @@ public static partial class Utf8JsonWriterExtensions
             options,
             options,
             static (writer, value, options) => JsonSerializer.Serialize(writer, value, options),
+            defaultValue,
             equalityComparer
         );
     }
@@ -144,6 +159,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="propertyName">The name of the JSON property.</param>
     /// <param name="nullableValue">The value to serialize, if present.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <param name="equalityComparer">
     ///     Optional comparer used to detect default values.
     /// </param>
@@ -154,7 +170,8 @@ public static partial class Utf8JsonWriterExtensions
         string propertyName,
         T? nullableValue,
         JsonSerializerOptions options,
-        EqualityComparer<T>? equalityComparer = null
+        T? defaultValue = default,
+        EqualityComparer<T?>? equalityComparer = null
     )
         where T : struct
     {
@@ -165,6 +182,7 @@ public static partial class Utf8JsonWriterExtensions
             options,
             options,
             static (writer, value, options) => JsonSerializer.Serialize(writer, value, options),
+            defaultValue,
             equalityComparer
         );
     }
@@ -178,13 +196,17 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="propertyName">The name of the JSON property.</param>
     /// <param name="obj">The object to serialize.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">The comparer used to compare non-null values with the default.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
     public static bool TryWritePropertyWithSerializer<T>
     (
         this Utf8JsonWriter writer,
         string propertyName,
         T? obj,
-        JsonSerializerOptions options
+        JsonSerializerOptions options,
+        T? defaultValue = default,
+        IEqualityComparer<T>? equalityComparer = null
     )
         where T : class
     {
@@ -194,7 +216,9 @@ public static partial class Utf8JsonWriterExtensions
             obj,
             options,
             options,
-            static (writer, value, options) => JsonSerializer.Serialize(writer, value, options)
+            static (writer, value, options) => JsonSerializer.Serialize(writer, value, options),
+            defaultValue,
+            equalityComparer
         );
     }
     #endregion

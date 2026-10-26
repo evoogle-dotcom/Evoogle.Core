@@ -13,188 +13,6 @@ namespace Evoogle.Json;
 /// <inheritdoc cref="Utf8JsonWriterExtensions"/>
 public static partial class Utf8JsonWriterExtensions
 {
-    #region TryWriteWithConverter Extension Methods
-    /// <summary>
-    ///     Attempts to write a <see cref="CultureInfo"/> value using the specified converter when the
-    ///     serializer options permit it.
-    /// </summary>
-    /// <param name="writer">The writer to which the value will be written.</param>
-    /// <param name="cultureInfo">The culture info to write.</param>
-    /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="converter">The converter used to write the value.</param>
-    /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWriteWithConverter
-    (
-        this Utf8JsonWriter writer,
-        CultureInfo? cultureInfo,
-        JsonSerializerOptions options,
-        CultureInfoJsonConverter converter
-    )
-    {
-        return writer.TryWrite
-        (
-            cultureInfo,
-            options,
-            (converter, options),
-            static (writer, value, state) => state.converter.Write(writer, value, state.options)
-        );
-    }
-
-    /// <summary>
-    ///     Attempts to write an enum value using the specified converter when the serializer
-    ///     options permit it.
-    /// </summary>
-    /// <typeparam name="TEnum">The enum type to write.</typeparam>
-    /// <param name="writer">The writer to which the value will be written.</param>
-    /// <param name="value">The enum value to write.</param>
-    /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="converter">The converter used to write the value.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
-    /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWriteWithConverter<TEnum>
-    (
-        this Utf8JsonWriter writer,
-        TEnum value,
-        JsonSerializerOptions options,
-        EnumJsonConverter<TEnum> converter,
-        EqualityComparer<TEnum>? equalityComparer = null
-    )
-        where TEnum : struct, Enum
-    {
-        return writer.TryWrite
-        (
-            value,
-            options,
-            (converter, options),
-            static (writer, value, state) => state.converter.Write(writer, value, state.options),
-            equalityComparer
-        );
-    }
-
-    /// <summary>
-    ///     Attempts to write a nullable enum value using the specified converter when the
-    ///     serializer options permit it.
-    /// </summary>
-    /// <typeparam name="TEnum">The enum type to write.</typeparam>
-    /// <param name="writer">The writer to which the value will be written.</param>
-    /// <param name="value">The enum value to write, if present.</param>
-    /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="converter">The converter used to write the value.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
-    /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWriteWithConverter<TEnum>
-    (
-        this Utf8JsonWriter writer,
-        TEnum? value,
-        JsonSerializerOptions options,
-        EnumJsonConverter<TEnum> converter,
-        EqualityComparer<TEnum>? equalityComparer = null
-    )
-        where TEnum : struct, Enum
-    {
-        return writer.TryWrite
-        (
-            value,
-            options,
-            (converter, options),
-            static (writer, value, state) => state.converter.Write(writer, value, state.options),
-            equalityComparer
-        );
-    }
-
-    /// <summary>
-    ///     Attempts to write a <see cref="Type"/> value using the specified converter when the
-    ///     serializer options permit it.
-    /// </summary>
-    /// <param name="writer">The writer to which the value will be written.</param>
-    /// <param name="type">The type to write.</param>
-    /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="converter">The converter used to write the value.</param>
-    /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWriteWithConverter
-    (
-        this Utf8JsonWriter writer,
-        Type? type,
-        JsonSerializerOptions options,
-        TypeJsonConverter converter
-    )
-    {
-        return writer.TryWrite
-        (
-            type,
-            options,
-            (converter, options),
-            static (writer, value, state) => state.converter.Write(writer, value, state.options)
-        );
-    }
-
-    /// <summary>
-    ///     Attempts to write an Ulid value using the specified converter when the serializer
-    ///     options permit it.
-    /// </summary>
-    /// <param name="writer">The writer to which the value will be written.</param>
-    /// <param name="value">The Ulid value to write.</param>
-    /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="converter">The converter used to write the value.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
-    /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWriteWithConverter
-    (
-        this Utf8JsonWriter writer,
-        Ulid value,
-        JsonSerializerOptions options,
-        UlidJsonConverter converter,
-        EqualityComparer<Ulid>? equalityComparer = null
-    )
-    {
-        return writer.TryWrite
-        (
-            value,
-            options,
-            (converter, options),
-            static (writer, value, state) => state.converter.Write(writer, value, state.options),
-            equalityComparer
-        );
-    }
-
-    /// <summary>
-    ///     Attempts to write a nullable Ulid value using the specified converter when the
-    ///     serializer options permit it.
-    /// </summary>
-    /// <param name="writer">The writer to which the value will be written.</param>
-    /// <param name="value">The Ulid value to write, if present.</param>
-    /// <param name="options">The serializer options that control ignore conditions.</param>
-    /// <param name="converter">The converter used to write the value.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
-    /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
-    public static bool TryWriteWithConverter
-    (
-        this Utf8JsonWriter writer,
-        Ulid? value,
-        JsonSerializerOptions options,
-        UlidJsonConverter converter,
-        EqualityComparer<Ulid>? equalityComparer = null
-    )
-    {
-        return writer.TryWrite
-        (
-            value,
-            options,
-            (converter, options),
-            static (writer, value, state) => state.converter.Write(writer, value, state.options),
-            equalityComparer
-        );
-    }
-    #endregion
-
     #region WritePropertyWithConverter Extension Methods
     /// <summary>
     ///     Writes an enum property using the specified converter, including default enum values.
@@ -229,6 +47,189 @@ public static partial class Utf8JsonWriterExtensions
     }
     #endregion
 
+    #region TryWriteWithConverter Extension Methods
+    /// <summary>
+    ///     Attempts to write a <see cref="CultureInfo"/> value using the specified converter when the
+    ///     serializer options permit it.
+    /// </summary>
+    /// <param name="writer">The writer to which the value will be written.</param>
+    /// <param name="cultureInfo">The culture info to write.</param>
+    /// <param name="options">The serializer options that control ignore conditions.</param>
+    /// <param name="converter">The converter used to write the value.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">The comparer used to compare non-null values with the default.</param>
+    /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
+    public static bool TryWriteWithConverter
+    (
+        this Utf8JsonWriter writer,
+        CultureInfo? cultureInfo,
+        JsonSerializerOptions options,
+        CultureInfoJsonConverter converter,
+        CultureInfo? defaultValue = default,
+        EqualityComparer<CultureInfo>? equalityComparer = null
+    )
+    {
+        return writer.TryWrite
+        (
+            cultureInfo,
+            options,
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options),
+            defaultValue,
+            equalityComparer
+        );
+    }
+
+    /// <summary>
+    ///     Attempts to write an enum value using the specified converter when the serializer
+    ///     options permit it.
+    /// </summary>
+    /// <typeparam name="TEnum">The enum type to write.</typeparam>
+    /// <param name="writer">The writer to which the value will be written.</param>
+    /// <param name="value">The enum value to write.</param>
+    /// <param name="options">The serializer options that control ignore conditions.</param>
+    /// <param name="converter">The converter used to write the value.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
+    public static bool TryWriteWithConverter<TEnum>
+    (
+        this Utf8JsonWriter writer,
+        TEnum value,
+        JsonSerializerOptions options,
+        EnumJsonConverter<TEnum> converter,
+        TEnum defaultValue = default
+    )
+        where TEnum : struct, Enum
+    {
+        return writer.TryWrite
+        (
+            value,
+            options,
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options),
+            defaultValue
+        );
+    }
+
+    /// <summary>
+    ///     Attempts to write a nullable enum value using the specified converter when the
+    ///     serializer options permit it.
+    /// </summary>
+    /// <typeparam name="TEnum">The enum type to write.</typeparam>
+    /// <param name="writer">The writer to which the value will be written.</param>
+    /// <param name="value">The enum value to write, if present.</param>
+    /// <param name="options">The serializer options that control ignore conditions.</param>
+    /// <param name="converter">The converter used to write the value.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
+    public static bool TryWriteWithConverter<TEnum>
+    (
+        this Utf8JsonWriter writer,
+        TEnum? value,
+        JsonSerializerOptions options,
+        EnumJsonConverter<TEnum> converter,
+        TEnum defaultValue = default
+    )
+        where TEnum : struct, Enum
+    {
+        return writer.TryWrite
+        (
+            value,
+            options,
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options),
+            defaultValue
+        );
+    }
+
+    /// <summary>
+    ///     Attempts to write a <see cref="Type"/> value using the specified converter when the
+    ///     serializer options permit it.
+    /// </summary>
+    /// <param name="writer">The writer to which the value will be written.</param>
+    /// <param name="type">The type to write.</param>
+    /// <param name="options">The serializer options that control ignore conditions.</param>
+    /// <param name="converter">The converter used to write the value.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
+    public static bool TryWriteWithConverter
+    (
+        this Utf8JsonWriter writer,
+        Type? type,
+        JsonSerializerOptions options,
+        TypeJsonConverter converter,
+        Type? defaultValue = default
+    )
+    {
+        return writer.TryWrite
+        (
+            type,
+            options,
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options),
+            defaultValue
+        );
+    }
+
+    /// <summary>
+    ///     Attempts to write an Ulid value using the specified converter when the serializer
+    ///     options permit it.
+    /// </summary>
+    /// <param name="writer">The writer to which the value will be written.</param>
+    /// <param name="value">The Ulid value to write.</param>
+    /// <param name="options">The serializer options that control ignore conditions.</param>
+    /// <param name="converter">The converter used to write the value.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
+    public static bool TryWriteWithConverter
+    (
+        this Utf8JsonWriter writer,
+        Ulid value,
+        JsonSerializerOptions options,
+        UlidJsonConverter converter,
+        Ulid defaultValue = default
+    )
+    {
+        return writer.TryWrite
+        (
+            value,
+            options,
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options),
+            defaultValue
+        );
+    }
+
+    /// <summary>
+    ///     Attempts to write a nullable Ulid value using the specified converter when the
+    ///     serializer options permit it.
+    /// </summary>
+    /// <param name="writer">The writer to which the value will be written.</param>
+    /// <param name="value">The Ulid value to write, if present.</param>
+    /// <param name="options">The serializer options that control ignore conditions.</param>
+    /// <param name="converter">The converter used to write the value.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <returns><c>true</c> if the value was written; otherwise, <c>false</c>.</returns>
+    public static bool TryWriteWithConverter
+    (
+        this Utf8JsonWriter writer,
+        Ulid? value,
+        JsonSerializerOptions options,
+        UlidJsonConverter converter,
+        Ulid? defaultValue = default
+    )
+    {
+        return writer.TryWrite
+        (
+            value,
+            options,
+            (converter, options),
+            static (writer, value, state) => state.converter.Write(writer, value, state.options),
+            defaultValue
+        );
+    }
+    #endregion
+
     #region TryWritePropertyWithConverter Extension Methods
     /// <summary>
     ///     Attempts to write a <see cref="CultureInfo"/> property using the specified converter when the
@@ -239,6 +240,8 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="cultureInfo">The cultureInfo to write.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
     /// <param name="converter">The converter used to write the value.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
+    /// <param name="equalityComparer">The comparer used to compare non-null values with the default.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
     public static bool TryWritePropertyWithConverter
     (
@@ -246,7 +249,9 @@ public static partial class Utf8JsonWriterExtensions
         string propertyName,
         CultureInfo? cultureInfo,
         JsonSerializerOptions options,
-        CultureInfoJsonConverter converter
+        CultureInfoJsonConverter converter,
+        CultureInfo? defaultValue = default,
+        EqualityComparer<CultureInfo>? equalityComparer = null
     )
     {
         return writer.TryWriteProperty
@@ -255,7 +260,9 @@ public static partial class Utf8JsonWriterExtensions
             cultureInfo,
             options,
             (converter, options),
-            static (writer, value, state) => state.converter.Write(writer, value, state.options)
+            static (writer, value, state) => state.converter.Write(writer, value, state.options),
+            defaultValue,
+            equalityComparer
         );
     }
 
@@ -269,9 +276,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="value">The enum value to write.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
     /// <param name="converter">The converter used to write the value.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
     public static bool TryWritePropertyWithConverter<TEnum>
     (
@@ -280,7 +285,7 @@ public static partial class Utf8JsonWriterExtensions
         TEnum value,
         JsonSerializerOptions options,
         EnumJsonConverter<TEnum> converter,
-        EqualityComparer<TEnum>? equalityComparer = null
+        TEnum defaultValue = default
     )
         where TEnum : struct, Enum
     {
@@ -291,7 +296,7 @@ public static partial class Utf8JsonWriterExtensions
             options,
             (converter, options),
             static (writer, value, state) => state.converter.Write(writer, value, state.options),
-            equalityComparer
+            defaultValue
         );
     }
 
@@ -305,9 +310,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="value">The enum value to write, if present.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
     /// <param name="converter">The converter used to write the value.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
     public static bool TryWritePropertyWithConverter<TEnum>
     (
@@ -316,7 +319,7 @@ public static partial class Utf8JsonWriterExtensions
         TEnum? value,
         JsonSerializerOptions options,
         EnumJsonConverter<TEnum> converter,
-        EqualityComparer<TEnum>? equalityComparer = null
+        TEnum? defaultValue = default
     )
         where TEnum : struct, Enum
     {
@@ -327,7 +330,7 @@ public static partial class Utf8JsonWriterExtensions
             options,
             (converter, options),
             static (writer, value, state) => state.converter.Write(writer, value, state.options),
-            equalityComparer
+            defaultValue
         );
     }
 
@@ -340,6 +343,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="type">The type to write.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
     /// <param name="converter">The converter used to write the value.</param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
     public static bool TryWritePropertyWithConverter
     (
@@ -347,7 +351,8 @@ public static partial class Utf8JsonWriterExtensions
         string propertyName,
         Type? type,
         JsonSerializerOptions options,
-        TypeJsonConverter converter
+        TypeJsonConverter converter,
+        Type? defaultValue = default
     )
     {
         return writer.TryWriteProperty
@@ -356,7 +361,8 @@ public static partial class Utf8JsonWriterExtensions
             type,
             options,
             (converter, options),
-            static (writer, value, state) => state.converter.Write(writer, value, state.options)
+            static (writer, value, state) => state.converter.Write(writer, value, state.options),
+            defaultValue
         );
     }
 
@@ -369,9 +375,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="value">The Ulid value to write.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
     /// <param name="converter">The converter used to write the value.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
     public static bool TryWritePropertyWithConverter
     (
@@ -380,7 +384,7 @@ public static partial class Utf8JsonWriterExtensions
         Ulid value,
         JsonSerializerOptions options,
         UlidJsonConverter converter,
-        EqualityComparer<Ulid>? equalityComparer = null
+        Ulid defaultValue = default
     )
     {
         return writer.TryWriteProperty
@@ -390,7 +394,7 @@ public static partial class Utf8JsonWriterExtensions
             options,
             (converter, options),
             static (writer, value, state) => state.converter.Write(writer, value, state.options),
-            equalityComparer
+            defaultValue
         );
     }
 
@@ -403,9 +407,7 @@ public static partial class Utf8JsonWriterExtensions
     /// <param name="value">The Ulid value to write, if present.</param>
     /// <param name="options">The serializer options that control ignore conditions.</param>
     /// <param name="converter">The converter used to write the value.</param>
-    /// <param name="equalityComparer">
-    ///     Optional comparer used to detect default values.
-    /// </param>
+    /// <param name="defaultValue">The value omitted under WhenWritingDefault; defaults to the CLR default.</param>
     /// <returns><c>true</c> if the property was written; otherwise, <c>false</c>.</returns>
     public static bool TryWritePropertyWithConverter
     (
@@ -414,7 +416,7 @@ public static partial class Utf8JsonWriterExtensions
         Ulid? value,
         JsonSerializerOptions options,
         UlidJsonConverter converter,
-        EqualityComparer<Ulid>? equalityComparer = null
+        Ulid? defaultValue = default
     )
     {
         return writer.TryWriteProperty
@@ -424,7 +426,7 @@ public static partial class Utf8JsonWriterExtensions
             options,
             (converter, options),
             static (writer, value, state) => state.converter.Write(writer, value, state.options),
-            equalityComparer
+            defaultValue
         );
     }
     #endregion
