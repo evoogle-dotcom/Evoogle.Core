@@ -15,9 +15,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
     public class GetNullabilityInfoTest : XUnitTest
     {
         #region User Supplied Properties
-        public Type Type { get; init; } = null!;
-        public string PropertyName { get; init; } = null!;
-        public MemberNullableInfo Expected { get; init; } = null!;
+        public required Type Type { get; init; }
+        public required string PropertyName { get; init; }
+        public required MemberNullableInfo Expected { get; init; }
         #endregion
 
         #region Calculated Properties
@@ -48,9 +48,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
     public class IsStaticTest : XUnitTest
     {
         #region User Supplied Properties
-        public Type Type { get; init; } = null!;
-        public string PropertyName { get; init; } = null!;
-        public bool Expected { get; init; }
+        public required Type Type { get; init; }
+        public required string PropertyName { get; init; }
+        public required bool Expected { get; init; }
         #endregion
 
         #region Calculated Properties
@@ -83,27 +83,27 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     public class Sample
     {
-        public string? NullableReference { get; set; }
-        public string NonNullableReference { get; set; }
+        public string? NullableString { get; set; }
+        public string String { get; set; }
 
-        public int? NullableValue { get; set; }
-        public int NonNullableValue { get; set; }
+        public int? NullableInt { get; set; }
+        public int Int { get; set; }
 
-        public List<string?>? NullableCollectionWithNullableReferenceElements { get; set; }
-        public List<string>? NullableCollectionWithNonNullableReferenceElements { get; set; }
-        public List<string?> NonNullableCollectionWithNullableReferenceElements { get; set; }
-        public List<string> NonNullableCollectionWithNonNullableReferenceElements { get; set; }
+        public List<string?>? NullableListOfNullableStrings { get; set; }
+        public List<string>? NullableListOfStrings { get; set; }
+        public List<string?> ListOfNullableStrings { get; set; }
+        public List<string> ListOfStrings { get; set; }
 
-        public List<int?>? NullableCollectionWithNullableValueElements { get; set; }
-        public List<int>? NullableCollectionWithNonNullableValueElements { get; set; }
-        public List<int?> NonNullableCollectionWithNullableValueElements { get; set; }
-        public List<int> NonNullableCollectionWithNonNullableValueElements { get; set; }
+        public List<int?>? NullableListOfNullableInts { get; set; }
+        public List<int>? NullableListOfInts { get; set; }
+        public List<int?> ListOfNullableInts { get; set; }
+        public List<int> ListOfInts { get; set; }
 
-        public List<List<string?>?>? NullableCollectionWithNullableCollectionWithNullableReferenceElements { get; set; }
-        public List<List<List<string?>?>?>? NullableCollectionWithNullableCollectionWithNullableCollectionWithNullableReferenceElements { get; set; }
+        public List<List<string?>?>? NullableListOfNullableListsOfNullableStrings { get; set; }
+        public List<List<List<string?>?>?>? NullableListOfNullableListsOfNullableListsOfNullableStrings { get; set; }
 
-        public List<List<int?>?>? NullableCollectionWithNullableCollectionWithNullableValueElements { get; set; }
-        public List<List<List<int?>?>?>? NullableCollectionWithNullableCollectionWithNullableCollectionWithNullableValueElements { get; set; }
+        public List<List<int?>?>? NullableListOfNullableListsOfNullableInts { get; set; }
+        public List<List<List<int?>?>?>? NullableListOfNullableListsOfNullableListsOfNullableInts { get; set; }
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -127,9 +127,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
     [
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Reference",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableString)}",
             Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableReference),
+            PropertyName = nameof(Sample.NullableString),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(string),
@@ -140,9 +140,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Non Nullable Reference",
+            Name = $"{nameof(Sample)}.{nameof(Sample.String)}",
             Type = typeof(Sample),
-            PropertyName = nameof(Sample.NonNullableReference),
+            PropertyName = nameof(Sample.String),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(string),
@@ -153,9 +153,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Value",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableInt)}",
             Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableValue),
+            PropertyName = nameof(Sample.NullableInt),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(int?),
@@ -166,9 +166,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Non Nullable Value",
+            Name = $"{nameof(Sample)}.{nameof(Sample.Int)}",
             Type = typeof(Sample),
-            PropertyName = nameof(Sample.NonNullableValue),
+            PropertyName = nameof(Sample.Int),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(int),
@@ -179,9 +179,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Collection With Nullable Reference Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableStrings)}",
             Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableCollectionWithNullableReferenceElements),
+            PropertyName = nameof(Sample.NullableListOfNullableStrings),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<string?>),
@@ -200,9 +200,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Collection With Non Nullable Reference Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfStrings)}",
             Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableCollectionWithNonNullableReferenceElements),
+            PropertyName = nameof(Sample.NullableListOfStrings),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<string>),
@@ -221,9 +221,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Non Nullable Collection With Nullable Reference Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.ListOfNullableStrings)}",
             Type = typeof(Sample),
-            PropertyName = nameof(Sample.NonNullableCollectionWithNullableReferenceElements),
+            PropertyName = nameof(Sample.ListOfNullableStrings),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<string?>),
@@ -242,9 +242,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Non Nullable Collection With Non Nullable Reference Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.ListOfStrings)}",
             Type = typeof(Sample),
-            PropertyName = nameof(Sample.NonNullableCollectionWithNonNullableReferenceElements),
+            PropertyName = nameof(Sample.ListOfStrings),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<string>),
@@ -263,9 +263,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Collection With Nullable Value Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableInts)}",
             Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableCollectionWithNullableValueElements),
+            PropertyName = nameof(Sample.NullableListOfNullableInts),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<int?>),
@@ -284,9 +284,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Collection With Non Nullable Value Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfInts)}",
             Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableCollectionWithNonNullableValueElements),
+            PropertyName = nameof(Sample.NullableListOfInts),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<int>),
@@ -305,9 +305,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Non Nullable Collection With Nullable Value Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.ListOfNullableInts)}",
             Type = typeof(Sample),
-            PropertyName = nameof(Sample.NonNullableCollectionWithNullableValueElements),
+            PropertyName = nameof(Sample.ListOfNullableInts),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<int?>),
@@ -326,9 +326,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Non Nullable Collection With Non Nullable Value Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.ListOfInts)}",
             Type = typeof(Sample),
-            PropertyName = nameof(Sample.NonNullableCollectionWithNonNullableValueElements),
+            PropertyName = nameof(Sample.ListOfInts),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<int>),
@@ -347,9 +347,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Collection With Nullable Collection With Nullable Reference Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableListsOfNullableStrings)}",
             Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableCollectionWithNullableCollectionWithNullableReferenceElements),
+            PropertyName = nameof(Sample.NullableListOfNullableListsOfNullableStrings),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<List<string?>?>),
@@ -375,9 +375,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Collection With Nullable Collection With Nullable Collection With Nullable Reference Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableListsOfNullableListsOfNullableStrings)}",
             Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableCollectionWithNullableCollectionWithNullableCollectionWithNullableReferenceElements),
+            PropertyName = nameof(Sample.NullableListOfNullableListsOfNullableListsOfNullableStrings),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<List<List<string?>?>?>),
@@ -410,9 +410,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Collection With Nullable Collection With Nullable Value Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableListsOfNullableInts)}",
             Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableCollectionWithNullableCollectionWithNullableValueElements),
+            PropertyName = nameof(Sample.NullableListOfNullableListsOfNullableInts),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<List<int?>?>),
@@ -438,9 +438,9 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Collection With Nullable Collection With Nullable Collection With Nullable Value Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableListsOfNullableListsOfNullableInts)}",
             Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableCollectionWithNullableCollectionWithNullableCollectionWithNullableValueElements),
+            PropertyName = nameof(Sample.NullableListOfNullableListsOfNullableListsOfNullableInts),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<List<List<int?>?>?>),
@@ -473,7 +473,7 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Unknown Reference",
+            Name = $"{nameof(UnknownSample)}.{nameof(UnknownSample.UnknownReference)}",
             Type = typeof(UnknownSample),
             PropertyName = nameof(UnknownSample.UnknownReference),
             Expected = new MemberNullableInfo
@@ -486,7 +486,7 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
 
         new GetNullabilityInfoTest
         {
-            Name = "With Unknown Collection With Unknown Reference Elements",
+            Name = $"{nameof(UnknownSample)}.{nameof(UnknownSample.UnknownCollectionWithUnknownReferenceElements)}",
             Type = typeof(UnknownSample),
             PropertyName = nameof(UnknownSample.UnknownCollectionWithUnknownReferenceElements),
             Expected = new MemberNullableInfo
@@ -510,14 +510,14 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
     [
         new IsStaticTest
         {
-            Name = "With Instance Property",
+            Name = $"{nameof(Widget)}.{nameof(Widget.Property)}",
             Type = typeof(Widget),
             PropertyName = nameof(Widget.Property),
             Expected = false
         },
         new IsStaticTest
         {
-            Name = "With Static Property",
+            Name = $"{nameof(Widget)}.{nameof(Widget.StaticProperty)}",
             Type = typeof(Widget),
             PropertyName = nameof(Widget.StaticProperty),
             Expected = true

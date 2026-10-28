@@ -15,9 +15,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
     public class GetNullabilityInfoTest : XUnitTest
     {
         #region User Supplied Properties
-        public Type Type { get; init; } = null!;
-        public string FieldName { get; init; } = null!;
-        public MemberNullableInfo Expected { get; init; } = null!;
+        public required Type Type { get; init; }
+        public required string FieldName { get; init; }
+        public required MemberNullableInfo Expected { get; init; }
         #endregion
 
         #region Calculated Properties
@@ -48,9 +48,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
     public class IsStaticTest : XUnitTest
     {
         #region User Supplied Properties
-        public Type Type { get; init; } = null!;
-        public string FieldName { get; init; } = null!;
-        public bool Expected { get; init; }
+        public required Type Type { get; init; }
+        public required string FieldName { get; init; }
+        public required bool Expected { get; init; }
         #endregion
 
         #region Calculated Properties
@@ -84,27 +84,27 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     public class Sample
     {
-        public string? NullableReference;
-        public string NonNullableReference;
+        public string? NullableString;
+        public string String;
 
-        public int? NullableValue;
-        public int NonNullableValue;
+        public int? NullableInt;
+        public int Int;
 
-        public List<string?>? NullableCollectionWithNullableReferenceElements;
-        public List<string>? NullableCollectionWithNonNullableReferenceElements;
-        public List<string?> NonNullableCollectionWithNullableReferenceElements;
-        public List<string> NonNullableCollectionWithNonNullableReferenceElements;
+        public List<string?>? NullableListOfNullableStrings;
+        public List<string>? NullableListOfStrings;
+        public List<string?> ListOfNullableStrings;
+        public List<string> ListOfStrings;
 
-        public List<int?>? NullableCollectionWithNullableValueElements;
-        public List<int>? NullableCollectionWithNonNullableValueElements;
-        public List<int?> NonNullableCollectionWithNullableValueElements;
-        public List<int> NonNullableCollectionWithNonNullableValueElements;
+        public List<int?>? NullableListOfNullableInts;
+        public List<int>? NullableListOfInts;
+        public List<int?> ListOfNullableInts;
+        public List<int> ListOfInts;
 
-        public List<List<string?>?>? NullableCollectionWithNullableCollectionWithNullableReferenceElements;
-        public List<List<List<string?>?>?>? NullableCollectionWithNullableCollectionWithNullableCollectionWithNullableReferenceElements;
+        public List<List<string?>?>? NullableListOfNullableListsOfNullableStrings;
+        public List<List<List<string?>?>?>? NullableListOfNullableListsOfNullableListsOfNullableStrings;
 
-        public List<List<int?>?>? NullableCollectionWithNullableCollectionWithNullableValueElements;
-        public List<List<List<int?>?>?>? NullableCollectionWithNullableCollectionWithNullableCollectionWithNullableValueElements;
+        public List<List<int?>?>? NullableListOfNullableListsOfNullableInts;
+        public List<List<List<int?>?>?>? NullableListOfNullableListsOfNullableListsOfNullableInts;
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
@@ -131,9 +131,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
     [
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Reference",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableString)}",
             Type = typeof(Sample),
-            FieldName = nameof(Sample.NullableReference),
+            FieldName = nameof(Sample.NullableString),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(string),
@@ -144,9 +144,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Non Nullable Reference",
+            Name = $"{nameof(Sample)}.{nameof(Sample.String)}",
             Type = typeof(Sample),
-            FieldName = nameof(Sample.NonNullableReference),
+            FieldName = nameof(Sample.String),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(string),
@@ -157,9 +157,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Value",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableInt)}",
             Type = typeof(Sample),
-            FieldName = nameof(Sample.NullableValue),
+            FieldName = nameof(Sample.NullableInt),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(int?),
@@ -170,9 +170,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Non Nullable Value",
+            Name = $"{nameof(Sample)}.{nameof(Sample.Int)}",
             Type = typeof(Sample),
-            FieldName = nameof(Sample.NonNullableValue),
+            FieldName = nameof(Sample.Int),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(int),
@@ -183,9 +183,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Collection With Nullable Reference Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableStrings)}",
             Type = typeof(Sample),
-            FieldName = nameof(Sample.NullableCollectionWithNullableReferenceElements),
+            FieldName = nameof(Sample.NullableListOfNullableStrings),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<string?>),
@@ -204,9 +204,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Collection With Non Nullable Reference Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfStrings)}",
             Type = typeof(Sample),
-            FieldName = nameof(Sample.NullableCollectionWithNonNullableReferenceElements),
+            FieldName = nameof(Sample.NullableListOfStrings),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<string>),
@@ -225,9 +225,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Non Nullable Collection With Nullable Reference Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.ListOfNullableStrings)}",
             Type = typeof(Sample),
-            FieldName = nameof(Sample.NonNullableCollectionWithNullableReferenceElements),
+            FieldName = nameof(Sample.ListOfNullableStrings),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<string?>),
@@ -246,9 +246,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Non Nullable Collection With Non Nullable Reference Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.ListOfStrings)}",
             Type = typeof(Sample),
-            FieldName = nameof(Sample.NonNullableCollectionWithNonNullableReferenceElements),
+            FieldName = nameof(Sample.ListOfStrings),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<string>),
@@ -267,9 +267,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Collection With Nullable Value Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableInts)}",
             Type = typeof(Sample),
-            FieldName = nameof(Sample.NullableCollectionWithNullableValueElements),
+            FieldName = nameof(Sample.NullableListOfNullableInts),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<int?>),
@@ -288,9 +288,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Collection With Non Nullable Value Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfInts)}",
             Type = typeof(Sample),
-            FieldName = nameof(Sample.NullableCollectionWithNonNullableValueElements),
+            FieldName = nameof(Sample.NullableListOfInts),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<int>),
@@ -309,9 +309,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Non Nullable Collection With Nullable Value Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.ListOfNullableInts)}",
             Type = typeof(Sample),
-            FieldName = nameof(Sample.NonNullableCollectionWithNullableValueElements),
+            FieldName = nameof(Sample.ListOfNullableInts),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<int?>),
@@ -330,9 +330,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Non Nullable Collection With Non Nullable Value Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.ListOfInts)}",
             Type = typeof(Sample),
-            FieldName = nameof(Sample.NonNullableCollectionWithNonNullableValueElements),
+            FieldName = nameof(Sample.ListOfInts),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<int>),
@@ -351,9 +351,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Collection With Nullable Collection With Nullable Reference Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableListsOfNullableStrings)}",
             Type = typeof(Sample),
-            FieldName = nameof(Sample.NullableCollectionWithNullableCollectionWithNullableReferenceElements),
+            FieldName = nameof(Sample.NullableListOfNullableListsOfNullableStrings),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<List<string?>?>),
@@ -379,9 +379,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Collection With Nullable Collection With Nullable Collection With Nullable Reference Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableListsOfNullableListsOfNullableStrings)}",
             Type = typeof(Sample),
-            FieldName = nameof(Sample.NullableCollectionWithNullableCollectionWithNullableCollectionWithNullableReferenceElements),
+            FieldName = nameof(Sample.NullableListOfNullableListsOfNullableListsOfNullableStrings),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<List<List<string?>?>?>),
@@ -414,9 +414,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Collection With Nullable Collection With Nullable Value Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableListsOfNullableInts)}",
             Type = typeof(Sample),
-            FieldName = nameof(Sample.NullableCollectionWithNullableCollectionWithNullableValueElements),
+            FieldName = nameof(Sample.NullableListOfNullableListsOfNullableInts),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<List<int?>?>),
@@ -442,9 +442,9 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Nullable Collection With Nullable Collection With Nullable Collection With Nullable Value Elements",
+            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableListsOfNullableListsOfNullableInts)}",
             Type = typeof(Sample),
-            FieldName = nameof(Sample.NullableCollectionWithNullableCollectionWithNullableCollectionWithNullableValueElements),
+            FieldName = nameof(Sample.NullableListOfNullableListsOfNullableListsOfNullableInts),
             Expected = new MemberNullableInfo
             {
                 MemberType = typeof(List<List<List<int?>?>?>),
@@ -477,7 +477,7 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Unknown Reference",
+            Name = $"{nameof(UnknownSample)}.{nameof(UnknownSample.UnknownReference)}",
             Type = typeof(UnknownSample),
             FieldName = nameof(UnknownSample.UnknownReference),
             Expected = new MemberNullableInfo
@@ -490,7 +490,7 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
 
         new GetNullabilityInfoTest
         {
-            Name = "With Unknown Collection With Unknown Reference Elements",
+            Name = $"{nameof(UnknownSample)}.{nameof(UnknownSample.UnknownCollectionWithUnknownReferenceElements)}",
             Type = typeof(UnknownSample),
             FieldName = nameof(UnknownSample.UnknownCollectionWithUnknownReferenceElements),
             Expected = new MemberNullableInfo
@@ -514,14 +514,14 @@ public class FieldReflectionTests(ITestOutputHelper output) : XUnitTests(output)
     [
         new IsStaticTest
         {
-            Name = "With Instance Field",
+            Name = $"{nameof(Widget)}.{nameof(Widget.Field)}",
             Type = typeof(Widget),
             FieldName = nameof(Widget.Field),
             Expected = false
         },
         new IsStaticTest
         {
-            Name = "With Static Field",
+            Name = $"{nameof(Widget)}.{nameof(Widget.StaticField)}",
             Type = typeof(Widget),
             FieldName = nameof(Widget.StaticField),
             Expected = true
