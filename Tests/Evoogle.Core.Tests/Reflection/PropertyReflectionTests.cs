@@ -3,6 +3,8 @@
 //
 // This file is licensed under the MIT License.
 // See the LICENSE file in the project root for more information.
+using System.Reflection;
+
 using Evoogle.XUnit;
 
 using FluentAssertions;
@@ -123,405 +125,52 @@ public class PropertyReflectionTests(ITestOutputHelper output) : XUnitTests(outp
     #endregion
 
     #region Theory Data
+    private static readonly Dictionary<string, bool> _expectedStaticByPropertyName =
+        new()
+        {
+            [nameof(Widget.Property)] = false,
+            [nameof(Widget.StaticProperty)] = true
+        };
+
     public static TheoryDataRow<IXUnitTest>[] GetNullabilityInfoTestTheoryData =>
     [
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableString)}",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableString),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(string),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = []
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.String)}",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.String),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(string),
-                Nullability = MemberNullability.NonNullable,
-                CollectionChain = []
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableInt)}",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableInt),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(int?),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = []
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.Int)}",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.Int),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(int),
-                Nullability = MemberNullability.NonNullable,
-                CollectionChain = []
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableStrings)}",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableListOfNullableStrings),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<string?>),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<string?>),
-                        ElementType = typeof(string),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.Nullable
-                    }
-                ]
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfStrings)}",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableListOfStrings),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<string>),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<string>),
-                        ElementType = typeof(string),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.NonNullable
-                    }
-                ]
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.ListOfNullableStrings)}",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.ListOfNullableStrings),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<string?>),
-                Nullability = MemberNullability.NonNullable,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<string?>),
-                        ElementType = typeof(string),
-                        CollectionNullability = MemberNullability.NonNullable,
-                        ElementNullability = MemberNullability.Nullable
-                    }
-                ]
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.ListOfStrings)}",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.ListOfStrings),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<string>),
-                Nullability = MemberNullability.NonNullable,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<string>),
-                        ElementType = typeof(string),
-                        CollectionNullability = MemberNullability.NonNullable,
-                        ElementNullability = MemberNullability.NonNullable
-                    }
-                ]
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableInts)}",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableListOfNullableInts),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<int?>),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<int?>),
-                        ElementType = typeof(int?),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.Nullable
-                    }
-                ]
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfInts)}",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableListOfInts),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<int>),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<int>),
-                        ElementType = typeof(int),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.NonNullable
-                    }
-                ]
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.ListOfNullableInts)}",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.ListOfNullableInts),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<int?>),
-                Nullability = MemberNullability.NonNullable,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<int?>),
-                        ElementType = typeof(int?),
-                        CollectionNullability = MemberNullability.NonNullable,
-                        ElementNullability = MemberNullability.Nullable
-                    }
-                ]
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.ListOfInts)}",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.ListOfInts),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<int>),
-                Nullability = MemberNullability.NonNullable,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<int>),
-                        ElementType = typeof(int),
-                        CollectionNullability = MemberNullability.NonNullable,
-                        ElementNullability = MemberNullability.NonNullable
-                    }
-                ]
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableListsOfNullableStrings)}",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableListOfNullableListsOfNullableStrings),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<List<string?>?>),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<List<string?>?>),
-                        ElementType = typeof(List<string?>),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.Nullable
-                    },
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<string?>),
-                        ElementType = typeof(string),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.Nullable
-                    }
-                ]
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableListsOfNullableListsOfNullableStrings)}",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableListOfNullableListsOfNullableListsOfNullableStrings),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<List<List<string?>?>?>),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<List<List<string?>?>?>),
-                        ElementType = typeof(List<List<string?>?>),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.Nullable
-                    },
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<List<string?>?>),
-                        ElementType = typeof(List<string?>),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.Nullable
-                    },
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<string?>),
-                        ElementType = typeof(string),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.Nullable
-                    }
-                ]
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableListsOfNullableInts)}",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableListOfNullableListsOfNullableInts),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<List<int?>?>),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<List<int?>?>),
-                        ElementType = typeof(List<int?>),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.Nullable
-                    },
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<int?>),
-                        ElementType = typeof(int?),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.Nullable
-                    }
-                ]
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableListsOfNullableListsOfNullableInts)}",
-            Type = typeof(Sample),
-            PropertyName = nameof(Sample.NullableListOfNullableListsOfNullableListsOfNullableInts),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<List<List<int?>?>?>),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<List<List<int?>?>?>),
-                        ElementType = typeof(List<List<int?>?>),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.Nullable
-                    },
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<List<int?>?>),
-                        ElementType = typeof(List<int?>),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.Nullable
-                    },
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<int?>),
-                        ElementType = typeof(int?),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.Nullable
-                    }
-                ]
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(UnknownSample)}.{nameof(UnknownSample.UnknownReference)}",
-            Type = typeof(UnknownSample),
-            PropertyName = nameof(UnknownSample.UnknownReference),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(string),
-                Nullability = MemberNullability.Unknown,
-                CollectionChain = []
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(UnknownSample)}.{nameof(UnknownSample.UnknownCollectionWithUnknownReferenceElements)}",
-            Type = typeof(UnknownSample),
-            PropertyName = nameof(UnknownSample.UnknownCollectionWithUnknownReferenceElements),
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<string>),
-                Nullability = MemberNullability.Unknown,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<string>),
-                        CollectionNullability = MemberNullability.Unknown,
-                        ElementType = typeof(string),
-                        ElementNullability = MemberNullability.Unknown
-                    }
-                ]
-            }
-        },
+        .. (
+            from type in new[] { typeof(Sample), typeof(UnknownSample) }
+            from propertyInfo in type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+            orderby type.Name, propertyInfo.Name
+            let propertyName = propertyInfo.Name
+            let expected = MemberNullabilityTestData.ExpectedByMemberName[propertyName]
+            select new TheoryDataRow<IXUnitTest>
+            (
+                new GetNullabilityInfoTest
+                {
+                    Name = $"{type.Name}.{propertyName}",
+                    Type = type,
+                    PropertyName = propertyName,
+                    Expected = expected
+                }
+            )
+        )
     ];
 
     public static TheoryDataRow<IXUnitTest>[] IsStaticTheoryData =>
     [
-        new IsStaticTest
-        {
-            Name = $"{nameof(Widget)}.{nameof(Widget.Property)}",
-            Type = typeof(Widget),
-            PropertyName = nameof(Widget.Property),
-            Expected = false
-        },
-        new IsStaticTest
-        {
-            Name = $"{nameof(Widget)}.{nameof(Widget.StaticProperty)}",
-            Type = typeof(Widget),
-            PropertyName = nameof(Widget.StaticProperty),
-            Expected = true
-        },
+        .. (
+            from propertyInfo in typeof(Widget).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly)
+            orderby propertyInfo.Name
+            let propertyName = propertyInfo.Name
+            let expected = _expectedStaticByPropertyName[propertyName]
+            select new TheoryDataRow<IXUnitTest>
+            (
+                new IsStaticTest
+                {
+                    Name = $"{nameof(Widget)}.{propertyName}",
+                    Type = typeof(Widget),
+                    PropertyName = propertyName,
+                    Expected = expected
+                }
+            )
+        )
     ];
     #endregion
 

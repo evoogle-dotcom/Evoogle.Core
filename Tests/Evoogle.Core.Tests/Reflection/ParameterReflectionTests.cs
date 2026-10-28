@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2024-2025 Evoogle.com
 // SPDX-License-Identifier: MIT
+using System.Reflection;
+
 using Evoogle.XUnit;
 
 using FluentAssertions;
@@ -14,7 +16,7 @@ public sealed class ParameterReflectionTests(ITestOutputHelper output) : XUnitTe
         #region User Supplied Properties
         public required Type Type { get; init; }
         public required string MethodName { get; init; }
-        public required bool IsReturnParameter { get; init; }
+        public required int? ParameterPosition { get; init; }
         public required MemberNullableInfo Expected { get; init; }
         #endregion
 
@@ -27,7 +29,7 @@ public sealed class ParameterReflectionTests(ITestOutputHelper output) : XUnitTe
         {
             this.WriteLine($"Type              = {this.Type.Name}");
             this.WriteLine($"Method            = {this.MethodName}");
-            this.WriteLine($"IsReturnParameter = {this.IsReturnParameter}");
+            this.WriteLine($"ParameterPosition = {this.ParameterPosition}");
             this.WriteLine();
             this.WriteLine($"Expected = {this.Expected}");
         }
@@ -35,9 +37,9 @@ public sealed class ParameterReflectionTests(ITestOutputHelper output) : XUnitTe
         protected override void Act()
         {
             var methodInfo = this.Type.GetMethod(this.MethodName)!;
-            var parameterInfo = this.IsReturnParameter
-                ? methodInfo.ReturnParameter
-                : methodInfo.GetParameters().Single();
+            var parameterInfo = this.ParameterPosition is int parameterPosition
+                ? methodInfo.GetParameters()[parameterPosition]
+                : methodInfo.ReturnParameter;
 
             this.Actual = ParameterReflection.GetNullabilityInfo(parameterInfo);
 
@@ -80,205 +82,25 @@ public sealed class ParameterReflectionTests(ITestOutputHelper output) : XUnitTe
     #region Theory Data
     public static TheoryDataRow<IXUnitTest>[] GetNullabilityInfoTheoryData =>
     [
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableString)}",
-            Type = typeof(Sample),
-            MethodName = nameof(Sample.NullableString),
-            IsReturnParameter = false,
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(string),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = []
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableString)}",
-            Type = typeof(Sample),
-            MethodName = nameof(Sample.NullableString),
-            IsReturnParameter = true,
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(string),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = []
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.String)}",
-            Type = typeof(Sample),
-            MethodName = nameof(Sample.String),
-            IsReturnParameter = false,
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(string),
-                Nullability = MemberNullability.NonNullable,
-                CollectionChain = []
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.String)}",
-            Type = typeof(Sample),
-            MethodName = nameof(Sample.String),
-            IsReturnParameter = true,
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(string),
-                Nullability = MemberNullability.NonNullable,
-                CollectionChain = []
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableInt)}",
-            Type = typeof(Sample),
-            MethodName = nameof(Sample.NullableInt),
-            IsReturnParameter = false,
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(int?),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = []
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableInt)}",
-            Type = typeof(Sample),
-            MethodName = nameof(Sample.NullableInt),
-            IsReturnParameter = true,
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(int?),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = []
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.Int)}",
-            Type = typeof(Sample),
-            MethodName = nameof(Sample.Int),
-            IsReturnParameter = false,
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(int),
-                Nullability = MemberNullability.NonNullable,
-                CollectionChain = []
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.Int)}",
-            Type = typeof(Sample),
-            MethodName = nameof(Sample.Int),
-            IsReturnParameter = true,
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(int),
-                Nullability = MemberNullability.NonNullable,
-                CollectionChain = []
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableStrings)}",
-            Type = typeof(Sample),
-            MethodName = nameof(Sample.NullableListOfNullableStrings),
-            IsReturnParameter = false,
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<string?>),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<string?>),
-                        ElementType = typeof(string),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.Nullable
-                    }
-                ]
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfNullableStrings)}",
-            Type = typeof(Sample),
-            MethodName = nameof(Sample.NullableListOfNullableStrings),
-            IsReturnParameter = true,
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<string?>),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<string?>),
-                        ElementType = typeof(string),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.Nullable
-                    }
-                ]
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfStrings)}",
-            Type = typeof(Sample),
-            MethodName = nameof(Sample.NullableListOfStrings),
-            IsReturnParameter = false,
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<string>),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<string>),
-                        ElementType = typeof(string),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.NonNullable
-                    }
-                ]
-            }
-        },
-
-        new GetNullabilityInfoTest
-        {
-            Name = $"{nameof(Sample)}.{nameof(Sample.NullableListOfStrings)}",
-            Type = typeof(Sample),
-            MethodName = nameof(Sample.NullableListOfStrings),
-            IsReturnParameter = true,
-            Expected = new MemberNullableInfo
-            {
-                MemberType = typeof(List<string>),
-                Nullability = MemberNullability.Nullable,
-                CollectionChain = [
-                    new MemberNullableInfo.CollectionInfo
-                    {
-                        CollectionType = typeof(List<string>),
-                        ElementType = typeof(string),
-                        CollectionNullability = MemberNullability.Nullable,
-                        ElementNullability = MemberNullability.NonNullable
-                    }
-                ]
-            }
-        },
+        .. (
+            from methodInfo in typeof(Sample).GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+            orderby methodInfo.Name
+            let expected = MemberNullabilityTestData.ExpectedByMemberName[methodInfo.Name]
+            from parameterInfo in methodInfo.GetParameters().Append(methodInfo.ReturnParameter)
+            let parameterPosition = parameterInfo.Position < 0 ? (int?)null : parameterInfo.Position
+            let parameterName = parameterPosition.HasValue ? $"Parameter{parameterPosition}" : "Return"
+            select new TheoryDataRow<IXUnitTest>
+            (
+                new GetNullabilityInfoTest
+                {
+                    Name = $"{nameof(Sample)}.{methodInfo.Name}.{parameterName}",
+                    Type = typeof(Sample),
+                    MethodName = methodInfo.Name,
+                    ParameterPosition = parameterPosition,
+                    Expected = expected
+                }
+            )
+        )
     ];
     #endregion
 
